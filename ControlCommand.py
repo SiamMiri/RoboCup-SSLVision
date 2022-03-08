@@ -25,13 +25,14 @@ def load_json_config_file():
 # Date of issue: 05.03.2021
 # Date of modify: XX.XX.xXXx
 def start_capturing_command(self):
-    """ Calles Class ImageProcessing object """
+    """ Calls Class ImageProcessing object """
     imgProc.start_capturing(self.cameraConfig)
 
-    self.robot_id          = imgProc.detect_robot_id()
-    self.robot_location    = imgProc.detect_robot_location()
+'''
+    self.robot_id = imgProc.detect_robot_id()
+    self.robot_location = imgProc.detect_robot_location()
     self.robot_orientation = imgProc.detect_robot_orientation()
+'''
 
 def finish_capturing_command(self):
     imgProc.finish_capturing()
-

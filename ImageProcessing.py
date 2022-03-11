@@ -58,7 +58,27 @@ class ImageProcessing():
 
         while True:
             ret, frame = self.camera_capture.read()
-            blurred_frame = cv2.GaussianBlur(frame, (5, 5), 0)
+            blurred_frame = cv2.GaussianBlur(frame, (37, 37), 0)
+
+
+            Z = np.float32(frame.reshape((-1, 3)))
+
+            criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+            K = 4
+            _, labels, centers = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+            labels = labels.reshape((frame.shape[:-1]))
+            reduced = np.uint8(centers)[labels]
+
+            result = [np.hstack([frame, reduced])]
+            for i, c in enumerate(centers):
+                mask = cv2.inRange(labels, i, i)
+                mask = np.dstack([mask] * 3)  # Make it 3 channel
+                ex_img = cv2.bitwise_and(frame, mask)
+                ex_reduced = cv2.bitwise_and(reduced, mask)
+                result.append(np.hstack([ex_img, ex_reduced]))
+
+            # cv2.imwrite('watermelon_out.jpg', np.vstack(result))
+
 
             hsv = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2HSV)
 
@@ -90,10 +110,11 @@ class ImageProcessing():
             fps = 1 / (cTime - self.pTime)
             self.pTime = cTime
             cv2.putText(mask, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
-            cv2.putText(frame, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
+            cv2.putText(blurred_frame, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
             cv2.imshow("B&W RobotSoccer\tHit Escape to Exit", mask)  # BLack and White Image
-            cv2.imshow("RobotSoccer\tHit Escape to Exit", frame)  # Normal Images with contours
+            # cv2.imshow("RobotSoccer\tHit Escape to Exit", np.vstack(result))  # Normal Images with contours
+            cv2.imshow("RobotSoccer\tHit Escape to Exit", result[0])
 
             # cv2.waitKey(1)
             k = cv2.waitKey(1)  # TODO: You can define fps here as well each 1 is 1ms

@@ -63,21 +63,23 @@ class ImageProcessing():
             hsv = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2HSV)
 
             # CHANGE : This is just sample and it should be changed
-            low_blue = np.array([38, 86, 0])
-            upper_blue = np.array([100, 200, 255])
+            low_blue = np.array([100, 50, 50])
+            upper_blue = np.array([130, 255, 255])
 
             # define mask
             mask = cv2.inRange(hsv, low_blue, upper_blue)
 
             # CHAIN_APPROX_NONE gibe all points
-            contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
             cv2.drawContours(frame, contours, -1, (0, 0, 0), 1)  # -1 means all the counters
 
             # print(contours[0]) if contours[0] is not None else print("Pass")
-            for contour in contours:
-                position = cv2.contourArea(contour)
-                if position > 5000:
-                    cv2.drawContours(frame, contours, -1, (0, 0, 0), 1)  # -1 means all the counters
+            if len(contours) > 40:
+                # for contour in contours:
+                # position = cv2.contourArea(contour)
+                blue_area = max(contours, key=cv2.contourArea)
+                (xg, yg, wg, hg) = cv2.boundingRect(blue_area)
+                cv2.rectangle(frame, (xg, yg), (xg + wg, yg + hg), (0, 255, 0), 2)
 
             if not ret:
                 print("failed to grab frame")
@@ -90,12 +92,11 @@ class ImageProcessing():
             cv2.putText(mask, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
             cv2.putText(frame, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
-
             cv2.imshow("B&W RobotSoccer\tHit Escape to Exit", mask)  # BLack and White Image
             cv2.imshow("RobotSoccer\tHit Escape to Exit", frame)  # Normal Images with contours
 
             # cv2.waitKey(1)
-            k = cv2.waitKey(1)
+            k = cv2.waitKey(1)  # TODO: You can define fps here as well each 1 is 1ms
             if k % 256 == 27:
                 # ESC pressed
                 print("Escape hit, closing...")

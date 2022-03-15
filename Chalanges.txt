@@ -1,4 +1,0 @@
-/**
-Chalanges that might exist in obots detection
-1 : speed of the robots could peaking in excess of 2m/s, and the ball speeds speed peaking can reach up to 5m/s
-*/

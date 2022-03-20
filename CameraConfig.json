@@ -1,5 +1,6 @@
 {
-    "FPS":10,
-    "Resolution":[240,120],
-    "focus": 5
+    "FPS":30,
+    "Resolution":[1280,740],
+    "resize_frame": [740, 480],
+    "focus": 255
 }

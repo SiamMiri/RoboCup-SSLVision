@@ -14,7 +14,7 @@ class ImageProcessing():
     """ This class get images from ControlCommand """
 
     def __init__(self):
-        self.camera_capture = cv2.VideoCapture(1)
+        self.camera_capture = cv2.VideoCapture(0)
         self.pTime = 0
         self.robot_center_pos = None
 
@@ -23,7 +23,7 @@ class ImageProcessing():
 
     def start_capturing(self, camera_config: json):
         """ Start capturing get camera config from start_capturing_command """
-        self.set_camera_config(camera_config, Fps=False, Res=False, Focus=False, Resize_frame = False)
+        self.set_camera_config(camera_config, Fps=False, Res=False, Focus=False)
 
         # Creat windows for the frame
         cv2.namedWindow("RobotSoccer\tHit Escape to Exit")
@@ -43,6 +43,12 @@ class ImageProcessing():
                 print("failed to grab frame")
                 break
 
+                # Change Frame Size
+            if isinstance(camera_config["resize_frame"], list):
+                frame = cv2.resize(frame, (int(camera_config["resize_frame"][0]),
+                                           int(camera_config["resize_frame"][1])))
+            else:
+                print("Frame Size Configuration is incorrect")
 
             # Show frame rate
             # cTime = time.time()
@@ -125,7 +131,7 @@ class ImageProcessing():
         """ contours for blue area """
         for contours in contours_blue:
             blue_area = cv2.contourArea(contours)
-            if blue_area > 5000:
+            if blue_area < 2000 and blue_area > 1000:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
@@ -141,7 +147,7 @@ class ImageProcessing():
         """ contours for red area """             
         for contours in contours_red:
             red_area = cv2.contourArea(contours)
-            if red_area > 5000:
+            if red_area < 2000 and red_area > 1000:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
@@ -157,7 +163,7 @@ class ImageProcessing():
         """ contours for yellow area """             
         for contours in contours_yellow:
             yellow_area = cv2.contourArea(contours)
-            if yellow_area > 5000:
+            if yellow_area < 2000 and yellow_area > 1000:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
@@ -173,7 +179,7 @@ class ImageProcessing():
         """ contours for green area """             
         for contours in contours_green:
             green_area = cv2.contourArea(contours)
-            if green_area > 5000:
+            if green_area < 2000 and green_area > 1000:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
@@ -189,7 +195,7 @@ class ImageProcessing():
         """ contours for orange area """             
         for contours in contours_orange:
             orange_area = cv2.contourArea(contours)
-            if orange_area > 5000:
+            if orange_area < 2000 and orange_area > 1000:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
@@ -233,9 +239,9 @@ class ImageProcessing():
     def finish_capturing(self):
         cv2.destroyAllWindows()
 
-    def set_camera_config(self, camera_config: json, Fps=False, Res=False, Focus=False, Resize_frame  =  False):
+    def set_camera_config(self, camera_config: json, Fps=False, Res=False, Focus=False):
 
-        if isinstance(Fps, bool) and isinstance(Res, bool) and isinstance(Focus, bool) and isinstance(Resize_frame, bool):
+        if isinstance(Fps, bool) and isinstance(Res, bool) and isinstance(Focus, bool):
             
             if Fps is not False:
                 # Change FPS
@@ -277,17 +283,6 @@ class ImageProcessing():
                     print("Focus Configuration is incorrect")
             else:
                 print(".json file config focus is not Set")
-                
-            if Resize_frame is not False:
-                # Change Frame Size
-                if isinstance(camera_config["resize_frame"], list):
-                    frame = cv2.resize(frame, (int(camera_config["resize_frame"][0]),
-                                            int(camera_config["resize_frame"][1])))
-                else:
-                    print("Frame Size Configuration is incorrect")
-            else:
-                print(".json file Frame Size is not Set")
-                
         else:
             print("Set Boolean value for Camera filter setting ")
             

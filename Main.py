@@ -1,7 +1,12 @@
 # Autor : Siamak Mirifar
 # Liscence : Student project ( Open source Liscence)
 
-# Version number: 1.0.1      Date: 05.01.2022
+# Version number: 1.0.1      Date: 05.03.2022
+# Version number: 1.1.0      Date: 19.03.2022           Add Robot detection
+# Version number: 1.1.1      Date: 19.03.2022           Complete Robot detection
+
+
+# NOTE:
 
 # TODO: 1- Find Robot Id base on the robot color
 # TODO: 2- Find Robot location in the field
@@ -9,20 +14,20 @@
 # TODO: 4- Find Robot ball position (similar to robot position)
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
 
-# FIXME: @start_capturing FPS does not update
-
 from ControlCommand import *
 
+
 # Definition of slots in this class are for futures if there were need to use GUI
-class CaptureImage():
+class CaptureImage:
+
     def __init__(self):
         self.img_counter = 0
 
-        self.cameraConfig       = load_json_config_file()  # Loading Camera Configuration from Json File
-        self.robot_id           = None                     # Robot Id base on Color       
-        self.robot_location     = None                     # Robot location on the field
-        self.robot_orientation  = None                     # Robot oriantation
-
+        self.cameraConfig = load_json_config_file()  # Loading Camera Configuration from Json File
+        
+        self.robot_id = None                         # Robot Id base on Color
+        self.robot_location = None                   # Robot location on the field
+        self.robot_orientation = None                # Robot orientation
 
     def __del__(self):
         """ Destroy All the class objects """

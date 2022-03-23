@@ -31,18 +31,20 @@ class ImageProcessing():
         while True:
         
             # capture a image from the camera
-            ret, frame = self.camera_capture.read()
+            #ret, frame = self.camera_capture.read() FIXME: Changed to load Image
+
+            frame = cv2.imread("/home/siamakmirifar/Documents/Rosenheim/ThirdSemmester/MasterProjekt/server_robot_vision/WIN_20220323_11_24_46_Pro.jpg")
             
             # Aplied Filter GaussianBlur and Segmentation
             frame = self.set_image_filter(frame = frame, GaussianBlur = False, Segmentation = False)
             
             # Detect Robot 
             frame =  self.detect_robot_id(frame = frame)
-            
+            ''' FIXME changed for working on images
             if not ret:
                 print("failed to grab frame")
                 break
-
+            '''
                 # Change Frame Size
             if isinstance(camera_config["resize_frame"], list):
                 frame = cv2.resize(frame, (int(camera_config["resize_frame"][0]),
@@ -76,8 +78,8 @@ class ImageProcessing():
         # Source: https://cvexplained.wordpress.com/2020/04/28/color-detection-hsv/#:~:text=From%20the%20above%20HSV%20color,range%20(20%2C%20255).&text=Our%20rose%20flower%20is%20predominantly,HSV%20values%20of%20red%20color.
         
         # Color: blue
-        low_blue    = np.array([90, 60, 0], np.uint8)
-        upper_blue  = np.array([121, 255, 255], np.uint8)        
+        low_blue    = np.array([90, 150, 0], np.uint8)
+        upper_blue  = np.array([140, 255, 255], np.uint8)        
         
         # Color: Red
         low_red     = np.array([160, 150, 120], np.uint8)
@@ -131,7 +133,7 @@ class ImageProcessing():
         """ contours for blue area """
         for contours in contours_blue:
             blue_area = cv2.contourArea(contours)
-            if blue_area < 2000 and blue_area > 1000:
+            if blue_area < 800 and blue_area > 1:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 

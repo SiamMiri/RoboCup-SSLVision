@@ -37,6 +37,13 @@ class ImageProcessing():
             
             # Aplied Filter GaussianBlur and Segmentation
             frame = self.set_image_filter(frame = frame, GaussianBlur = False, Segmentation = False)
+
+            # Change Frame Size
+            if isinstance(camera_config["resize_frame"], list):
+                frame = cv2.resize(frame, (int(camera_config["resize_frame"][0]),
+                                           int(camera_config["resize_frame"][1])))
+            else:
+                print("Frame Size Configuration is incorrect")
             
             # Detect Robot 
             frame =  self.detect_robot_id(frame = frame)
@@ -45,13 +52,7 @@ class ImageProcessing():
                 print("failed to grab frame")
                 break
             '''
-                # Change Frame Size
-            if isinstance(camera_config["resize_frame"], list):
-                frame = cv2.resize(frame, (int(camera_config["resize_frame"][0]),
-                                           int(camera_config["resize_frame"][1])))
-            else:
-                print("Frame Size Configuration is incorrect")
-
+            
             # Show frame rate
             # cTime = time.time()
             # fps = 1 / (cTime - self.pTime)
@@ -82,8 +83,8 @@ class ImageProcessing():
         upper_blue  = np.array([140, 255, 255], np.uint8)        
         
         # Color: Red
-        low_red     = np.array([160, 150, 120], np.uint8)
-        upper_red   = np.array([180, 255, 255], np.uint8)
+        low_red     = np.array([110, 50, 120], np.uint8)
+        upper_red   = np.array([250, 255, 255], np.uint8)
                 
         # Color: yellow
         low_yellow      = np.array([25, 70, 120], np.uint8)
@@ -131,17 +132,24 @@ class ImageProcessing():
         cy_blue = 0 
         moment = 0
         """ contours for blue area """
+        robot_num = 0
         for contours in contours_blue:
             blue_area = cv2.contourArea(contours)
-            if blue_area < 800 and blue_area > 1:
+            if blue_area < 40 and blue_area > 20:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
                 cx_blue = int(moment["m10"]/moment["m00"])
                 cy_blue = int(moment["m01"]/moment["m00"])
-                
-                cv2.circle(frame, (cx_blue, cy_blue), 7, (255, 255, 255), -1)
-                cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 2, (255, 255, 255), 3)
+                crop_img = self.crop_robot_rec(frame, cy_blue, cx_blue)
+                try:
+                    if crop_img is not None:
+                        cv2.imwrite(f"Robot{robot_num}_x{cx_blue}_y{cy_blue}.jpg", crop_img)
+                except Exception as e:
+                    print(e)
+                robot_num += 1 
+                cv2.circle(frame, (cx_blue, cy_blue), 1, (255, 255, 255), -1)
+                cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
         
         cx_red = 0 
         cy_red = 0 
@@ -149,7 +157,7 @@ class ImageProcessing():
         """ contours for red area """             
         for contours in contours_red:
             red_area = cv2.contourArea(contours)
-            if red_area < 2000 and red_area > 1000:
+            if red_area < 800 and red_area > 1:
                 cv2.drawContours(frame, [contours], -1, (255,255,255), 3)
                 moment = cv2.moments(contours) # NOTE: check me again 
                 
@@ -158,11 +166,11 @@ class ImageProcessing():
                 
                 cv2.circle(frame, (cx_red, cy_red), 7, (255, 255, 255), -1)
                 cv2.putText(frame, "red", (cx_red, cy_red), cv2.QT_FONT_NORMAL, 2, (255, 255, 255), 3)
-               
+        
         cx_yellow = 0 
         cy_yellow = 0 
         moment = 0 
-        """ contours for yellow area """             
+        """ contours for yellow area              
         for contours in contours_yellow:
             yellow_area = cv2.contourArea(contours)
             if yellow_area < 2000 and yellow_area > 1000:
@@ -174,11 +182,11 @@ class ImageProcessing():
                 
                 cv2.circle(frame, (cx_yellow, cy_yellow), 7, (255, 255, 255), -1)
                 cv2.putText(frame, "yellow", (cx_yellow, cy_yellow), cv2.QT_FONT_NORMAL, 2, (255, 255, 255), 3)
-              
+        """
         cx_green = 0 
         cy_green = 0 
         moment = 0  
-        """ contours for green area """             
+        """ contours for green area              
         for contours in contours_green:
             green_area = cv2.contourArea(contours)
             if green_area < 2000 and green_area > 1000:
@@ -190,11 +198,11 @@ class ImageProcessing():
                 
                 cv2.circle(frame, (cx_green, cy_green), 7, (255, 255, 255), -1)
                 cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 2, (255, 255, 255), 3)
-                
+        """
         cx_orange = 0 
         cy_orange = 0 
         moment = 0  
-        """ contours for orange area """             
+        """ contours for orange area              
         for contours in contours_orange:
             orange_area = cv2.contourArea(contours)
             if orange_area < 2000 and orange_area > 1000:
@@ -206,11 +214,11 @@ class ImageProcessing():
                 
                 cv2.circle(frame, (cx_orange, cy_orange), 7, (255, 255, 255), -1)
                 cv2.putText(frame, "orange", (cx_orange, cy_orange), cv2.QT_FONT_NORMAL, 2, (255, 255, 255), 3)
-                
-        cx  = cx_red - cx_orange
-        cy  = cy_red - cy_orange
-        print(abs(cx))
-        print(abs(cy))
+        """      
+        #cx  = cx_red - cx_orange
+        #cy  = cy_red - cy_orange
+        #print(abs(cx))
+        #print(abs(cy))
         '''
         if abs(cx) < 700 and abs(cx) > 200 and abs(cy) < 700 and abs(cy) < 200:
             print("********************")
@@ -230,7 +238,7 @@ class ImageProcessing():
             cv2.rectangle(frame, (xg, yg), (xg + wg, yg + hg), (0, 255, 0), 2)
         '''
                         
-        return frame
+        return crop_img
 
     def detect_robot_orientation(self):
         return None
@@ -338,6 +346,16 @@ class ImageProcessing():
             '''
                              
         return frame
+
+    def crop_robot_rec(self, img : cv2.VideoCapture.read, pos_y , pos_x):
+        np_crop_img = np.array(img)
+        pos_y = pos_y - 15
+        pos_x = pos_x - 15
+        higth = pos_y + 30
+        width = pos_x + 30
+        np_crop_img  = np_crop_img[pos_y:higth, pos_x:width]
+        crop_img = np_crop_img
+        return crop_img
         
 
 

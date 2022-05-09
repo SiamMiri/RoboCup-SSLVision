@@ -1,10 +1,6 @@
 # Autor : Siamak Mirifar
 # Liscence : Student project ( Open source Liscence)
 
-# Version number: 1.0.1      Date: 05.03.2022
-# Version number: 1.1.0      Date: 19.03.2022           Add Robot detection
-# Version number: 1.1.1      Date: 19.03.2022           Complete Robot detection
-
 
 # NOTE:
 

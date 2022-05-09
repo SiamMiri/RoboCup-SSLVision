@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
@@ -33,3 +34,6 @@ for meth in methods:
     plt.suptitle(meth)
     plt.show()
     
+=======
+print("HI")
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81

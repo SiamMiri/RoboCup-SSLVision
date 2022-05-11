@@ -10,6 +10,7 @@ import argparse
 from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import math
+from threading import Thread
 
 #from HSV_Color_Picker import *
 
@@ -61,7 +62,7 @@ class ImageProcessing():
 
     def start_capturing(self, camera_config: json):
         """ Start capturing get camera config from start_capturing_command """
-        self.set_camera_config(camera_config, Fps=False, Res=True, Focus=False)
+        self.set_camera_config(camera_config, Fps=False, Res=False, Focus=False)
 
         # Set Pixel Value
         try:
@@ -78,12 +79,13 @@ class ImageProcessing():
         while True:
         
             # ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+            # frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
             frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
             # frame = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
             # self.detect_robot_orientation(frame=frame)
             # Aplied Filter GaussianBlur and Segmentation
-            frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False, Res = True)
+            frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False, Res = False)
             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             # frame = cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
             
@@ -109,7 +111,7 @@ class ImageProcessing():
             # cv2.imshow("RobotSoccer\tHit Escape to Exit", np.vstack(result))  # Normal Images with contours
             # cv2.imshow("RobotSoccer\tHit Escape to Exit", reduced)
 
-            cv2.imshow("RobotSoccer\tHit Escape to Exit", frame)
+            # cv2.imshow("RobotSoccer\tHit Escape to Exit", frame)
             # cv2.waitKey(1)
             k = cv2.waitKey(1)
             if k % 256 == 27:
@@ -516,11 +518,16 @@ class ImageProcessing():
 
         self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
         
-        num_x_cor = {'green' : [],
-                      'red'  : []}
+        num_x_cor   = {'green' : [],
+                        'red'  : []}
 
-        num_y_cor = {'green' : [],
-                      'red'  : []}
+        num_y_cor   = {'green' : [],
+                        'red'  : []}
+
+        circle_pack = {"1": [],
+                       "2": [],
+                       "3": [],
+                       "4": []}
 
         b_if_robot      = False
         robot_id = 0
@@ -655,8 +662,14 @@ class ImageProcessing():
                     # img[mask_red > 0] = (255, 0 , 255)
                     num_of_red    += 1
                     num_of_circle += 1
-                    num_x_cor['red'].append(cx_red)
-                    num_y_cor['red'].append(cy_red)
+                    position = self.check_circle_position(img.shape[0], img.shape[1], cx_red, cy_red)
+                    num_x_cor['red'].append([position , cx_red, cy_red])
+                    # circle_pack.append([position , cx_red, cy_red])
+                    for i in circle_pack:
+                        if i == position:
+                            circle_pack[i] = [cx_red, cy_red]
+                    # num_y_cor['red'].append(cy_red)
+                    print(f'Red Position is: {position}')
                     myradians = math.atan2(int(img.shape[1]/2)-cx_red, int(img.shape[0]/2)-cy_red)
                     mydegrees = math.degrees(myradians)
                     self.creat_circle_id(img,'red', [cx_red, cy_red])
@@ -664,26 +677,26 @@ class ImageProcessing():
 
             
             # self.creat_circle_id(frame = img, color = "red", cordinate_list = list_circle_cordinate) 
-            if ImageProcessing.SHOW_CIRCLE_LINE_CONNECTION:
-                cv2.line(img, (num_x_cor['red'][0], num_y_cor['red'][0]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
-                cv2.line(img, (num_x_cor['red'][0], num_y_cor['red'][0]), (num_x_cor['red'][2], num_y_cor['red'][2]), (0, 0, 0), thickness=1, lineType=1)
-                cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
+            # if ImageProcessing.SHOW_CIRCLE_LINE_CONNECTION:
+            #     cv2.line(img, (num_x_cor['red'][0], num_y_cor['red'][0]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
+            #     cv2.line(img, (num_x_cor['red'][0], num_y_cor['red'][0]), (num_x_cor['red'][2], num_y_cor['red'][2]), (0, 0, 0), thickness=1, lineType=1)
+            #     cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
             # cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][3], num_y_cor['red'][3]), (0, 0, 0), thickness=1, lineType=1)
             # cv2.line(img, (num_x_cor['red'][3], num_y_cor['red'][3]), (num_x_cor['red'][0], num_y_cor['red'][0]), (0, 0, 0), thickness=1, lineType=1)
             # cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][3], num_y_cor['red'][3]), (0, 0, 0), thickness=1, lineType=1)
             # cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][3], num_y_cor['red'][3]), (0, 0, 0), thickness=1, lineType=1)
 
-            len1 = math.sqrt((num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2)
-            len2 = math.sqrt((num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2)
-            len3 = math.sqrt((num_x_cor['red'][2] - num_x_cor['red'][1])**2 + (num_y_cor['red'][2] - num_y_cor['red'][1])**2)
-            print(f'length1: {len1}')
-            print(f'length2: {len2}')
-            print(f'length3: {len3}')
+            # len1 = math.sqrt((num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2)
+            # len2 = math.sqrt((num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2)
+            # len3 = math.sqrt((num_x_cor['red'][2] - num_x_cor['red'][1])**2 + (num_y_cor['red'][2] - num_y_cor['red'][1])**2)
+            # print(f'length1: {len1}')
+            # print(f'length2: {len2}')
+            # print(f'length3: {len3}')
 
             # Check if the the red color rech the limit
-            if num_of_red == 4:
-                b_if_robot = True
-                return b_if_robot, robot_id[9]
+            # if num_of_red == 4:
+            #     b_if_robot = True
+            #     return b_if_robot, robot_id[9]
 
 
             list_circle_cordinate.clear()
@@ -707,14 +720,30 @@ class ImageProcessing():
                     # cv2.circle(frame, (cx_green, cy_green), 1, (255, 255, 255), -1)
                     # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
                     # crop_img[mask_green > 0] = (0, 255 , 0)
-                    num_x_cor['green'].append(cx_green)
-                    num_y_cor['green'].append(cy_green)
+                    position = self.check_circle_position(img.shape[0], img.shape[1], cx_green, cy_green)
+                    # circle_pack.append([position , cx_red, cy_red])
+                    for i in circle_pack:
+                        if i == position:
+                            circle_pack[i] = [cx_green, cy_green]
+                    print(f'Green Position is: {position}')
+                    num_x_cor['green'].append([position , cx_green, cy_green])
+                    # num_x_cor['green'].append(cx_green)
+                    # num_y_cor['green'].append(cy_green)
                     self.creat_circle_id(img,'green', [cx_green, cy_green])
                     cv2.circle(img, (cx_green, cy_green), radius=num_of_green, color=(255, 255, 255), thickness=-1)
                     
             # self.creat_circle_id(frame = img, color = "green", cordinate_list = list_circle_cordinate) 
             # print(list_circle_cordinate)
-
+            a = num_x_cor['red']
+            b = num_x_cor['green']
+            print(f'List Red is : {len(a)}')
+            print(f'List Green is : {len(b)}')
+            A = num_x_cor['green']
+            B = num_x_cor['red']
+            print(f'num_x_cor_green : {A}')
+            print(f'num_y_cor_red : {B}')
+            print(f'circle_pack: {circle_pack}')
+            self.getOrientation(circle_pack)
             """ contours for black area              
             for contours in contours_black:
                 black_area = cv2.contourArea(contours)
@@ -732,21 +761,21 @@ class ImageProcessing():
 
             # Check if the the red color reach the limit return the and finish
             # print(num_of_green)
-            if num_of_green == 4:
-                b_if_robot = True
-                return b_if_robot, robot_id[8]
+            # if num_of_green == 4:
+            #     b_if_robot = True
+            #     return b_if_robot, robot_id[8]
 
-            # Check if the number of spot are match to robot Config
-            if num_of_circle == 4:
-                b_if_robot = True
-                #self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
-            else:
-                b_if_robot = False
+            # # Check if the number of spot are match to robot Config
+            # if num_of_circle == 4:
+            #     b_if_robot = True
+            #     #self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
+            # else:
+            #     b_if_robot = False
             
-            if ImageProcessing.SHOW_CIRCLE_LINE_CONNECTION:
-                cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][0], num_y_cor['red'][0]), (0, 0, 0), thickness=1, lineType=1)
-                cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][2], num_y_cor['red'][2]), (0, 0, 0), thickness=1, lineType=1)
-                cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
+            # if ImageProcessing.SHOW_CIRCLE_LINE_CONNECTION:
+            #     cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][0], num_y_cor['red'][0]), (0, 0, 0), thickness=1, lineType=1)
+            #     cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][2], num_y_cor['red'][2]), (0, 0, 0), thickness=1, lineType=1)
+            #     cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
             
             # a = self.angle_clockwise([num_x_cor['red'][0], num_y_cor['red'][0]], [11, 11])
             # print(f'The Rotation of the image is: a {a}')
@@ -763,62 +792,66 @@ class ImageProcessing():
              
             img = cv2.circle(img, (11,11), radius=0, color=(0, 0, 255), thickness=-1)
 
-            print(f'num_x_cor green: {num_x_cor["green"]}')
-            print(f'num_y_cor green: {num_y_cor["green"]}')
+            # print(f'num_x_cor green: {num_x_cor["green"]}')
+            # print(f'num_y_cor green: {num_y_cor["green"]}')
             
-            print(f'num_x_cor red:   {num_x_cor["red"]}')
-            print(f'num_y_cor red:   {num_y_cor["red"]}')
+            # print(f'num_x_cor red:   {num_x_cor["red"]}')
+            # print(f'num_y_cor red:   {num_y_cor["red"]}')
             
-            point_one     = (num_x_cor['green'][0] - num_x_cor['red'][0])**2 + (num_y_cor['green'][0] - num_y_cor['red'][0])**2
+            # point_one     = (num_x_cor['green'][0] - num_x_cor['red'][0])**2 + (num_y_cor['green'][0] - num_y_cor['red'][0])**2
+            # # values_green = [int(num_x_cor['green'][0]), int(num_y_cor['green'][0])]
+            # # values_red = [int(num_x_cor['red'][0]), int(num_y_cor['red'][0])]
+
             # values_green = [int(num_x_cor['green'][0]), int(num_y_cor['green'][0])]
             # values_red = [int(num_x_cor['red'][0]), int(num_y_cor['red'][0])]
-
-            values_green = [int(num_x_cor['green'][0]), int(num_y_cor['green'][0])]
-            values_red = [0 , img.shape[1] // 2]
-            print(f'values_green : {values_green} and values_red : {values_red}')
+            # print(f'values_green : {values_green} and values_red : {values_red}')
             
-            img = cv2.line(img, values_red, values_green, (0, 0, 0), thickness=1, lineType=1)
-            dx = values_green[1] - values_red[1] # img.shape[1] #values_red[1]# 
-            dy = values_green[0] - img.shape[0] // 2 #values_red[0]# 
-            point_one   = math.atan2(dy, dx)
-            point_one   = math.degrees(point_one)
-            print(f"My degree is : {point_one}")
-            (h, w) = img.shape[:2]
-            # rotate our image by 45 degrees around the center of the image
-            # rotate our image by -90 degrees around the image
-            M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), point_one, 1.0)
-            img = cv2.warpAffine(img, M, (w, h))
-            # cv2.line(img, (0 , int(img.shape[0]/2)), (img.shape[0], int(img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
-            # cv2.line(img, (int(img.shape[0]/2) , 0), (int(img.shape[0]/2), img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
-            # cv2.imshow("Rotated by -90 Degrees", rotated)
+            # img = cv2.line(img, values_red, values_green, (0, 0, 0), thickness=1, lineType=1)
+            # dx = values_green[1] - values_red[1] # img.shape[1] #values_red[1]# 
+            # dy = values_green[0] - img.shape[0] // 2 #values_red[0]# 
+            # point_one   = math.atan2(dy, dx)
+            # point_one   = math.degrees(point_one)
             
-            point_two     = (num_x_cor['green'][0] - num_x_cor['red'][1])**2 + (num_y_cor['green'][0] - num_y_cor['red'][1])**2
-            point_three   = (num_x_cor['green'][0] - num_x_cor['red'][2])**2 + (num_y_cor['green'][0] - num_y_cor['red'][2])**2
+            # # point_one = 80 - point_one
+            # # point_one = -1* point_one
+            # print(f"My degree is : {point_one}")
+            # point_one = 10
+            # (h, w) = img.shape[:2]
+            # # rotate our image by 45 degrees around the center of the image
+            # # rotate our image by -90 degrees around the image
+            # # M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), point_one, 1.0)
+            # # img = cv2.warpAffine(img, M, (w, h))
+            # # cv2.line(img, (0 , int(img.shape[0]/2)), (img.shape[0], int(img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
+            # # cv2.line(img, (int(img.shape[0]/2) , 0), (int(img.shape[0]/2), img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
+            # # cv2.imshow("Rotated by -90 Degrees", rotated)
+            
+            # point_two     = (num_x_cor['green'][0] - num_x_cor['red'][1])**2 + (num_y_cor['green'][0] - num_y_cor['red'][1])**2
+            # point_three   = (num_x_cor['green'][0] - num_x_cor['red'][2])**2 + (num_y_cor['green'][0] - num_y_cor['red'][2])**2
 
-            point_four    = (num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2
-            point_five    = (num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2
-            point_six     = (num_x_cor['red'][1] - num_x_cor['red'][2])**2 + (num_y_cor['red'][1] - num_y_cor['red'][2])**2
+            # point_four    = (num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2
+            # point_five    = (num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2
+            # point_six     = (num_x_cor['red'][1] - num_x_cor['red'][2])**2 + (num_y_cor['red'][1] - num_y_cor['red'][2])**2
 
 
             
 
-            #if point_one   < 0 : point_one   = point_one   * -1
-            if point_two   < 0 : point_two   = point_two   * -1
-            if point_three < 0 : point_three = point_three * -1
-            if point_four  < 0 : point_four  = point_four  * -1
-            if point_five  < 0 : point_five  = point_five  * -1
-            if point_six   < 0 : point_six   = point_six   * -1
+            # #if point_one   < 0 : point_one   = point_one   * -1
+            # if point_two   < 0 : point_two   = point_two   * -1
+            # if point_three < 0 : point_three = point_three * -1
+            # if point_four  < 0 : point_four  = point_four  * -1
+            # if point_five  < 0 : point_five  = point_five  * -1
+            # if point_six   < 0 : point_six   = point_six   * -1
 
-            point_one   = math.sqrt(point_one)
-            point_two   = math.sqrt(point_two)
-            point_three = math.sqrt(point_three)
-            point_four  = math.sqrt(point_four)
-            point_five  = math.sqrt(point_five)
-            point_six   = math.sqrt(point_six)
+            # point_one   = math.sqrt(point_one)
+            # point_two   = math.sqrt(point_two)
+            # point_three = math.sqrt(point_three)
+            # point_four  = math.sqrt(point_four)
+            # point_five  = math.sqrt(point_five)
+            # point_six   = math.sqrt(point_six)
             
-            list_me = [point_one, point_two, point_three, point_four, point_five, point_six]
-            list_me = sorted(list_me)
-            print(list_me)
+            # list_me = [point_one, point_two, point_three, point_four, point_five, point_six]
+            # list_me = sorted(list_me)
+            # print(list_me)
             '''
             point_one   = math.atan2((num_x_cor['red'][0] - 11) , (num_y_cor['red'][0] - 11))
             point_one   = math.degrees(point_one)
@@ -832,17 +865,17 @@ class ImageProcessing():
             point_four   = math.atan2((num_x_cor['green'][1] - 11) , (num_y_cor['green'][1] - 11))
             point_four   = math.degrees(point_four)
             '''
-            print("##############################")
-            print(f'green: {point_one}')
-            print(f'green: {point_two}')
-            print(f'green: {point_three}')
-            print(f'{point_four}')
-            print(f'{point_five}')
-            print(f'{point_six}')
-            print("##############################")
-            point_one   = math.atan2((num_x_cor['red'][0] - num_x_cor['green'][0]) , (num_y_cor['red'][0] - num_x_cor['green'][0]))
-            point_one   = math.degrees(-1*point_one)
-            print(f'Degree is: {point_one}')
+            # print("##############################")
+            # print(f'green: {point_one}')
+            # print(f'green: {point_two}')
+            # print(f'green: {point_three}')
+            # print(f'{point_four}')
+            # print(f'{point_five}')
+            # print(f'{point_six}')
+            # print("##############################")
+            # point_one   = math.atan2((num_x_cor['red'][0] - num_x_cor['green'][0]) , (num_y_cor['red'][0] - num_x_cor['green'][0]))
+            # point_one   = math.degrees(-1*point_one)
+            # print(f'Degree is: {point_one}')
             # print(f'num_x_cor {num_x_cor}')    
             # print(f'num_y_cor {num_y_cor}')
             # img = self.overlay_image_alpha(img, field)  
@@ -856,9 +889,30 @@ class ImageProcessing():
         except Exception as e:
             print(e)
 
+        cTime = time.time()
+        fps = 1 / (cTime - self.pTime)
+        self.pTime = cTime
+        cv2.putText(img, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 1)
         cv2.namedWindow("RobotSoccer1\tHit Escape to Exit")
         cv2.imshow("RobotSoccer1\tHit Escape to Exit", img)
         return b_if_robot, robot_id      
+
+    def check_circle_position(self,img_shape_x, img_shape_y, x, y):
+        if x >= img_shape_x//2:
+            if y <= img_shape_y//2:
+                return "1"
+        
+        if x <= img_shape_x//2:
+            if y <= img_shape_y//2:
+                return "2"
+    
+        if x <= img_shape_x//2:
+            if y >= img_shape_y//2:
+                return "3"
+
+        if x >= img_shape_x//2:
+            if y >= img_shape_y//2:
+                return "4"
 
     def robot_id_detection(self, num_of_green:int = None, num_of_red:int = None, Robo_Num : int = None, robot_id: list = None):
         if num_of_green == 2 and num_of_red == 2:
@@ -944,39 +998,28 @@ class ImageProcessing():
         p[1] = q[1] + 9 * sin(angle - pi / 4)
         cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv2.LINE_AA)
 
-    def getOrientation(self, pts, img):
-        # [pca]
-        # Construct a buffer used by the pca analysis
-        sz = len(pts)
-        data_pts = np.empty((sz, 2), dtype=np.float64)
-        for i in range(data_pts.shape[0]):
-            data_pts[i,0] = pts[i,0,0]
-            data_pts[i,1] = pts[i,0,1]
-        
-        # Perform PCA analysis
-        mean = np.empty((0))
-        mean, eigenvectors, eigenvalues = cv2.PCACompute2(data_pts, mean)
-        
-        # Store the center of the object
-        cntr = (int(mean[0,0]), int(mean[0,1]))
-        # [pca]
-        
-        # [visualization]
-        # Draw the principal components
-        cv2.circle(img, cntr, 3, (255, 0, 255), 2)
-        p1 = (cntr[0] + 0.02 * eigenvectors[0,0] * eigenvalues[0,0], cntr[1] + 0.02 * eigenvectors[0,1] * eigenvalues[0,0])
-        p2 = (cntr[0] - 0.02 * eigenvectors[1,0] * eigenvalues[1,0], cntr[1] - 0.02 * eigenvectors[1,1] * eigenvalues[1,0])
-        self.drawAxis(img, cntr, p1, (255, 255, 0), 1)
-        self.drawAxis(img, cntr, p2, (0, 0, 255), 5)
-        
-        angle = atan2(eigenvectors[0,1], eigenvectors[0,0]) # orientation in radians
-        # [visualization]
+    def getOrientation(self, circle_pack = None ):
+        length_list = []
 
-        # Label with the rotation angle
-        label = "  Rotation Angle: " + str(-int(np.rad2deg(angle)) - 90) + " degrees"
-        textbox = cv2.rectangle(img, (cntr[0], cntr[1]-25), (cntr[0] + 250, cntr[1] + 10), (255,255,255), -1)
-        cv2.putText(img, label, (cntr[0], cntr[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+        len_one   = math.sqrt((circle_pack["1"][0] - circle_pack["2"][0])**2 + (circle_pack["1"][1] - circle_pack["2"][1])**2)
+        len_two   = math.sqrt((circle_pack["1"][0] - circle_pack["3"][0])**2 + (circle_pack["1"][1] - circle_pack["3"][1])**2)
+        len_three = math.sqrt((circle_pack["1"][0] - circle_pack["4"][0])**2 + (circle_pack["1"][1] - circle_pack["4"][1])**2)
+        len_four  = math.sqrt((circle_pack["2"][0] - circle_pack["3"][0])**2 + (circle_pack["2"][1] - circle_pack["3"][1])**2)
+        len_five  = math.sqrt((circle_pack["2"][0] - circle_pack["4"][0])**2 + (circle_pack["2"][1] - circle_pack["4"][1])**2)
+        len_six   = math.sqrt((circle_pack["3"][0] - circle_pack["4"][0])**2 + (circle_pack["3"][1] - circle_pack["4"][1])**2)
+
+        print("##############################")
+        print(f'len_one:   {len_one}'  )
+        print(f'len_two:   {len_two}'  )
+        print(f'len_three: {len_three}')
+        print(f'len_four:  {len_four}' )
+        print(f'len_five:  {len_five}' )
+        print(f'len_six:   {len_six}'  )
+        print("##############################")
+        length_list = [len_one, len_two, len_three, len_four, len_five, len_six]
+        length_list = sorted(length_list)
         
+        angle = 0
         return angle
 
     def resize_frame(self, frame):

@@ -7,10 +7,17 @@ import mediapipe as mp
 import imutils
 from collections import deque
 import argparse
+<<<<<<< HEAD
+from math import atan2, cos, sin, sqrt, pi
+=======
 from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import math
+<<<<<<< HEAD
 from threading import Thread
+=======
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
+>>>>>>> 1a965efb0ce71285dc18b54256fbc0043e14f315
 
 #from HSV_Color_Picker import *
 
@@ -79,15 +86,42 @@ class ImageProcessing():
         while True:
         
             # ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+<<<<<<< HEAD
             # frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
+=======
+<<<<<<< HEAD
+
+            # print(frame.shape)
+            frame = cv2.imread("FieldTest_AllLight_Off_Daylight(hight).jpg")
+=======
+>>>>>>> 1a965efb0ce71285dc18b54256fbc0043e14f315
             frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
             # frame = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
             # self.detect_robot_orientation(frame=frame)
             # Aplied Filter GaussianBlur and Segmentation
+<<<<<<< HEAD
             frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False, Res = False)
+=======
+<<<<<<< HEAD
+            frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False)
+            #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            #frame = cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
+
+            """"""
+            # Change Frame Size
+            # if isinstance(camera_config["resize_frame"], list):
+            #     frame = cv2.resize(frame, (int(camera_config["resize_frame"][0]),
+            #                             int(camera_config["resize_frame"][1])))
+            # else:
+            #    print("Frame Size Configuration is incorrect")
+=======
+            frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False, Res = True)
+>>>>>>> 1a965efb0ce71285dc18b54256fbc0043e14f315
             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             # frame = cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
             
             # Detect Robot 
             frame =  self.detect_robot_id(frame = frame)
@@ -122,8 +156,14 @@ class ImageProcessing():
     def detect_robot_id(self, frame: cv2.VideoCapture.read):
         # Contants:
         robot_num = 1
+<<<<<<< HEAD
+
+        frame_hsv   = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        self.convert_pixel_to_centimeter(frame_hsv)
+=======
         try:
             frame_hsv   = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
 
             # Source: https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
             
@@ -147,6 +187,181 @@ class ImageProcessing():
             # low_orange     = np.array([10, 100, 20], np.uint8)
             # upper_orange   = np.array([25, 255, 255], np.uint8)
 
+<<<<<<< HEAD
+        # Color: black
+        low_black       = np.array([0, 0, 0], np.uint8)
+        upper_black     = np.array([180, 255, 145], np.uint8)
+                
+        
+        
+        # define masks
+        mask_blue   = cv2.inRange(frame_hsv, low_blue       ,upper_blue)
+        mask_red    = cv2.inRange(frame_hsv, low_red        ,upper_red)
+        mask_yellow = cv2.inRange(frame_hsv, low_yellow     ,upper_yellow)
+        mask_green  = cv2.inRange(frame_hsv, low_green      ,upper_green)
+        mask_orange = cv2.inRange(frame_hsv, low_orange     ,upper_orange)
+        mask_black  = cv2.inRange(frame_hsv, low_black     ,upper_black)
+
+
+        
+        # CHAIN_APPROX_NONE gibe all points
+        # contours = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        # cv2.drawContours(mask, contours, -1, (0, 0, 0), 1)  # -1 means all the counters
+        contours_blue       = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_blue       = imutils.grab_contours(contours_blue)
+        frame[mask_blue > 0] = (255, 0 , 97)
+
+        contours_red        = cv2.findContours(mask_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_red        = imutils.grab_contours(contours_red)
+
+        contours_yellow     = cv2.findContours(mask_yellow.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_yellow     = imutils.grab_contours(contours_yellow)
+        #frame[mask_yellow > 0] = (0, 30 , 255)
+
+        contours_green      = cv2.findContours(mask_green.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_green      = imutils.grab_contours(contours_green)
+
+        contours_black      = cv2.findContours(mask_black.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_black      = imutils.grab_contours(contours_black)
+        #frame[mask_black > 0] = (0, 0 , 0)
+
+        contours_orange     = cv2.findContours(mask_orange.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_orange     = imutils.grab_contours(contours_orange)
+        #frame[mask_orange > 0] = (20, 150 , 255)
+
+        # frame = cv2.bitwise_and(result, result, mask=full_mask)
+        cx_blue = 0 
+        cy_blue = 0 
+        moment = 0
+        r = 100
+        i = 0
+        
+        """ contours for blue area """
+        for contours in contours_blue:
+            blue_area = cv2.contourArea(contours)
+            width = frame.shape[1]
+            height = frame.shape[0]
+            print(f"width: {width}\nheight: {height}")
+            if blue_area < 6000 and blue_area > 15:
+                #cv2.drawContours(frame, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                #cv2.drawContours(frame, contours, i, (0, 0, 255), 2)
+                i += 1
+                # Find the orientation of each shape
+                # self.getOrientation(contours, frame)
+
+                cx_blue = int(moment["m10"]/moment["m00"])
+                cy_blue = int(moment["m01"]/moment["m00"])
+                crop_img = self.crop_robot_circle(frame, cy_blue, cx_blue)
+                 # FIXME: Change for testing orientation
+                try:
+                    if crop_img is not None:
+                        cv2.imwrite(f"Robot{robot_num}_x{cx_blue}_y{cy_blue}.jpg", crop_img)
+                    else:
+                        print("crop image is not valid")
+                except Exception as e:
+                    print(e)
+                # self.check_if_robot(crop_img) # cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV) 
+                # color_picker(cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV))
+                if self.check_if_robot(crop_img, robot_num):
+                    self.detect_robot_location(cy_blue, cx_blue, robot_num) 
+                    print("It is a Robot")
+                else:
+                    print("It is not a Robot")
+                
+                robot_num += 1
+                # cv2.circle(frame, (cx_blue, cy_blue), 1, (255, 255, 255), -1)
+                # cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+        
+        cx_red = 0 
+        cy_red = 0 
+        moment = 0
+        """ contours for red area              
+        for contours in contours_red:
+            red_area = cv2.contourArea(contours)
+            if red_area < 90 and red_area > 15:
+                cv2.drawContours(frame, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_red = int(moment["m10"]/moment["m00"])
+                cy_red = int(moment["m01"]/moment["m00"])
+                
+                # cv2.circle(frame, (cx_red, cy_red), 7, (255, 255, 255), -1)
+                # cv2.putText(frame, "red", (cx_red, cy_red), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+        """       
+        cx_yellow = 0 
+        cy_yellow = 0 
+        moment = 0 
+        """ contours for yellow area              
+        for contours in contours_yellow:
+            yellow_area = cv2.contourArea(contours)
+            if yellow_area < 90 and yellow_area > 15:
+                cv2.drawContours(frame, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_yellow = int(moment["m10"]/moment["m00"])
+                cy_yellow = int(moment["m01"]/moment["m00"])
+                
+                cv2.circle(frame, (cx_yellow, cy_yellow), 1, (255, 255, 255), -1)
+                cv2.putText(frame, "yellow", (cx_yellow, cy_yellow), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+                #
+        """
+        cx_green = 0 
+        cy_green = 0 
+        moment = 0  
+        """ contours for green area              
+        for contours in contours_green:
+            green_area = cv2.contourArea(contours)
+            if green_area < 60 and green_area > 15:
+                # cv2.drawContours(frame, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_green = int(moment["m10"]/moment["m00"])
+                cy_green = int(moment["m01"]/moment["m00"])
+                
+                # cv2.circle(frame, (cx_green, cy_green), 1, (255, 255, 255), -1)
+                # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+                # crop_img[mask_green > 0] = (0, 255 , 0)
+        """
+        cx_orange = 0 
+        cy_orange = 0 
+        moment = 0  
+        """ contours for orange area              
+        for contours in contours_orange:
+            orange_area = cv2.contourArea(contours)
+            if orange_area < 60 and orange_area > 40:
+                cv2.drawContours(frame, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_orange = int(moment["m10"]/moment["m00"])
+                cy_orange = int(moment["m01"]/moment["m00"])
+                
+                # cv2.circle(frame, (cx_orange, cy_orange), 1, (255, 255, 255), -1)
+                # cv2.putText(frame, "orange", (cx_orange, cy_orange), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+        """
+        #cx  = cx_red - cx_orange
+        #cy  = cy_red - cy_orange
+        #print(abs(cx))
+        #print(abs(cy))
+        '''
+        if abs(cx) < 700 and abs(cx) > 200 and abs(cy) < 700 and abs(cy) < 200:
+            print("********************")
+            print(abs(cx))
+            print(abs(cy))
+            print("********************")
+        '''
+        
+       
+        '''
+        # print(contours[0]) if contours[0] is not None else print("Pass")
+        if len(contours_blue) > 40:
+            # for contour in contours:
+            # position = cv2.contourArea(contour)
+            blue_area = max(contours_blue, key=cv2.contourArea)
+            (xg, yg, wg, hg) = cv2.boundingRect(blue_area)
+            cv2.rectangle(frame, (xg, yg), (xg + wg, yg + hg), (0, 255, 0), 2)
+        '''
+=======
             # Color: black
             # low_black       = np.array([0, 0, 0], np.uint8)
             # upper_black     = np.array([180, 255, 145], np.uint8)
@@ -250,6 +465,7 @@ class ImageProcessing():
                     # cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
         except Exception as e:
             print(e)
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
                         
         return frame
 
@@ -419,7 +635,11 @@ class ImageProcessing():
         else:
             print("Set Boolean value for Camera filter setting ")
             
+<<<<<<< HEAD
+    def set_image_filter(self, frame  : cv2.VideoCapture.read, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False ):
+=======
     def set_image_filter(self, frame  : cv2.VideoCapture.read, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
 
         ''' Blur Image '''
         if Blur is not False:
@@ -474,11 +694,19 @@ class ImageProcessing():
         return frame
 
     def crop_robot_circle(self, img : cv2.VideoCapture.read, pos_y , pos_x):
+<<<<<<< HEAD
+
+        pos_y   = pos_y - 10
+        pos_x   = pos_x - 10
+        radius  = 10 
+                
+=======
         print(f"diff {pos_x} and {pos_y}")
         pos_y   = pos_y - int(img.shape[0]/40) 
         pos_x   = pos_x - int(img.shape[1]/65)
         radius  = int(img.shape[1] / 65)
 
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
         # crop image as a square
         img = img[pos_y:pos_y+radius*2, pos_x:pos_x+radius*2]
         # create a mask
@@ -501,18 +729,35 @@ class ImageProcessing():
         pos_x   = pos_x - 15
         higth   = pos_y + 30
         width   = pos_x + 30
+<<<<<<< HEAD
+         #crop rec image from robot
+=======
         # crop rec image from robot
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
         np_crop_img  = np_crop_img[pos_y:higth, pos_x:width]
         crop_img = np_crop_img
         
         return crop_img
     
+<<<<<<< HEAD
+    def check_if_robot(self, img : cv2.VideoCapture.read, Robo_Num: int):
+        # contants
+        num_of_circle   = 0
+        num_of_red      = 0
+        num_of_green    = 0
+        robot_id        = [0, 1, 2, 3, 4, 5, 6,
+                           7, 8, 9, 10, 11, 12, 
+                           13, 14, 15]
+
+        b_if_robot      = False
+=======
     def check_if_robot(self, img : cv2.VideoCapture.read, Robo_Num: int, field : cv2.VideoCapture.read, cy: int = None, cx :int = None):
         # constants
         num_of_circle   = 1
         num_of_red      = 0
         num_of_green    = 0
         list_vector_len = []
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
 
         b_json = False
 
@@ -542,6 +787,25 @@ class ImageProcessing():
             b_json = False
             print(e)
         
+<<<<<<< HEAD
+        # Color: Red
+        low_red         = np.array([5, 0, 0], np.uint8)
+        upper_red       = np.array([165, 255, 255], np.uint8)
+                        
+        # Color: green
+        low_green       = np.array([30, 0, 254], np.uint8)
+        upper_green     = np.array([100, 255, 255], np.uint8)
+
+        # Color: black
+        low_black       = np.array([0, 0, 0], np.uint8)
+        upper_black     = np.array([180, 255, 145], np.uint8)
+                
+        # define masks
+        mask_blue       = cv2.inRange(frame_hsv, low_blue       ,upper_blue)
+        mask_red        = cv2.inRange(frame_hsv, low_red        ,upper_red)
+        mask_green      = cv2.inRange(frame_hsv, low_green      ,upper_green)
+        mask_black      = cv2.inRange(frame_hsv, low_black      ,upper_black)
+=======
         try:
             frame_hsv       = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             # color_picker(img)
@@ -835,6 +1099,7 @@ class ImageProcessing():
 
             
 
+<<<<<<< HEAD
             # #if point_one   < 0 : point_one   = point_one   * -1
             # if point_two   < 0 : point_two   = point_two   * -1
             # if point_three < 0 : point_three = point_three * -1
@@ -848,6 +1113,22 @@ class ImageProcessing():
             # point_four  = math.sqrt(point_four)
             # point_five  = math.sqrt(point_five)
             # point_six   = math.sqrt(point_six)
+=======
+            #if point_one   < 0 : point_one   = point_one   * -1
+            if point_two   < 0 : point_two   = point_two   * -1
+            if point_three < 0 : point_three = point_three * -1
+            if point_four  < 0 : point_four  = point_four  * -1
+            if point_five  < 0 : point_five  = point_five  * -1
+            if point_six   < 0 : point_six   = point_six   * -1
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
+
+            point_one   = math.sqrt(point_one)
+            point_two   = math.sqrt(point_two)
+            point_three = math.sqrt(point_three)
+            point_four  = math.sqrt(point_four)
+            point_five  = math.sqrt(point_five)
+            point_six   = math.sqrt(point_six)
+>>>>>>> 1a965efb0ce71285dc18b54256fbc0043e14f315
             
             # list_me = [point_one, point_two, point_three, point_four, point_five, point_six]
             # list_me = sorted(list_me)
@@ -923,6 +1204,238 @@ class ImageProcessing():
             print("Num_Green = 3  Num_Red = 1")
             # return robot_id[2], robot_id[6], robot_id[12], robot_id[14]
         
+<<<<<<< HEAD
+        contours_red    = cv2.findContours(mask_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_red    = imutils.grab_contours(contours_red)
+        #img[mask_red > 0] = (255, 0 , 255)
+
+        contours_green  = cv2.findContours(mask_green.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_green  = imutils.grab_contours(contours_green)
+        #img[mask_green > 0] = (0, 255 , 0)
+
+        contours_black  = cv2.findContours(mask_black.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_black  = imutils.grab_contours(contours_black)
+        img[mask_black > 0] = (0, 0 , 0)
+
+        for contours in contours_blue:
+            blue_area = cv2.contourArea(contours)
+            if blue_area < 60 and blue_area > 5:
+                #cv2.drawContours(img, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_blue = int(moment["m10"]/moment["m00"])
+                cy_blue = int(moment["m01"]/moment["m00"])
+                self.creat_circle_id(frame = img, color = "blue")
+                # cv2.circle(frame, (cx_blue, cy_blue), 1, (255, 255, 255), -1)
+                # cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+        
+        cx_red = 0 
+        cy_red = 0
+        list_circle_cordinate = [] 
+        moment = 0
+        """ contours for red area  """            
+        for contours in contours_red:
+            red_area = cv2.contourArea(contours)
+            if red_area < 60 and red_area > 5:
+                cv2.drawContours(img, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_red = int(moment["m10"]/moment["m00"])
+                cy_red = int(moment["m01"]/moment["m00"])
+                list_circle_cordinate.append([cy_red,cx_red])
+                print(f"cx_red: {cx_red} and cy_green: {cy_red}")
+                num_of_red    += 1
+                num_of_circle += 1
+                # cv2.circle(frame, (cx_red, cy_red), 7, (255, 255, 255), -1)
+                # cv2.putText(frame, "red", (cx_red, cy_red), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+        
+        self.creat_circle_id(frame = img, color = "red", cordinate_list = list_circle_cordinate) 
+
+        # Check if the the red color rech the limit
+        if num_of_red == 4:
+            b_if_robot = True
+            return b_if_robot, robot_id[9]
+
+        cx_green    = 0 
+        cy_green    = 0 
+        list_circle_cordinate.clear()
+        moment      = 0  
+        """ contours for green area """             
+        for contours in contours_green:
+            green_area = cv2.contourArea(contours)
+            if green_area < 60 and green_area > 5:
+                #cv2.drawContours(img, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_green = int(moment["m10"]/moment["m00"])
+                cy_green = int(moment["m01"]/moment["m00"])
+                print(f"cx_green: {cx_green} and cy_green: {cy_green}")
+                num_of_green  += 1
+                num_of_circle += 1 
+                list_circle_cordinate.append([cy_green,cx_green])
+                # cv2.circle(frame, (cx_green, cy_green), 1, (255, 255, 255), -1)
+                # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+                # crop_img[mask_green > 0] = (0, 255 , 0)
+        
+        self.creat_circle_id(frame = img, color = "green", cordinate_list = list_circle_cordinate) 
+        #print(list_circle_cordinate)
+
+        """ contours for black area              
+        for contours in contours_black:
+            black_area = cv2.contourArea(contours)
+            if black_area < 200 and black_area > 1:
+                cv2.drawContours(img, [contours], -1, (255,255,255), 1)
+                moment = cv2.moments(contours) # NOTE: check me again 
+                
+                cx_green = int(moment["m10"]/moment["m00"])
+                cy_green = int(moment["m01"]/moment["m00"])
+                
+                # cv2.circle(frame, (cx_green, cy_green), 1, (255, 255, 255), -1)
+                # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
+                # crop_img[mask_green > 0] = (0, 255 , 0)
+        """
+        # Check if the the red color reach the limit return the and finish
+        if num_of_green == 4:
+            b_if_robot = True
+            return b_if_robot, robot_id[8]
+
+        # Check if the number of spot are match to robot Config
+        if num_of_circle == 4:
+            b_if_robot = True
+        else:
+            b_if_robot = False
+
+        cv2.namedWindow("RobotSoccer1\tHit Escape to Exit")
+        cv2.imshow("RobotSoccer1\tHit Escape to Exit", img) 
+        '''
+        if b_if_robot:
+            self.robot_id_detection(num_of_green,num_of_red, robot_num, robot_id)
+        else:
+            self.robot_id_detection(num_of_green,num_of_red, robot_num, robot_id)
+            print(f"ROBOT Num.{robot_num} IT IS NOT ROBOT {num_of_circle}!!") 
+        '''
+        return b_if_robot, robot_id
+        
+
+    def robot_id_detection(self, num_of_green:int = None, num_of_red:int = None, Robo_Num : int = None, robot_id: list = None):
+        if num_of_green == 2 and num_of_red == 2:
+            print("Num_Green = 2  Num_Red = 2")
+            #return robot_id[1], robot_id[3], robot_id[5], robot_id[10], robot_id[11], robot_id[7]
+        
+        if num_of_green == 3 and num_of_red == 1:
+            print("Num_Green = 3  Num_Red = 1")
+            #return robot_id[2], robot_id[6], robot_id[12], robot_id[14]
+        
+        if num_of_green == 1 and num_of_red == 3:
+            print("Num_Green = 1  Num_Red = 3")
+            #return robot_id[0], robot_id[4], robot_id[13], robot_id[15]
+
+        #print(f"Robot{Robo_Num}: num_of_green: {num_of_green}, num_of_red: {num_of_red}")
+
+    
+    def convert_pixel_to_centimeter(self, frame: cv2.VideoCapture.read):
+        try:
+            height, width = frame.shape[:2]
+            #print(f"height: {height} and width: {width}")
+
+        except Exception as e :
+            print(e) 
+
+    def creat_circle_id(self, frame: cv2.VideoCapture.read, color: str = None, cordinate_list :list = None):
+        # Center coordinates
+        center_coordinates = (10, 10)
+        
+        # Radius of circle
+        radius = 3
+        # Line thickness of -1 px
+        thickness = -1
+
+        if color == "blue":
+            # blue color in BGR
+            color = (255, 0, 0)
+            frame = cv2.circle(frame, center_coordinates, radius, color, thickness)
+            return frame
+
+        if color == "red": 
+            # red color in BGR
+            color = (255, 0 , 255) # (0, 0, 255)
+            radius = 3
+            for i in cordinate_list:
+                center_coordinates = (i[0], i[1])
+                frame = cv2.circle(frame, center_coordinates, radius, color, thickness)
+            return frame
+
+        if color == "green": 
+            # green color in BGR
+            color = (0, 255, 0)
+            radius = 3
+            for i in cordinate_list:
+                center_coordinates = (i[0], i[1])
+                frame = cv2.circle(frame, center_coordinates, radius, color, thickness)
+            return frame
+
+        return frame
+
+    def finish_capturing(self):
+        cv2.destroyAllWindows()
+
+    def drawAxis(self, img, p_, q_, color, scale):
+        p = list(p_)
+        q = list(q_)
+        
+        ## [visualization1]
+        angle = atan2(p[1] - q[1], p[0] - q[0]) # angle in radians
+        hypotenuse = sqrt((p[1] - q[1]) * (p[1] - q[1]) + (p[0] - q[0]) * (p[0] - q[0]))
+        
+        # Here we lengthen the arrow by a factor of scale
+        q[0] = p[0] - scale * hypotenuse * cos(angle)
+        q[1] = p[1] - scale * hypotenuse * sin(angle)
+        cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv2.LINE_AA)
+        
+        # create the arrow hooks
+        p[0] = q[0] + 9 * cos(angle + pi / 4)
+        p[1] = q[1] + 9 * sin(angle + pi / 4)
+        cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv2.LINE_AA)
+        
+        p[0] = q[0] + 9 * cos(angle - pi / 4)
+        p[1] = q[1] + 9 * sin(angle - pi / 4)
+        cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv2.LINE_AA)
+
+    def getOrientation(self, pts, img):
+        ## [pca]
+        # Construct a buffer used by the pca analysis
+        sz = len(pts)
+        data_pts = np.empty((sz, 2), dtype=np.float64)
+        for i in range(data_pts.shape[0]):
+            data_pts[i,0] = pts[i,0,0]
+            data_pts[i,1] = pts[i,0,1]
+        
+        # Perform PCA analysis
+        mean = np.empty((0))
+        mean, eigenvectors, eigenvalues = cv2.PCACompute2(data_pts, mean)
+        
+        # Store the center of the object
+        cntr = (int(mean[0,0]), int(mean[0,1]))
+        ## [pca]
+        
+        ## [visualization]
+        # Draw the principal components
+        cv2.circle(img, cntr, 3, (255, 0, 255), 2)
+        p1 = (cntr[0] + 0.02 * eigenvectors[0,0] * eigenvalues[0,0], cntr[1] + 0.02 * eigenvectors[0,1] * eigenvalues[0,0])
+        p2 = (cntr[0] - 0.02 * eigenvectors[1,0] * eigenvalues[1,0], cntr[1] - 0.02 * eigenvectors[1,1] * eigenvalues[1,0])
+        self.drawAxis(img, cntr, p1, (255, 255, 0), 1)
+        self.drawAxis(img, cntr, p2, (0, 0, 255), 5)
+        
+        angle = atan2(eigenvectors[0,1], eigenvectors[0,0]) # orientation in radians
+        ## [visualization]
+
+        # Label with the rotation angle
+        label = "  Rotation Angle: " + str(-int(np.rad2deg(angle)) - 90) + " degrees"
+        textbox = cv2.rectangle(img, (cntr[0], cntr[1]-25), (cntr[0] + 250, cntr[1] + 10), (255,255,255), -1)
+        cv2.putText(img, label, (cntr[0], cntr[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+        
+        return angle
+=======
         if num_of_green == 1 and num_of_red == 3:
             print("Num_Green = 1  Num_Red = 3")
 
@@ -1075,5 +1588,6 @@ class ImageProcessing():
 
     def finish_capturing(self):
         cv2.destroyAllWindows()
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
 
 imgProc = ImageProcessing()

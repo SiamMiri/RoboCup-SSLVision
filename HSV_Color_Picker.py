@@ -11,9 +11,15 @@ high_S = max_value
 high_V = max_value
 window_capture_name = 'Video Capture'
 window_detection_name = 'Object Detection'
+<<<<<<< HEAD
+low_H_name = 'Low H'
+low_S_name = 'Low S'
+low_V_name = 'Low V'
+=======
 low_H_name  = 'Low H'
 low_S_name  = 'Low S'
 low_V_name  = 'Low V'
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
 high_H_name = 'High H'
 high_S_name = 'High S'
 high_V_name = 'High V'
@@ -77,8 +83,13 @@ def color_picker(frame):
         
         # ret, frame = cap.read()
 
+<<<<<<< HEAD
+        frame = cv.imread("t.png")
+        #frame = cv.resize(frame, (740,480))
+=======
         frame = cv.imread('ee.jpg')
         frame = cv.resize(frame, (740,480))
+>>>>>>> bd61e1a7f4ee447e26f0532ed44c58a99db19f81
 
         #if frame is None:
             #break

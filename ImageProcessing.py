@@ -12,15 +12,13 @@ from skimage.transform import (hough_line, hough_line_peaks)
 import math
 from threading import Thread
 
-#from HSV_Color_Picker import *
-
+#from HSV_Color_Picker import #
 
 # This class receive Images from the ControlCommand
 # It processes images to detect the robot ID, origination
 # and location. The return the data back as needed
 class ImageProcessing():
     """ This class get images from ControlCommand """
-
     # This Parameters are belongs to the CLASS
 
     # Dimension in cintimeteres
@@ -74,13 +72,13 @@ class ImageProcessing():
             print(e)
 
         # Creat windows for the frame
-        cv2.namedWindow("RobotSoccer\tHit Escape to Exit")
+        # cv2.namedWindow("RobotSoccer\tHit Escape to Exit")
         
         while True:
         
             # ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
             # frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
-            frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
+            frame = cv2.imread("ee.jpg")
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
             # frame = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
             # self.detect_robot_orientation(frame=frame)
@@ -816,11 +814,9 @@ class ImageProcessing():
             # # point_one = -1* point_one
             # print(f"My degree is : {point_one}")
             # point_one = 10
-            # (h, w) = img.shape[:2]
+            
             # # rotate our image by 45 degrees around the center of the image
             # # rotate our image by -90 degrees around the image
-            # # M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), point_one, 1.0)
-            # # img = cv2.warpAffine(img, M, (w, h))
             # # cv2.line(img, (0 , int(img.shape[0]/2)), (img.shape[0], int(img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
             # # cv2.line(img, (int(img.shape[0]/2) , 0), (int(img.shape[0]/2), img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
             # # cv2.imshow("Rotated by -90 Degrees", rotated)
@@ -831,7 +827,10 @@ class ImageProcessing():
             # point_four    = (num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2
             # point_five    = (num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2
             # point_six     = (num_x_cor['red'][1] - num_x_cor['red'][2])**2 + (num_y_cor['red'][1] - num_y_cor['red'][2])**2
-
+            if False :
+                (h, w) = img.shape[:2]
+                M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), 20, 1.0)
+                img = cv2.warpAffine(img, M, (w, h))
 
             
 
@@ -892,7 +891,7 @@ class ImageProcessing():
         cTime = time.time()
         fps = 1 / (cTime - self.pTime)
         self.pTime = cTime
-        cv2.putText(img, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 1)
+        cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
         cv2.namedWindow("RobotSoccer1\tHit Escape to Exit")
         cv2.imshow("RobotSoccer1\tHit Escape to Exit", img)
         return b_if_robot, robot_id      
@@ -999,26 +998,29 @@ class ImageProcessing():
         cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), color, 3, cv2.LINE_AA)
 
     def getOrientation(self, circle_pack = None ):
-        length_list = []
+        length_list = {}
 
-        len_one   = math.sqrt((circle_pack["1"][0] - circle_pack["2"][0])**2 + (circle_pack["1"][1] - circle_pack["2"][1])**2)
-        len_two   = math.sqrt((circle_pack["1"][0] - circle_pack["3"][0])**2 + (circle_pack["1"][1] - circle_pack["3"][1])**2)
-        len_three = math.sqrt((circle_pack["1"][0] - circle_pack["4"][0])**2 + (circle_pack["1"][1] - circle_pack["4"][1])**2)
-        len_four  = math.sqrt((circle_pack["2"][0] - circle_pack["3"][0])**2 + (circle_pack["2"][1] - circle_pack["3"][1])**2)
-        len_five  = math.sqrt((circle_pack["2"][0] - circle_pack["4"][0])**2 + (circle_pack["2"][1] - circle_pack["4"][1])**2)
-        len_six   = math.sqrt((circle_pack["3"][0] - circle_pack["4"][0])**2 + (circle_pack["3"][1] - circle_pack["4"][1])**2)
+        length_list.update({ "1-2" : math.sqrt((circle_pack["1"][0] - circle_pack["2"][0])**2 + (circle_pack["1"][1] - circle_pack["2"][1])**2) })
+        length_list.update({ "1-3" : math.sqrt((circle_pack["1"][0] - circle_pack["3"][0])**2 + (circle_pack["1"][1] - circle_pack["3"][1])**2) })
+        length_list.update({ "1-4" : math.sqrt((circle_pack["1"][0] - circle_pack["4"][0])**2 + (circle_pack["1"][1] - circle_pack["4"][1])**2) })
+        length_list.update({ "2-3" : math.sqrt((circle_pack["2"][0] - circle_pack["3"][0])**2 + (circle_pack["2"][1] - circle_pack["3"][1])**2) })
+        length_list.update({ "2-4" : math.sqrt((circle_pack["2"][0] - circle_pack["4"][0])**2 + (circle_pack["2"][1] - circle_pack["4"][1])**2) })
+        length_list.update({ "3-4" : math.sqrt((circle_pack["3"][0] - circle_pack["4"][0])**2 + (circle_pack["3"][1] - circle_pack["4"][1])**2) })
 
         print("##############################")
-        print(f'len_one:   {len_one}'  )
-        print(f'len_two:   {len_two}'  )
-        print(f'len_three: {len_three}')
-        print(f'len_four:  {len_four}' )
-        print(f'len_five:  {len_five}' )
-        print(f'len_six:   {len_six}'  )
+        print(f'len_one:   {length_list["1-2"]}')
+        print(f'len_two:   {length_list["1-3"]}')
+        print(f'len_three: {length_list["1-4"]}')
+        print(f'len_four:  {length_list["2-3"]}')
+        print(f'len_five:  {length_list["2-4"]}')
+        print(f'len_six:   {length_list["3-4"]}')
         print("##############################")
-        length_list = [len_one, len_two, len_three, len_four, len_five, len_six]
-        length_list = sorted(length_list)
-        
+        min_len = min(length_list, key=length_list.get)
+        #length_list = [len_one, len_two, len_three, len_four, len_five, len_six]
+        #length_list = sorted(length_list)
+        print(min_len)
+        print(circle_pack[min_len[:1]])
+        print(circle_pack[min_len[-1:]])
         angle = 0
         return angle
 

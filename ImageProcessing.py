@@ -42,7 +42,7 @@ class ImageProcessing():
     MASK_COLOR_THRESHOLD            = True
     CIRCLE_ID_COLOR_BY_CORDINATE    = True
     CENTER_CORDINATE                = False
-    ROTATE_ROBOT_IMAGE              = True
+    ROTATE_ROBOT_IMAGE              = False
     PRINT_DEBUG                     = False
     SHOW_MAIN_FIELD                 = False
     ANGLE                           = 166
@@ -169,13 +169,8 @@ class ImageProcessing():
                     angles = [a*180/np.pi for a in angle]
                     angle_difference = np.max(angles) - np.min(angles)
                     # print(f"angle_difference: {angle_difference}")
-                    if robot_num == 5:
-                        if self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue):
-                            self.detect_robot_location(cy_blue, cx_blue, robot_num) 
-                            print("It is a Robot")
-                        else:
-                            print("It is not a Robot")
-                
+                    self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue)
+                    #self.detect_robot_location(cy_blue, cx_blue, robot_num) 
                     robot_num += 1
         except Exception as e:
             print(e)
@@ -444,8 +439,6 @@ class ImageProcessing():
         list_vector_len = []
 
         b_json = False
-
-        self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
         
         num_x_cor   = {'green' : [],
                         'red'  : []}
@@ -461,7 +454,6 @@ class ImageProcessing():
 
         b_if_robot      = False
         robot_id = Robo_Num
-
         try:
         # try to load the json file if exist
             with open("Robo_Color_Config.json") as color_config:
@@ -568,7 +560,7 @@ class ImageProcessing():
                             circle_pack[i] = [cx_red, cy_red]
                     print(f'Red Position is: {position}')
                     self.creat_circle_id(img,'red', [cx_red, cy_red])
-                    cv2.circle(img, (cx_red, cy_red), radius=num_of_red, color=(255, 255, 255), thickness=-1)
+                    # cv2.circle(img, (cx_red, cy_red), radius=num_of_red, color=(255, 255, 255), thickness=-1)
 
             list_circle_cordinate.clear()
             """ contours for green area """             
@@ -594,7 +586,7 @@ class ImageProcessing():
                     print(f'Green Position is: {position}')
                     num_x_cor['green'].append([position , cx_green, cy_green])
                     self.creat_circle_id(img,'green', [cx_green, cy_green])
-                    cv2.circle(img, (cx_green, cy_green), radius=num_of_green, color=(255, 255, 255), thickness=-1)
+                    # cv2.circle(img, (cx_green, cy_green), radius=num_of_green, color=(255, 255, 255), thickness=-1)
                     
             a = num_x_cor['red']
             b = num_x_cor['green']
@@ -627,8 +619,15 @@ class ImageProcessing():
                 (h, w) = img.shape[:2]
                 M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), ImageProcessing.ANGLE, 1.0)
                 img = cv2.warpAffine(img, M, (w, h))
-        
-            ROBOT_ID = self.match_robot(img)
+                ROBOT_ID = self.match_robot(img)
+            else: 
+                imgRotate = img 
+                (h, w) = imgRotate.shape[:2]
+                M = cv2.getRotationMatrix2D((imgRotate.shape[1] // 2, imgRotate.shape[1] // 2), ImageProcessing.ANGLE, 1.0)
+                imgRotate = cv2.warpAffine(imgRotate, M, (w, h))
+                ROBOT_ID = self.match_robot(imgRotate)
+
+            self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
             print(f'ROBOT_ID: {ROBOT_ID}')
         except Exception as e:
             print(e)
@@ -636,10 +635,10 @@ class ImageProcessing():
         cTime = time.time()
         fps = 1 / (cTime - self.pTime)
         self.pTime = cTime
-        # cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
-        # cv2.namedWindow(f"RobotSoccer Robot{robot_id}\tHit Escape to Exit")
-        # cv2.imshow(f"RobotSoccer Robot{robot_id}\tHit Escape to Exit", img)
-        return b_if_robot, robot_id      
+        cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
+        cv2.namedWindow(f"RobotSoccer Robot{ROBOT_ID}\tHit Escape to Exit")
+        cv2.imshow(f"RobotSoccer Robot{ROBOT_ID}\tHit Escape to Exit", img)
+        return ROBOT_ID      
 
     def check_circle_position(self,img_shape_x, img_shape_y, x, y):
         if x >= img_shape_x//2:
@@ -1317,12 +1316,12 @@ class ImageProcessing():
         
         frame_hsv       = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         
-        low_red         = np.array([126, 40, 140], np.uint8)
-        upper_red       = np.array([180, 255, 255], np.uint8)
+        low_red         = np.array([0, 26, 104], np.uint8)
+        upper_red       = np.array([11, 255, 255], np.uint8)
                         
         # Color: green
-        low_green       = np.array([0,  90 , 150], np.uint8)
-        upper_green     = np.array([75, 255, 255], np.uint8)
+        low_green       = np.array([30,  175 , 140], np.uint8)
+        upper_green     = np.array([105, 255, 255], np.uint8)
 
                 
         # define masks
@@ -1381,9 +1380,33 @@ class ImageProcessing():
                 if cx_green > img.shape[0]/2 and cy_green > img.shape[1]/2:
                     circle_pack['4'] = "green"
 
-        print(circle_pack)
-        cv2.namedWindow(f"RobotSoccer Robot{0}\tHit Escape to Exit")
-        cv2.imshow(f"RobotSoccer Robot{0}\tHit Escape to Exit", img)
+        return self.loop_robot_id_list(color_pattern_list = circle_pack)
+        
+    def loop_robot_id_list(self, color_pattern_list: dict = None):
+        Robot_Pattern_Dict= {
+        "Robo1"  : {'1': 'red'  , '2': 'red'  , '3': 'green', '4': 'red'},
+        "Robo2"  : {'1': 'red'  , '2': 'green', '3': 'green', '4': 'red'},
+        "Robo3"  : {'1': 'green', '2': 'green', '3': 'green', '4': 'red'},
+        "Robo4"  : {'1': 'green', '2': 'red'  , '3': 'green', '4': 'red'},
+        "Robo5"  : {'1': 'red'  , '2': 'red'  , '3': 'red'  , '4': 'green'},
+        "Robo6"  : {'1': 'red'  , '2': 'green', '3': 'red'  , '4': 'green'},
+        "Robo7"  : {'1': 'green', '2': 'green', '3': 'red'  , '4': 'green'},
+        "Robo8"  : {'1': 'green', '2': 'red'  , '3': 'red'  , '4': 'green'},
+        "Robo9"  : {'1': 'green', '2': 'green', '3': 'green', '4': 'green'},
+        "Robo10" : {'1': 'red'  , '2': 'red'  , '3': 'red'  , '4': 'red'  },
+        "Robo11" : {'1': 'red'  , '2': 'red'  , '3': 'green', '4': 'green'},
+        "Robo12" : {'1': 'green', '2': 'green', '3': 'red'  , '4': 'red'  },
+        "Robo13" : {'1': 'red'  , '2': 'green', '3': 'green', '4': 'green'},
+        "Robo14" : {'1': 'red'  , '2': 'green', '3': 'red'  , '4': 'red'  },
+        "Robo15" : {'1': 'green', '2': 'red'  , '3': 'green', '4': 'green'},
+        "Robo16" : {'1': 'green', '2': 'red'  , '3': 'red'  , '4': 'red'  }}
+        
+        for id in Robot_Pattern_Dict:
+            if Robot_Pattern_Dict[id] == color_pattern_list:
+                return id
+            
+        return None
+        
     
     def finish_capturing(self):
         cv2.destroyAllWindows()

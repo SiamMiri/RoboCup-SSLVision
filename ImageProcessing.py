@@ -1,4 +1,5 @@
 import json
+from pickle import FALSE
 import cv2
 from cv2 import COLOR_BGR2RGB
 import numpy as np
@@ -11,6 +12,7 @@ from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import math
 from threading import Thread
+
 
 #from HSV_Color_Picker import #
 
@@ -37,9 +39,14 @@ class ImageProcessing():
     # Application Control Parameters #
     SAVE_ROBOT_IMAGE                = False
     SHOW_CIRCLE_LINE_CONNECTION     = False
-    MASK_COLOR_THRESHOLD            = False
+    MASK_COLOR_THRESHOLD            = True
     CIRCLE_ID_COLOR_BY_CORDINATE    = True
     CENTER_CORDINATE                = False
+    ROTATE_ROBOT_IMAGE              = True
+    PRINT_DEBUG                     = False
+    SHOW_MAIN_FIELD                 = False
+    ANGLE                           = 166
+
 
     def __init__(self):
         
@@ -71,22 +78,17 @@ class ImageProcessing():
         except Exception as e: 
             print(e)
 
-        # Creat windows for the frame
-        # cv2.namedWindow("RobotSoccer\tHit Escape to Exit")
-        
         while True:
         
             # ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
             # frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
-            frame = cv2.imread("ee.jpg")
+            frame = cv2.imread("FieldTest_AllLight_Off_Daylight(hight).jpg")
             # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
             # frame = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
             # self.detect_robot_orientation(frame=frame)
             # Aplied Filter GaussianBlur and Segmentation
             frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False, Res = False)
-            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # frame = cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
-            
+
             # Detect Robot 
             frame =  self.detect_robot_id(frame = frame)
             
@@ -94,26 +96,25 @@ class ImageProcessing():
             # if not ret:
             #     print("failed to grab frame")
             #     break
-            
-            
-            # print(frame.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT))
-            # print(frame.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH))
-            # Show frame rate
+
             cTime = time.time()
             fps = 1 / (cTime - self.pTime)
             self.pTime = cTime
             cv2.putText(frame, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
-            # cv2.putText(blurred_frame, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
-            # cv2.imshow("B&W RobotSoccer\tHit Escape to Exit", mask)  # BLack and White Image
-            # cv2.imshow("RobotSoccer\tHit Escape to Exit", np.vstack(result))  # Normal Images with contours
-            # cv2.imshow("RobotSoccer\tHit Escape to Exit", reduced)
-
-            # cv2.imshow("RobotSoccer\tHit Escape to Exit", frame)
-            # cv2.waitKey(1)
+            # Creat windows for the frame
+            if ImageProcessing.SHOW_MAIN_FIELD:
+                cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+                cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
+            
             k = cv2.waitKey(1)
             if k % 256 == 27:
                 # ESC pressed
+                print("Escape hit, closing...")
+                break
+            
+            if k % 256 == ord("q"):
+                # Q pressed
                 print("Escape hit, closing...")
                 break
 
@@ -124,104 +125,37 @@ class ImageProcessing():
             frame_hsv   = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
             # Source: https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
-            
             # Color: blue
             low_blue    = np.array([90, 150, 0], np.uint8)
             upper_blue  = np.array([140, 255, 255], np.uint8)        
             
-            # Color: Red
-            # low_red     = np.array([110, 50, 120], np.uint8)
-            # upper_red   = np.array([250, 255, 255], np.uint8)
-                    
-            # Color: yellow
-            # low_yellow      = np.array([18, 70, 120], np.uint8)
-            # upper_yellow    = np.array([15, 255, 255], np.uint8)
-            
-            # Color: green
-            # low_green      = np.array([60, 0, 150], np.uint8)
-            # upper_green    = np.array([80, 230, 255], np.uint8)
-                    
-            # Color: Orange
-            # low_orange     = np.array([10, 100, 20], np.uint8)
-            # upper_orange   = np.array([25, 255, 255], np.uint8)
-
-            # Color: black
-            # low_black       = np.array([0, 0, 0], np.uint8)
-            # upper_black     = np.array([180, 255, 145], np.uint8)
-                    
-            
             
             # define masks
             mask_blue   = cv2.inRange(frame_hsv, low_blue       ,upper_blue)
-            # mask_red    = cv2.inRange(frame_hsv, low_red        ,upper_red)
-            # mask_yellow = cv2.inRange(frame_hsv, low_yellow     ,upper_yellow)
-            # mask_green  = cv2.inRange(frame_hsv, low_green      ,upper_green)
-            # mask_orange = cv2.inRange(frame_hsv, low_orange     ,upper_orange)
-            # mask_black  = cv2.inRange(frame_hsv, low_black     ,upper_black)
 
-
-            
-            # CHAIN_APPROX_NONE gibe all points
-            # contours = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
-            # cv2.drawContours(mask, contours, -1, (0, 0, 0), 1)  # -1 means all the counters
             contours_blue       = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
             contours_blue       = imutils.grab_contours(contours_blue)
-
-            # contours_red        = cv2.findContours(mask_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-            # contours_red        = imutils.grab_contours(contours_red)
-
-            # contours_yellow     = cv2.findContours(mask_yellow.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-            # contours_yellow     = imutils.grab_contours(contours_yellow)
-            # frame[mask_yellow > 0] = (0, 30 , 255)
-
-            # contours_green      = cv2.findContours(mask_green.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-            # contours_green      = imutils.grab_contours(contours_green)
-
-            # contours_black      = cv2.findContours(mask_black.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-            # contours_black      = imutils.grab_contours(contours_black)
-            # #frame[mask_black > 0] = (0, 0 , 0)
-
-            # contours_orange     = cv2.findContours(mask_orange.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-            # contours_orange     = imutils.grab_contours(contours_orange)
-            # frame[mask_orange > 0] = (20, 150 , 255)
-
-            # frame = cv2.bitwise_and(result, result, mask=full_mask)
             cx_blue = 0 
             cy_blue = 0 
             moment = 0
-            
-            r = 100
             i = 0
-
-            # print(f"sss : {self.xFrameSizePixel/15}")
-            # print(f"sss : {self.xFrameSizePixel/22}")
-            # print(f"frame shape : {frame.shape}")
-            # print(f"frame shape : {frame.shape[1]/25}")
             
             """ contours for blue area """
             for contours in contours_blue:
                 blue_area = cv2.contourArea(contours)
-                #  / 
                 if blue_area < frame.shape[1]/9 and blue_area > frame.shape[1]/37:
-                    # cv2.drawContours(frame, [contours], -1, (255,255,255), 1)
+                    
                     if ImageProcessing.MASK_COLOR_THRESHOLD:
                         frame[mask_blue > 0] = (255, 0 , 0)
+                        
                     moment = cv2.moments(contours) # NOTE: check me again 
-                    # cv2.drawContours(frame, contours, i, (0, 0, 255), 2)
                     i += 1
-                    # Find the orientation of each shape
-                    # self.getOrientation(contours, frame)
-
                     cx_blue = int(moment["m10"]/moment["m00"])
                     cy_blue = int(moment["m01"]/moment["m00"])
-                    # print(self.convert_pixel_to_centimeter(xVal= cx_blue, yVal=cy_blue))
                     crop_img = self.crop_robot_circle(frame, cy_blue, cx_blue)
                     crop_img = self.creat_circle_id(crop_img, color = "blue", cordinate_list=[cx_blue, cy_blue])
                     # FIXME: Change for testing orientation
- 
-                    # self.check_if_robot(crop_img) # cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV) 
-                    # color_picker(cv2.cvtColor(crop_img, cv2.COLOR_BGR2HSV))
-                    # print(crop_img.shape)
+
                     if ImageProcessing.CENTER_CORDINATE:
                         cv2.line(crop_img, (0 , int(crop_img.shape[0]/2)), (crop_img.shape[0], int(crop_img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
                         cv2.line(crop_img, (int(crop_img.shape[0]/2) , 0), (int(crop_img.shape[0]/2), crop_img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
@@ -234,18 +168,15 @@ class ImageProcessing():
 
                     angles = [a*180/np.pi for a in angle]
                     angle_difference = np.max(angles) - np.min(angles)
-                    print(f"angle_difference: {angle_difference}")
-
-                    if self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue):
-                        self.detect_robot_location(cy_blue, cx_blue, robot_num) 
-                        print("It is a Robot")
-                    else:
-                        print("It is not a Robot")
-                    
+                    # print(f"angle_difference: {angle_difference}")
+                    if robot_num == 5:
+                        if self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue):
+                            self.detect_robot_location(cy_blue, cx_blue, robot_num) 
+                            print("It is a Robot")
+                        else:
+                            print("It is not a Robot")
+                
                     robot_num += 1
-                    break
-                    # cv2.circle(frame, (cx_blue, cy_blue), 1, (255, 255, 255), -1)
-                    # cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
         except Exception as e:
             print(e)
                         
@@ -278,7 +209,7 @@ class ImageProcessing():
         cnts = imutils.grab_contours(cnts)
         center = None
 
-            # only proceed if at least one contour was found
+        # only proceed if at least one contour was found
         if len(cnts) > 0:
             # find the largest contour in the mask, then use
             # it to compute the minimum enclosing circle and
@@ -522,13 +453,14 @@ class ImageProcessing():
         num_y_cor   = {'green' : [],
                         'red'  : []}
 
-        circle_pack = {"1": [],
-                       "2": [],
-                       "3": [],
-                       "4": []}
+        circle_pack = {"1":     [],
+                       "2":     [],
+                       "3":     [],
+                       "4":     [],
+                       "prime": []}
 
         b_if_robot      = False
-        robot_id = 0
+        robot_id = Robo_Num
 
         try:
         # try to load the json file if exist
@@ -541,15 +473,10 @@ class ImageProcessing():
             print(e)
         
         try:
-            frame_hsv       = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-            # color_picker(img)
-
-            # Color: blue
-            # low_blue        = np.array([70, 250, 175], np.uint8)
-            # upper_blue      = np.array([165, 255, 255], np.uint8)        
+            frame_hsv       = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)      
             if b_json == True:
                 try:
-                # Color: Red
+                    # Color: Red
                     low_red         = np.array(color_range["Low_Red"], np.uint8)
                     upper_red       = np.array(color_range["Up_Red"], np.uint8)
                                     
@@ -562,21 +489,15 @@ class ImageProcessing():
                     upper_black     = np.array([180, 255, 145], np.uint8)
                             
                     # define masks
-                    # mask_blue       = cv2.inRange(frame_hsv, low_blue       ,upper_blue)
                     mask_red        = cv2.inRange(frame_hsv, low_red        ,upper_red)
                     mask_green      = cv2.inRange(frame_hsv, low_green      ,upper_green)
                     mask_black      = cv2.inRange(frame_hsv, low_black      ,upper_black)
 
-                    # contours_blue   = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-                    # contours_blue   = imutils.grab_contours(contours_blue)
-                    
                     contours_red    = cv2.findContours(mask_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
                     contours_red    = imutils.grab_contours(contours_red)
-                    # img[mask_red > 0] = (255, 0 , 255)
 
                     contours_green  = cv2.findContours(mask_green.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
                     contours_green  = imutils.grab_contours(contours_green)
-                    # img[mask_green > 0] = (0, 255 , 0)
 
                     contours_black  = cv2.findContours(mask_black.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
                     contours_black  = imutils.grab_contours(contours_black)
@@ -598,21 +519,15 @@ class ImageProcessing():
                 upper_black     = np.array([180, 255, 145], np.uint8)
                         
                 # define masks
-                # mask_blue       = cv2.inRange(frame_hsv, low_blue       ,upper_blue)
                 mask_red        = cv2.inRange(frame_hsv, low_red        ,upper_red)
                 mask_green      = cv2.inRange(frame_hsv, low_green      ,upper_green)
                 mask_black      = cv2.inRange(frame_hsv, low_black      ,upper_black)
 
-                # contours_blue   = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-                # contours_blue   = imutils.grab_contours(contours_blue)
-                
                 contours_red    = cv2.findContours(mask_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
                 contours_red    = imutils.grab_contours(contours_red)
-                # img[mask_red > 0] = (255, 0 , 255)
 
                 contours_green  = cv2.findContours(mask_green.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
                 contours_green  = imutils.grab_contours(contours_green)
-                # img[mask_green > 0] = (0, 255 , 0)
 
                 contours_black  = cv2.findContours(mask_black.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
                 contours_black  = imutils.grab_contours(contours_black)
@@ -621,20 +536,8 @@ class ImageProcessing():
             if ImageProcessing.MASK_COLOR_THRESHOLD:
                 img[mask_green > 0] = (0  , 255 , 0)
                 img[mask_red   > 0] = (0, 0   , 255)
-            # img[mask_black > 0] = (0, 0 , 0)
 
-            # for contours in contours_blue:
-            #     blue_area = cv2.contourArea(contours)
-            #     if blue_area < 60 and blue_area > 5:
-            #         #cv2.drawContours(img, [contours], -1, (255,255,255), 1)
-            #         moment = cv2.moments(contours) # NOTE: check me again 
-                    
-            #         cx_blue = int(moment["m10"]/moment["m00"])
-            #         cy_blue = int(moment["m01"]/moment["m00"])
-            #         self.creat_circle_id(frame = img, color = "blue")
-            #         # cv2.circle(frame, (cx_blue, cy_blue), 1, (255, 255, 255), -1)
-            #         # cv2.putText(frame, "Blue", (cx_blue, cy_blue), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
-            are_of_circle_min = img.shape[0]/15
+            are_of_circle_min = img.shape[0]/13
             are_of_circle_max = img.shape[0]/6
 
             are_of_circle_min = pi*are_of_circle_min**2
@@ -643,95 +546,56 @@ class ImageProcessing():
             print(f'area_min: {are_of_circle_min}')
             print(f'area_max: {are_of_circle_max}')
             list_circle_cordinate = []             
+            
             """ contours for red area  """            
             for contours in contours_red:
                 red_area = cv2.contourArea(contours)
-                print(f"img.frame {img.shape}")
-                print(f"red_area {red_area}")
+                # print(f"img.frame {img.shape}")
                 if red_area < are_of_circle_max and red_area > are_of_circle_min:
-                    # cv2.drawContours(img, [contours], -1, (255,255,255), 1)
+                    print(f"red_area {red_area}")
                     moment = cv2.moments(contours) # NOTE: check me again 
                     cx_red = int(moment["m10"]/moment["m00"])
                     cy_red = int(moment["m01"]/moment["m00"])
                     list_circle_cordinate.append([cy_red,cx_red])
                     print(f"cx_red {cx_red}")
                     print(f"cy_red {cy_red}")
-                    # print(f"cx_red: {cx_red} and cy_green: {cy_red}")
-                    # img[mask_red > 0] = (255, 0 , 255)
                     num_of_red    += 1
                     num_of_circle += 1
                     position = self.check_circle_position(img.shape[0], img.shape[1], cx_red, cy_red)
                     num_x_cor['red'].append([position , cx_red, cy_red])
-                    # circle_pack.append([position , cx_red, cy_red])
                     for i in circle_pack:
                         if i == position:
                             circle_pack[i] = [cx_red, cy_red]
-                    # num_y_cor['red'].append(cy_red)
                     print(f'Red Position is: {position}')
-                    myradians = math.atan2(int(img.shape[1]/2)-cx_red, int(img.shape[0]/2)-cy_red)
-                    mydegrees = math.degrees(myradians)
                     self.creat_circle_id(img,'red', [cx_red, cy_red])
                     cv2.circle(img, (cx_red, cy_red), radius=num_of_red, color=(255, 255, 255), thickness=-1)
-
-            
-            # self.creat_circle_id(frame = img, color = "red", cordinate_list = list_circle_cordinate) 
-            # if ImageProcessing.SHOW_CIRCLE_LINE_CONNECTION:
-            #     cv2.line(img, (num_x_cor['red'][0], num_y_cor['red'][0]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
-            #     cv2.line(img, (num_x_cor['red'][0], num_y_cor['red'][0]), (num_x_cor['red'][2], num_y_cor['red'][2]), (0, 0, 0), thickness=1, lineType=1)
-            #     cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
-            # cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][3], num_y_cor['red'][3]), (0, 0, 0), thickness=1, lineType=1)
-            # cv2.line(img, (num_x_cor['red'][3], num_y_cor['red'][3]), (num_x_cor['red'][0], num_y_cor['red'][0]), (0, 0, 0), thickness=1, lineType=1)
-            # cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][3], num_y_cor['red'][3]), (0, 0, 0), thickness=1, lineType=1)
-            # cv2.line(img, (num_x_cor['red'][2], num_y_cor['red'][2]), (num_x_cor['red'][3], num_y_cor['red'][3]), (0, 0, 0), thickness=1, lineType=1)
-
-            # len1 = math.sqrt((num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2)
-            # len2 = math.sqrt((num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2)
-            # len3 = math.sqrt((num_x_cor['red'][2] - num_x_cor['red'][1])**2 + (num_y_cor['red'][2] - num_y_cor['red'][1])**2)
-            # print(f'length1: {len1}')
-            # print(f'length2: {len2}')
-            # print(f'length3: {len3}')
-
-            # Check if the the red color rech the limit
-            # if num_of_red == 4:
-            #     b_if_robot = True
-            #     return b_if_robot, robot_id[9]
-
 
             list_circle_cordinate.clear()
             """ contours for green area """             
             for contours in contours_green:
                 green_area = cv2.contourArea(contours)
-                print(f"green_area {green_area}")
                 if green_area < are_of_circle_max and green_area > are_of_circle_min:
-                    # cv2.drawContours(img, [contours], -1, (255,255,255), 1)
                     moment = cv2.moments(contours) # NOTE: check me again 
-                    
+                    print(f"green_area {green_area}")
                     cx_green = int(moment["m10"]/moment["m00"])
                     cy_green = int(moment["m01"]/moment["m00"])
                     print(f"cx_green {cx_green}")
                     print(f"cy_green {cy_green}")
-                    # print(f"cx_green: {cx_green} and cy_green: {cy_green}")
                     num_of_green  += 1
                     num_of_circle += 1 
                     list_circle_cordinate.append([cy_green,cx_green])
-                    # img[mask_green > 0] = (0, 255 , 0)
-                    # cv2.circle(frame, (cx_green, cy_green), 1, (255, 255, 255), -1)
-                    # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
-                    # crop_img[mask_green > 0] = (0, 255 , 0)
                     position = self.check_circle_position(img.shape[0], img.shape[1], cx_green, cy_green)
-                    # circle_pack.append([position , cx_red, cy_red])
                     for i in circle_pack:
                         if i == position:
-                            circle_pack[i] = [cx_green, cy_green]
+                            if len(circle_pack[i]) > 1:
+                                circle_pack["prime"] = [cx_green, cy_green]
+                            else:
+                                circle_pack[i] = [cx_green, cy_green]
                     print(f'Green Position is: {position}')
                     num_x_cor['green'].append([position , cx_green, cy_green])
-                    # num_x_cor['green'].append(cx_green)
-                    # num_y_cor['green'].append(cy_green)
                     self.creat_circle_id(img,'green', [cx_green, cy_green])
                     cv2.circle(img, (cx_green, cy_green), radius=num_of_green, color=(255, 255, 255), thickness=-1)
                     
-            # self.creat_circle_id(frame = img, color = "green", cordinate_list = list_circle_cordinate) 
-            # print(list_circle_cordinate)
             a = num_x_cor['red']
             b = num_x_cor['green']
             print(f'List Red is : {len(a)}')
@@ -740,6 +604,9 @@ class ImageProcessing():
             B = num_x_cor['red']
             print(f'num_x_cor_green : {A}')
             print(f'num_y_cor_red : {B}')
+            for x in list(circle_pack.keys()):
+                if circle_pack[x] == []:
+                    del circle_pack[x]
             print(f'circle_pack: {circle_pack}')
             self.getOrientation(circle_pack)
             """ contours for black area              
@@ -756,144 +623,22 @@ class ImageProcessing():
                     # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
                     # crop_img[mask_green > 0] = (0, 255 , 0)
             """
-
-            # Check if the the red color reach the limit return the and finish
-            # print(num_of_green)
-            # if num_of_green == 4:
-            #     b_if_robot = True
-            #     return b_if_robot, robot_id[8]
-
-            # # Check if the number of spot are match to robot Config
-            # if num_of_circle == 4:
-            #     b_if_robot = True
-            #     #self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
-            # else:
-            #     b_if_robot = False
-            
-            # if ImageProcessing.SHOW_CIRCLE_LINE_CONNECTION:
-            #     cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][0], num_y_cor['red'][0]), (0, 0, 0), thickness=1, lineType=1)
-            #     cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][2], num_y_cor['red'][2]), (0, 0, 0), thickness=1, lineType=1)
-            #     cv2.line(img, (num_x_cor['green'][0], num_y_cor['green'][0]), (num_x_cor['red'][1], num_y_cor['red'][1]), (0, 0, 0), thickness=1, lineType=1)
-            
-            # a = self.angle_clockwise([num_x_cor['red'][0], num_y_cor['red'][0]], [11, 11])
-            # print(f'The Rotation of the image is: a {a}')
-            
-            # b = self.inner_angle([num_x_cor['red'][0], num_y_cor['red'][0]], [11, 11])
-            # print(f'The Rotation of the image is: b {b}')
-            
-            '''
-            height, width = img.shape[:2]
-            center        = (width/2, height/2)
-            rotate_matrix = cv2.getRotationMatrix2D(center=center, angle= 360 - b, scale=1)
-            img           = cv2.warpAffine(src=img, M=rotate_matrix, dsize=(width, height))
-            '''
-             
-            img = cv2.circle(img, (11,11), radius=0, color=(0, 0, 255), thickness=-1)
-
-            # print(f'num_x_cor green: {num_x_cor["green"]}')
-            # print(f'num_y_cor green: {num_y_cor["green"]}')
-            
-            # print(f'num_x_cor red:   {num_x_cor["red"]}')
-            # print(f'num_y_cor red:   {num_y_cor["red"]}')
-            
-            # point_one     = (num_x_cor['green'][0] - num_x_cor['red'][0])**2 + (num_y_cor['green'][0] - num_y_cor['red'][0])**2
-            # # values_green = [int(num_x_cor['green'][0]), int(num_y_cor['green'][0])]
-            # # values_red = [int(num_x_cor['red'][0]), int(num_y_cor['red'][0])]
-
-            # values_green = [int(num_x_cor['green'][0]), int(num_y_cor['green'][0])]
-            # values_red = [int(num_x_cor['red'][0]), int(num_y_cor['red'][0])]
-            # print(f'values_green : {values_green} and values_red : {values_red}')
-            
-            # img = cv2.line(img, values_red, values_green, (0, 0, 0), thickness=1, lineType=1)
-            # dx = values_green[1] - values_red[1] # img.shape[1] #values_red[1]# 
-            # dy = values_green[0] - img.shape[0] // 2 #values_red[0]# 
-            # point_one   = math.atan2(dy, dx)
-            # point_one   = math.degrees(point_one)
-            
-            # # point_one = 80 - point_one
-            # # point_one = -1* point_one
-            # print(f"My degree is : {point_one}")
-            # point_one = 10
-            
-            # # rotate our image by 45 degrees around the center of the image
-            # # rotate our image by -90 degrees around the image
-            # # cv2.line(img, (0 , int(img.shape[0]/2)), (img.shape[0], int(img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
-            # # cv2.line(img, (int(img.shape[0]/2) , 0), (int(img.shape[0]/2), img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
-            # # cv2.imshow("Rotated by -90 Degrees", rotated)
-            
-            # point_two     = (num_x_cor['green'][0] - num_x_cor['red'][1])**2 + (num_y_cor['green'][0] - num_y_cor['red'][1])**2
-            # point_three   = (num_x_cor['green'][0] - num_x_cor['red'][2])**2 + (num_y_cor['green'][0] - num_y_cor['red'][2])**2
-
-            # point_four    = (num_x_cor['red'][0] - num_x_cor['red'][1])**2 + (num_y_cor['red'][0] - num_y_cor['red'][1])**2
-            # point_five    = (num_x_cor['red'][0] - num_x_cor['red'][2])**2 + (num_y_cor['red'][0] - num_y_cor['red'][2])**2
-            # point_six     = (num_x_cor['red'][1] - num_x_cor['red'][2])**2 + (num_y_cor['red'][1] - num_y_cor['red'][2])**2
-            if False :
+            if ImageProcessing.ROTATE_ROBOT_IMAGE :
                 (h, w) = img.shape[:2]
-                M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), 20, 1.0)
+                M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), ImageProcessing.ANGLE, 1.0)
                 img = cv2.warpAffine(img, M, (w, h))
-
-            
-
-            # #if point_one   < 0 : point_one   = point_one   * -1
-            # if point_two   < 0 : point_two   = point_two   * -1
-            # if point_three < 0 : point_three = point_three * -1
-            # if point_four  < 0 : point_four  = point_four  * -1
-            # if point_five  < 0 : point_five  = point_five  * -1
-            # if point_six   < 0 : point_six   = point_six   * -1
-
-            # point_one   = math.sqrt(point_one)
-            # point_two   = math.sqrt(point_two)
-            # point_three = math.sqrt(point_three)
-            # point_four  = math.sqrt(point_four)
-            # point_five  = math.sqrt(point_five)
-            # point_six   = math.sqrt(point_six)
-            
-            # list_me = [point_one, point_two, point_three, point_four, point_five, point_six]
-            # list_me = sorted(list_me)
-            # print(list_me)
-            '''
-            point_one   = math.atan2((num_x_cor['red'][0] - 11) , (num_y_cor['red'][0] - 11))
-            point_one   = math.degrees(point_one)
-            
-            point_two   = math.atan2((num_x_cor['red'][1] - 11) , (num_y_cor['red'][1] - 11))
-            point_two   = math.degrees(point_two)
-
-            point_three   = math.atan2((num_x_cor['green'][0] - 11) , (num_y_cor['green'][0] - 11))
-            point_three   = math.degrees(point_three)
-
-            point_four   = math.atan2((num_x_cor['green'][1] - 11) , (num_y_cor['green'][1] - 11))
-            point_four   = math.degrees(point_four)
-            '''
-            # print("##############################")
-            # print(f'green: {point_one}')
-            # print(f'green: {point_two}')
-            # print(f'green: {point_three}')
-            # print(f'{point_four}')
-            # print(f'{point_five}')
-            # print(f'{point_six}')
-            # print("##############################")
-            # point_one   = math.atan2((num_x_cor['red'][0] - num_x_cor['green'][0]) , (num_y_cor['red'][0] - num_x_cor['green'][0]))
-            # point_one   = math.degrees(-1*point_one)
-            # print(f'Degree is: {point_one}')
-            # print(f'num_x_cor {num_x_cor}')    
-            # print(f'num_y_cor {num_y_cor}')
-            # img = self.overlay_image_alpha(img, field)  
-            '''
-            if b_if_robot:
-                self.robot_id_detection(num_of_green,num_of_red, robot_num, robot_id)
-            else:
-                self.robot_id_detection(num_of_green,num_of_red, robot_num, robot_id)
-                print(f"ROBOT Num.{robot_num} IT IS NOT ROBOT {num_of_circle}!!") 
-            '''
+        
+            ROBOT_ID = self.match_robot(img)
+            print(f'ROBOT_ID: {ROBOT_ID}')
         except Exception as e:
             print(e)
-
+            
         cTime = time.time()
         fps = 1 / (cTime - self.pTime)
         self.pTime = cTime
-        cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
-        cv2.namedWindow("RobotSoccer1\tHit Escape to Exit")
-        cv2.imshow("RobotSoccer1\tHit Escape to Exit", img)
+        # cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
+        # cv2.namedWindow(f"RobotSoccer Robot{robot_id}\tHit Escape to Exit")
+        # cv2.imshow(f"RobotSoccer Robot{robot_id}\tHit Escape to Exit", img)
         return b_if_robot, robot_id      
 
     def check_circle_position(self,img_shape_x, img_shape_y, x, y):
@@ -999,29 +744,49 @@ class ImageProcessing():
 
     def getOrientation(self, circle_pack = None ):
         length_list = {}
-
-        length_list.update({ "1-2" : math.sqrt((circle_pack["1"][0] - circle_pack["2"][0])**2 + (circle_pack["1"][1] - circle_pack["2"][1])**2) })
-        length_list.update({ "1-3" : math.sqrt((circle_pack["1"][0] - circle_pack["3"][0])**2 + (circle_pack["1"][1] - circle_pack["3"][1])**2) })
-        length_list.update({ "1-4" : math.sqrt((circle_pack["1"][0] - circle_pack["4"][0])**2 + (circle_pack["1"][1] - circle_pack["4"][1])**2) })
-        length_list.update({ "2-3" : math.sqrt((circle_pack["2"][0] - circle_pack["3"][0])**2 + (circle_pack["2"][1] - circle_pack["3"][1])**2) })
-        length_list.update({ "2-4" : math.sqrt((circle_pack["2"][0] - circle_pack["4"][0])**2 + (circle_pack["2"][1] - circle_pack["4"][1])**2) })
-        length_list.update({ "3-4" : math.sqrt((circle_pack["3"][0] - circle_pack["4"][0])**2 + (circle_pack["3"][1] - circle_pack["4"][1])**2) })
-
-        print("##############################")
-        print(f'len_one:   {length_list["1-2"]}')
-        print(f'len_two:   {length_list["1-3"]}')
-        print(f'len_three: {length_list["1-4"]}')
-        print(f'len_four:  {length_list["2-3"]}')
-        print(f'len_five:  {length_list["2-4"]}')
-        print(f'len_six:   {length_list["3-4"]}')
-        print("##############################")
+        if 'prime' in circle_pack.keys():
+            circle_keys = list(circle_pack.keys())
+            # circle_keys = 1
+            print(circle_pack.keys())
+            length_list.update({ f"{circle_keys[0]}-{circle_keys[1]}" : math.sqrt((circle_pack[circle_keys[0]][0] - circle_pack[circle_keys[1]][0])**2 + (circle_pack[circle_keys[0]][1] - circle_pack[circle_keys[1]][1])**2) })
+            length_list.update({ f"{circle_keys[0]}-{circle_keys[2]}" : math.sqrt((circle_pack[circle_keys[0]][0] - circle_pack[circle_keys[2]][0])**2 + (circle_pack[circle_keys[0]][1] - circle_pack[circle_keys[2]][1])**2) })
+            length_list.update({ f"{circle_keys[0]}-{circle_keys[3]}" : math.sqrt((circle_pack[circle_keys[0]][0] - circle_pack[circle_keys[3]][0])**2 + (circle_pack[circle_keys[0]][1] - circle_pack[circle_keys[3]][1])**2) })
+            length_list.update({ f"{circle_keys[1]}-{circle_keys[2]}" : math.sqrt((circle_pack[circle_keys[1]][0] - circle_pack[circle_keys[2]][0])**2 + (circle_pack[circle_keys[1]][1] - circle_pack[circle_keys[2]][1])**2) })
+            length_list.update({ f"{circle_keys[1]}-{circle_keys[3]}" : math.sqrt((circle_pack[circle_keys[1]][0] - circle_pack[circle_keys[3]][0])**2 + (circle_pack[circle_keys[1]][1] - circle_pack[circle_keys[3]][1])**2) })
+            length_list.update({ f"{circle_keys[2]}-{circle_keys[3]}" : math.sqrt((circle_pack[circle_keys[2]][0] - circle_pack[circle_keys[3]][0])**2 + (circle_pack[circle_keys[2]][1] - circle_pack[circle_keys[3]][1])**2) })
+            if ImageProcessing.PRINT_DEBUG:
+                print("##############################")
+                print(f'len_all:   {length_list}')
+                print("##############################")
+        else:
+            length_list.update({ "1-2" : math.sqrt((circle_pack["1"][0] - circle_pack["2"][0])**2 + (circle_pack["1"][1] - circle_pack["2"][1])**2) })
+            length_list.update({ "1-3" : math.sqrt((circle_pack["1"][0] - circle_pack["3"][0])**2 + (circle_pack["1"][1] - circle_pack["3"][1])**2) })
+            length_list.update({ "1-4" : math.sqrt((circle_pack["1"][0] - circle_pack["4"][0])**2 + (circle_pack["1"][1] - circle_pack["4"][1])**2) })
+            length_list.update({ "2-3" : math.sqrt((circle_pack["2"][0] - circle_pack["3"][0])**2 + (circle_pack["2"][1] - circle_pack["3"][1])**2) })
+            length_list.update({ "2-4" : math.sqrt((circle_pack["2"][0] - circle_pack["4"][0])**2 + (circle_pack["2"][1] - circle_pack["4"][1])**2) })
+            length_list.update({ "3-4" : math.sqrt((circle_pack["3"][0] - circle_pack["4"][0])**2 + (circle_pack["3"][1] - circle_pack["4"][1])**2) })
+            if ImageProcessing.PRINT_DEBUG:
+                print("##############################")
+                print(f'len_one:   {length_list["1-2"]}')
+                print(f'len_two:   {length_list["1-3"]}')
+                print(f'len_three: {length_list["1-4"]}')
+                print(f'len_four:  {length_list["2-3"]}')
+                print(f'len_five:  {length_list["2-4"]}')
+                print(f'len_six:   {length_list["3-4"]}')
+                print("##############################")
+        
         min_len = min(length_list, key=length_list.get)
-        #length_list = [len_one, len_two, len_three, len_four, len_five, len_six]
-        #length_list = sorted(length_list)
-        print(min_len)
-        print(circle_pack[min_len[:1]])
-        print(circle_pack[min_len[-1:]])
-        angle = 0
+        length_list = sorted(length_list)
+        if 'prime' in circle_pack.keys():
+            min_length_list = [min_len[:1], min_len[-5:]]
+        else:
+            min_length_list = [min_len[:1], min_len[-1:]]
+        # print(f'min_length_list : {min_length_list}')
+        # print(f'min_len: {min_len}')
+        
+        angle = self.angle_between_circle(min_length_list, circle_pack)
+        print(f'The final Angle is : {angle}')
+        ImageProcessing.ANGLE = angle
         return angle
 
     def resize_frame(self, frame):
@@ -1057,24 +822,569 @@ class ImageProcessing():
         else:
             pass
 
-    def length(self, v):
-        return sqrt(v[0]**2+v[1]**2)
-    def dot_product(self, v,w):
-        return v[0]*w[0]+v[1]*w[1]
-    def determinant(self, v,w):
-        return v[0]*w[1]-v[1]*w[0]
-    def inner_angle(self, v,w):
-        cosx= self.dot_product(v,w)/(self.length(v)*self.length(w))
-        rad=acos(cosx) # in radians
-        return rad*180/pi # returns degrees
-    def angle_clockwise(self, A, B):
-        inner = self.inner_angle(A,B)
-        det   = self.determinant(A,B)
-        if det<0: #this is a property of the det. If the det < 0 then B is clockwise of A
-            return inner
-        else: # if the det > 0 then A is immediately clockwise of B
-            return 360-inner
+    def gradient(self, pt1 ,pt2):
+        return(pt2[1] - pt1[1])/ (pt2[0] - pt1[0]) 
 
+    def getAngle(self, PT1 = None, PT2 = None, PT3 = None):
+        pt1 = PT1
+        pt2 = PT2
+        pt3 = PT3
+        print(pt1, pt2, pt3)
+        n1 = self.gradient(pt1 , pt2)
+        n2 = self.gradient(pt1 ,pt3)
+        angleR = math.atan((n2 - n1)/(1 + (n2*n1)))
+        angleD = round(math.degrees(angleR))
+        return angleD
+
+    def angle_between_circle(self, lst_min_line_order = None, lst_min_line =  None):
+
+        print(lst_min_line_order)
+        print(lst_min_line)
+
+        ''' Durchmesser ist Ungültig '''
+        if lst_min_line_order[0] == '1' and lst_min_line_order[0] == '3':
+            return None
+        if lst_min_line_order[0] == '3' and lst_min_line_order[0] == '1':
+            return None
+        if lst_min_line_order[0] == '2' and lst_min_line_order[0] == '4':
+            return None
+        if lst_min_line_order[0] ==  '4' and lst_min_line_order[0] == '2':
+            return None
+
+        ''' first assumption '''
+        # # first assumption # #
+        if lst_min_line_order[0] == "1" and lst_min_line_order[1] == "2":
+            print("first assumption 1")
+            if lst_min_line["1"][0] > lst_min_line["2"][0]:
+                if lst_min_line["1"][1] > lst_min_line["2"][1]:
+                    print("1 is right and down")
+                    print("2 is left and up")
+                    Angle = self.getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                    Angle =  ( 180 + Angle ) * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("1 is right and up")
+                    print("2 is left and down")
+                    Angle = self.getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                    Angle =  ( 180 + Angle ) * -1
+                    print(Angle)
+                    return Angle
+
+            else:
+                print("THIS CONFIG IS NOT POSSIBLE !!!")
+
+        if lst_min_line_order[1] == "1" and lst_min_line_order[0] == "2":
+            print("first assumption 2")
+            if lst_min_line["1"][0] > lst_min_line["2"][0]:
+                if lst_min_line["1"][1] > lst_min_line["2"][1]:
+                    print("1 is right and down")
+                    print("2 is left and up")
+                    Angle = self.getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                    Angle =  ( 180 + Angle ) * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("1 is right and up")
+                    print("2 is left and down")
+                    Angle = self.getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                    Angle =  ( 180 + Angle ) * -1
+                    print(Angle)
+                    return Angle
+
+            else:
+                print("THIS CONFIG IS NOT POSSIBLE !!!")
+
+
+        ''' second assumption '''
+        # # second assumption # #
+        if lst_min_line_order[0] == "3" and lst_min_line_order[1] == "2":
+            print("second assumption 1")
+            if lst_min_line["2"][0] < lst_min_line["3"][0]:
+                if lst_min_line["2"][1] < lst_min_line["3"][1]:
+                    print("2 is up and back")
+                    print("3 is down and frot")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                    PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                    PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+                    
+                    
+                else:
+                    print("2 is down and back")
+                    print("3 is up and front")
+                    print("THIS CONFIG IS NOT POSSIBLE !!!")
+                    
+            else:
+                if lst_min_line["2"][1] < lst_min_line["3"][1]:
+                    print("2 is up and front")
+                    print("3 is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                    PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                    PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                    Angle = 90 - Angle + 90
+                    print(Angle)
+                    return Angle
+                
+
+        if lst_min_line_order[1] == "3" and lst_min_line_order[0] == "2":
+            print("second assumption 2")
+            if lst_min_line["2"][0] < lst_min_line["3"][0]:
+                if lst_min_line["2"][1] < lst_min_line["3"][1]:
+                    print("2 is up and back")
+                    print("3 is down and frot")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                    PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                    PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+                    
+                    
+                else:
+                    print("2 is down and back")
+                    print("3 is up and front")
+                    print("THIS CONFIG IS NOT POSSIBLE !!!")
+                    
+            else:
+                if lst_min_line["2"][1] < lst_min_line["3"][1]:
+                    print("2 is up and front")
+                    print("3 is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                    PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                    PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                    Angle = 90 - Angle + 90
+                    print(Angle)
+                    return Angle
+                
+        ''' third assumption '''
+        # # third assumption # #
+        if lst_min_line_order[0] == "3" and lst_min_line_order[1] == "4":
+            print("third assumption 1")
+            if lst_min_line["3"][0] < lst_min_line["4"][0]:
+                if lst_min_line["3"][1] < lst_min_line["4"][1]:
+                    print("3 is up and back")
+                    print("4 is down and front")
+                    # TODO: Check the 10 degree error
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                    PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("3 is down and back")
+                    print("4 is up and front")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                    PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+            else:
+                print("THIS IS NOT POSSIBLE!!")
+
+        if lst_min_line_order[1] == "3" and lst_min_line_order[0] == "4":
+            print("third assumption 2")
+            if lst_min_line["3"][0] < lst_min_line["4"][0]:
+                if lst_min_line["3"][1] < lst_min_line["4"][1]:
+                    print("3 is up and back")
+                    print("4 is down and front")
+                    # TODO: Check the 10 degree error
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                    PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("3 is down and back")
+                    print("4 is up and front")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                    PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+            else:
+                print("THIS IS NOT POSSIBLE!!")
+                    
+        ''' fourth assumption '''
+        # # fourth assumption # #
+        if lst_min_line_order[0] == "4"  and lst_min_line_order[1] == "1":
+            print("fourth assumption 1")
+            if lst_min_line["1"][0] > lst_min_line["4"][0]:
+                if lst_min_line["1"][1] < lst_min_line["4"][1]:
+                    print("1 is up and front")
+                    print("4 is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("1 is up and back")
+                print("4 is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+                Angle = ( Angle + 90 + 90 ) * -1
+                print(Angle)
+                return Angle
+        
+        if lst_min_line_order[1] == "4" and lst_min_line_order[0] == "1":
+            print("fourth assumption 2")
+            if lst_min_line["1"][0] > lst_min_line["4"][0]:
+                if lst_min_line["1"][1] < lst_min_line["4"][1]:
+                    print("1 is up and front")
+                    print("4 is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+                    Angle = Angle * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("1 is up and back")
+                print("4 is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                    PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                    PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+                Angle = ( Angle + 90 + 90 ) * -1
+                print(Angle)
+                return Angle
+            
+        ''' fifth assumption '''
+        # # fifth assumption # #
+        if lst_min_line_order[0] == "1"  and lst_min_line_order[1] == "prime":
+            print("fifth assumption 1")
+            if lst_min_line["1"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["1"][1] > lst_min_line["prime"][1]:
+                    print("1 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                          PT3 = [lst_min_line["1"][0], lst_min_line["prime"][1]])
+                    Angle = ( 180 + Angle ) * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("1 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                      PT3 = [lst_min_line["1"][0], lst_min_line["prime"][1]])
+                Angle = ( 180 + Angle ) * -1
+                print(Angle)
+                return Angle
+            
+        if lst_min_line_order[0] == "prime"  and lst_min_line_order[1] == "1":
+            print("fifth assumption 2")
+            if lst_min_line["1"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["1"][1] > lst_min_line["prime"][1]:
+                    print("1 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                          PT3 = [lst_min_line["1"][0], lst_min_line["prime"][1]])
+                    Angle = ( 180 + Angle ) * -1
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("1 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                      PT3 = [lst_min_line["1"][0], lst_min_line["prime"][1]])
+                Angle = ( 180 + Angle ) * -1
+                print(Angle)
+                return Angle
+            
+        ''' seventh assumption '''
+        # # seventh assumption # #
+        if lst_min_line_order[0] == "2"  and lst_min_line_order[1] == "prime":
+            print("seventh assumption 1")
+            if lst_min_line["2"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["2"][1] < lst_min_line["prime"][1]:
+                    print("2 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                          PT3 = [lst_min_line["2"][0], lst_min_line["prime"][1]])
+                    Angle = ( 90 - Angle ) + 90
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("2 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                      PT3 = [lst_min_line["2"][0], lst_min_line["prime"][1]])
+                Angle = ( 90 - Angle ) + 90
+                print(Angle)
+                return Angle
+            
+        if lst_min_line_order[0] == "prime"  and lst_min_line_order[1] == "2":
+            print("seventh assumption 2")
+            if lst_min_line["2"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["2"][1] < lst_min_line["prime"][1]:
+                    print("2 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                          PT3 = [lst_min_line["2"][0], lst_min_line["prime"][1]])
+                    Angle = ( 90 - Angle ) + 90
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("2 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                      PT3 = [lst_min_line["2"][0], lst_min_line["prime"][1]])
+                Angle = ( 90 - Angle ) + 90
+                print(Angle)
+                return Angle
+            
+        ''' Eighth assumption '''
+        # # Eighth assumption # #
+        if lst_min_line_order[0] == "3"  and lst_min_line_order[1] == "prime":
+            print("Eighth assumption 1")
+            if lst_min_line["3"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["3"][1] < lst_min_line["prime"][1]:
+                    print("3 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                          PT3 = [lst_min_line["prime"][0], lst_min_line["3"][1]])
+                    Angle = Angle * -1 
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("3 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                      PT3 = [lst_min_line["3"][0], lst_min_line["prime"][1]])
+                # Angle = ( 90 + Angle ) + 90
+                Angle = Angle * -1 
+                print(Angle)
+                return Angle
+            
+        if lst_min_line_order[0] == "prime"  and lst_min_line_order[1] == "3":
+            print("Eighth assumption 2")
+            if lst_min_line["3"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["3"][1] < lst_min_line["prime"][1]:
+                    print("3 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                          PT3 = [lst_min_line["3"][0], lst_min_line["prime"][1]])
+                    Angle = Angle * -1 
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("3 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                      PT3 = [lst_min_line["3"][0], lst_min_line["prime"][1]])
+                Angle = Angle * -1 
+                print(Angle)
+                return Angle
+            
+        ''' Ninth assumption '''
+        # # Ninth assumption # #
+        if lst_min_line_order[0] == "4"  and lst_min_line_order[1] == "prime":
+            print("Ninth assumption 1")
+            if lst_min_line["4"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["4"][1] < lst_min_line["prime"][1]:
+                    print("4 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["4"][0], lst_min_line["4"][1]], #
+                                          PT3 = [lst_min_line["4"][0], lst_min_line["prime"][1]])
+                    Angle = Angle * -1 
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("4 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["4"][0], lst_min_line["4"][1]], #
+                                      PT3 = [lst_min_line["4"][0], lst_min_line["prime"][1]])
+                # Angle = ( 90 + Angle ) + 90
+                Angle = Angle * -1 
+                print(Angle)
+                return Angle
+            
+        if lst_min_line_order[0] == "prime"  and lst_min_line_order[1] == "4":
+            print("Ninth assumption 2")
+            if lst_min_line["4"][0] > lst_min_line["prime"][0]:
+                if lst_min_line["4"][1] < lst_min_line["prime"][1]:
+                    print("4 is up and front")
+                    print("prime is down and back")
+                    # FIXED
+                    Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                          PT2 = [lst_min_line["4"][0], lst_min_line["4"][1]], #
+                                          PT3 = [lst_min_line["4"][0], lst_min_line["prime"][1]])
+                    Angle = Angle * -1 
+                    print(Angle)
+                    return Angle
+                else:
+                    print("THIS IS NOT POSSIBLE!!")
+            else:
+                print("4 is up and back")
+                print("prime is down and front")
+                # FIXED
+                Angle = self.getAngle(PT1 = [lst_min_line["prime"][0], lst_min_line["prime"][1]], # 
+                                      PT2 = [lst_min_line["4"][0], lst_min_line["4"][1]], #
+                                      PT3 = [lst_min_line["4"][0], lst_min_line["prime"][1]])
+                Angle = Angle * -1 
+                print(Angle)
+                return Angle
+            
+        return None
+    
+    def match_robot(self, img):
+        # constants
+        num_of_circle   = 0
+        num_of_red      = 0
+        num_of_green    = 0
+        
+        num_x_cor   = {'green' : [],
+                        'red'  : []}
+        
+        circle_pack = {"1":     [],
+                       "2":     [],
+                       "3":     [],
+                       "4":     []}
+        
+        frame_hsv       = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        
+        low_red         = np.array([126, 40, 140], np.uint8)
+        upper_red       = np.array([180, 255, 255], np.uint8)
+                        
+        # Color: green
+        low_green       = np.array([0,  90 , 150], np.uint8)
+        upper_green     = np.array([75, 255, 255], np.uint8)
+
+                
+        # define masks
+        mask_red        = cv2.inRange(frame_hsv, low_red        ,upper_red)
+        mask_green      = cv2.inRange(frame_hsv, low_green      ,upper_green)
+
+        contours_red    = cv2.findContours(mask_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_red    = imutils.grab_contours(contours_red)
+
+        contours_green  = cv2.findContours(mask_green.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+        contours_green  = imutils.grab_contours(contours_green)
+
+        are_of_circle_min = img.shape[0]/13
+        are_of_circle_max = img.shape[0]/6
+
+        are_of_circle_min = pi*are_of_circle_min**2
+        are_of_circle_max = pi*are_of_circle_max**2
+
+        print(f'area_min: {are_of_circle_min}')
+        print(f'area_max: {are_of_circle_max}')
+        list_circle_cordinate = []             
+        
+        """ contours for red area  """            
+        for contours in contours_red:
+            red_area = cv2.contourArea(contours)
+            # print(f"img.frame {img.shape}")
+            if red_area < are_of_circle_max and red_area > are_of_circle_min:
+                print(f"red_area {red_area}")
+                moment = cv2.moments(contours) # NOTE: check me again 
+                cx_red = int(moment["m10"]/moment["m00"])
+                cy_red = int(moment["m01"]/moment["m00"])
+                if cx_red > img.shape[0]/2 and cy_red < img.shape[1]/2:
+                    circle_pack['1'] = "red"
+                if cx_red < img.shape[0]/2 and cy_red < img.shape[1]/2:
+                    circle_pack['2'] = "red"
+                if cx_red < img.shape[0]/2 and cy_red > img.shape[1]/2:
+                    circle_pack['3'] = "red"
+                if cx_red > img.shape[0]/2 and cy_red > img.shape[1]/2:
+                    circle_pack['4'] = "red"
+
+        list_circle_cordinate.clear()
+        """ contours for green area """             
+        for contours in contours_green:
+            green_area = cv2.contourArea(contours)
+            if green_area < are_of_circle_max and green_area > are_of_circle_min:
+                moment = cv2.moments(contours) # NOTE: check me again 
+                print(f"green_area {green_area}")
+                cx_green = int(moment["m10"]/moment["m00"])
+                cy_green = int(moment["m01"]/moment["m00"])
+                if cx_green > img.shape[0]/2 and cy_green < img.shape[1]/2:
+                    circle_pack['1'] = "green"
+                if cx_green < img.shape[0]/2 and cy_green < img.shape[1]/2:
+                    circle_pack['2'] = "green"
+                if cx_green < img.shape[0]/2 and cy_green > img.shape[1]/2:
+                    circle_pack['3'] = "green"
+                if cx_green > img.shape[0]/2 and cy_green > img.shape[1]/2:
+                    circle_pack['4'] = "green"
+
+        print(circle_pack)
+        cv2.namedWindow(f"RobotSoccer Robot{0}\tHit Escape to Exit")
+        cv2.imshow(f"RobotSoccer Robot{0}\tHit Escape to Exit", img)
+    
     def finish_capturing(self):
         cv2.destroyAllWindows()
 

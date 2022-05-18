@@ -45,7 +45,8 @@ class ImageProcessing():
     ROTATE_ROBOT_IMAGE              = True
     PRINT_DEBUG                     = False
     SHOW_MAIN_FIELD                 = True
-    ANGLE                           = 166
+    CAPTURE_ONE_ROBOT_IMAGE         = False
+    ANGLE                           = 0
 
 
     def __init__(self):
@@ -175,6 +176,8 @@ class ImageProcessing():
                     threads = threading.Thread(target= self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue))    
                     threads.start()
                     thread_list.append(threads)
+                    if ImageProcessing.CAPTURE_ONE_ROBOT_IMAGE:
+                        break
             
             for thread in thread_list:
                 thread.join()

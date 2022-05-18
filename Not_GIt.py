@@ -31,10 +31,10 @@ list_circle_position = [[19, 11],
                         [12, 30],
                         [12, 11]] 
 
-list_circle_position = {'1' : [41, 18], 
-                        '2' : [19, 11], 
-                        '3' : [12, 30], 
-                        '4' : [31, 42]}
+list_circle_position = {'1' : [31,  7], 
+                        '2' : [11, 12], 
+                        '3' : [11, 38], 
+                        '4' : [41, 33]}
 
 # Pint 2 and 3
 
@@ -42,7 +42,7 @@ point_one = 1
 
 
 
-lst_min_line = {210: ["1","3"], 120:["1","2"],  point_one:["2","3"], 800:["4","3"]}
+lst_min_line = {985: ["1","3"], point_one:["1","2"],  800:["2","3"], 500:["4","3"], 1235: ["4","1"]}
 
 
 
@@ -72,7 +72,7 @@ def getAngle(PT1 = None, PT2 = None, PT3 = None):
     n2 = gradient(pt1 ,pt3)
     angleR = math.atan((n2 - n1)/(1 + (n2*n1)))
     angleD = round(math.degrees(angleR))
-    print(angleD)
+    return angleD
 
 
 def angle_between_circle(lst_min_line_order = None, lst_min_line =  None):
@@ -100,45 +100,72 @@ def angle_between_circle(lst_min_line_order = None, lst_min_line =  None):
 
     ''' first assumption '''
     # # first assumption # #
-
     if lst_min_line_order[0] == "1" and lst_min_line_order[1] == "2":
         print("first assumption 1")
-        if lst_min_line["1"][1] < lst_min_line["2"][1]:
-            print("1 is up")
+        if lst_min_line["1"][0] > lst_min_line["2"][0]:
+            if lst_min_line["1"][1] > lst_min_line["2"][1]:
+                print("1 is right and down")
+                print("2 is left and up")
+                Angle = getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                 PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                 PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                Angle = Angle + 180 
+                print(Angle)
+                return Angle
+            else:
+                print("1 is right and up")
+                print("2 is left and down")
+                Angle = getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                 PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                 PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                Angle = 180 - Angle 
+                print(Angle)
+                return Angle
 
         else:
-            print("2 is up")
+            print("THIS CONFIG IS NOT POSSIBLE !!!")
 
     if lst_min_line_order[1] == "1" and lst_min_line_order[0] == "2":
         print("first assumption 2")
+        if lst_min_line["1"][0] > lst_min_line["2"][0]:
+            if lst_min_line["1"][1] > lst_min_line["2"][1]:
+                print("1 is right and down")
+                print("2 is left and up")
+                Angle = getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                 PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                 PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                Angle = Angle + 180 
+                print(Angle)
+                return Angle
+            else:
+                print("1 is right and up")
+                print("2 is left and down")
+                Angle = getAngle(PT1 = [lst_min_line["2"][0], lst_min_line["2"][1]], # 
+                                 PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                 PT3 = [lst_min_line["1"][0], lst_min_line["2"][1]])
+                Angle = 180 - Angle 
+                print(Angle)
+                return Angle
 
+        else:
+            print("THIS CONFIG IS NOT POSSIBLE !!!")
 
 
     ''' second assumption '''
     # # second assumption # #
     if lst_min_line_order[0] == "3" and lst_min_line_order[1] == "2":
         print("second assumption 1")
-        # TODO: Check if added by 90 degree is correct in both side
-        if lst_min_line["2"][0] < lst_min_line["3"][0]:
-            if lst_min_line["2"][1] < lst_min_line["3"][1]:
-                print("2 is up and BACK")
-                print("3 is down and FRONT")
-            else:
-                print("This Condition is not possible !!")
-        else:
-            print("2 is up and FRONT")
-            print("3 is down and BACK")
-            getAngle(PT1= [lst_min_line["3"][0], lst_min_line["3"][1]],
-                     PT2= [lst_min_line["2"][0], lst_min_line["2"][1]],
-                     PT3= [lst_min_line["3"][0], lst_min_line["2"][1]])
-            
-
-    if lst_min_line_order[1] == "3" and lst_min_line_order[0] == "2":
-        print("second assumption 2")
         if lst_min_line["2"][0] < lst_min_line["3"][0]:
             if lst_min_line["2"][1] < lst_min_line["3"][1]:
                 print("2 is up and back")
                 print("3 is down and frot")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                 PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                 PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
                 
                 
             else:
@@ -150,122 +177,162 @@ def angle_between_circle(lst_min_line_order = None, lst_min_line =  None):
             if lst_min_line["2"][1] < lst_min_line["3"][1]:
                 print("2 is up and front")
                 print("3 is down and back")
-                # FIXED:
-                getAngle(PT1= [lst_min_line["3"][0], lst_min_line["3"][1]],
-                         PT2= [lst_min_line["2"][0], lst_min_line["2"][1]],
-                         PT3= [lst_min_line["2"][0], lst_min_line["3"][1]])
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                 PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                 PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                Angle = 90 - Angle + 90
+                print(Angle)
+                return Angle
+            
 
+    if lst_min_line_order[1] == "3" and lst_min_line_order[0] == "2":
+        print("second assumption 2")
+        if lst_min_line["2"][0] < lst_min_line["3"][0]:
+            if lst_min_line["2"][1] < lst_min_line["3"][1]:
+                print("2 is up and back")
+                print("3 is down and frot")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                 PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                 PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
+                
+                
+            else:
+                print("2 is down and back")
+                print("3 is up and front")
+                print("THIS CONFIG IS NOT POSSIBLE !!!")
+                
+        else:
+            if lst_min_line["2"][1] < lst_min_line["3"][1]:
+                print("2 is up and front")
+                print("3 is down and back")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["3"][0], lst_min_line["3"][1]], # 
+                                 PT2 = [lst_min_line["2"][0], lst_min_line["2"][1]], #
+                                 PT3 = [lst_min_line["2"][0], lst_min_line["3"][1]])
+                Angle = 90 - Angle + 90
+                print(Angle)
+                return Angle
+            
     ''' third assumption '''
     # # third assumption # #
     if lst_min_line_order[0] == "3" and lst_min_line_order[1] == "4":
-        print("third assumption")
-        if lst_min_line["3"][1] < lst_min_line["4"][1]:
-            if lst_min_line["3"][0] < lst_min_line["4"][0]:
+        print("third assumption 1")
+        if lst_min_line["3"][0] < lst_min_line["4"][0]:
+            if lst_min_line["3"][1] < lst_min_line["4"][1]:
                 print("3 is up and back")
                 print("4 is down and front")
                 # TODO: Check the 10 degree error
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                 PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                 PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
             else:
                 print("3 is down and back")
                 print("4 is up and front")
-                print("THIS IS NOT POSSIBLE!!")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                 PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                 PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
         else:
-            if lst_min_line["3"][0] > lst_min_line["4"][0]:
-                print("3 is up and back")
-                print("4 is down and front")
-                print("THIS IS NOT POSSIBLE!!")
+            print("THIS IS NOT POSSIBLE!!")
 
     if lst_min_line_order[1] == "3" and lst_min_line_order[0] == "4":
-        print("third assumption")
-        if lst_min_line["3"][1] < lst_min_line["4"][1]:
-            if lst_min_line["3"][0] < lst_min_line["4"][0]:
+        print("third assumption 2")
+        if lst_min_line["3"][0] < lst_min_line["4"][0]:
+            if lst_min_line["3"][1] < lst_min_line["4"][1]:
                 print("3 is up and back")
                 print("4 is down and front")
                 # TODO: Check the 10 degree error
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                 PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                 PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
             else:
                 print("3 is down and back")
                 print("4 is up and front")
-                print("THIS IS NOT POSSIBLE!!")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                 PT2 = [lst_min_line["3"][0], lst_min_line["3"][1]], #
+                                 PT3 = [lst_min_line["3"][0], lst_min_line["4"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
         else:
-            if lst_min_line["3"][0] > lst_min_line["4"][0]:
-                print("3 is up and back")
-                print("4 is down and front")
-                print("THIS IS NOT POSSIBLE!!")
+            print("THIS IS NOT POSSIBLE!!")
                 
         ''' fourth assumption '''
         # # fourth assumption # #
-    if lst_min_line_order[0] == "4"  and lst_min_line_order[1] == "2":
-        print("fourth assumption")
-        if lst_min_line_order[1] == "4" and lst_min_line_order[0] == "2":
-            print("fourth assumption")
+    if lst_min_line_order[0] == "4"  and lst_min_line_order[1] == "1":
+        print("fourth assumption 1")
+        if lst_min_line["1"][0] > lst_min_line["4"][0]:
+            if lst_min_line["1"][1] < lst_min_line["4"][1]:
+                print("1 is up and front")
+                print("4 is down and back")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                 PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                 PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
+            else:
+                print("THIS IS NOT POSSIBLE!!")
+        else:
+            print("1 is up and back")
+            print("4 is down and front")
+            print("1 is up and front")
+            print("4 is down and back")
+            # FIXED
+            Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+            Angle = ( Angle + 90 + 90 ) * -1
+            print(Angle)
+            return Angle
+    
+    if lst_min_line_order[1] == "4" and lst_min_line_order[0] == "1":
+        print("fourth assumption 2")
+        if lst_min_line["1"][0] > lst_min_line["4"][0]:
+            if lst_min_line["1"][1] < lst_min_line["4"][1]:
+                print("1 is up and front")
+                print("4 is down and back")
+                # FIXED
+                Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                 PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                 PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+                Angle = Angle * -1
+                print(Angle)
+                return Angle
+            else:
+                print("THIS IS NOT POSSIBLE!!")
+        else:
+            print("1 is up and back")
+            print("4 is down and front")
+            print("1 is up and front")
+            print("4 is down and back")
+            # FIXED
+            Angle = getAngle(PT1 = [lst_min_line["4"][0], lst_min_line["4"][1]], # 
+                                PT2 = [lst_min_line["1"][0], lst_min_line["1"][1]], #
+                                PT3 = [lst_min_line["1"][0], lst_min_line["4"][1]])
+            Angle = ( Angle + 90 + 90 ) * -1
+            print(Angle)
+            return Angle
 
 
 
 
 angle_between_circle(list(lst_min_line_order.items())[0][1], list_circle_position)
-
-
-list_circle_position_1 = [[58, 29],
-                          [17, 43],
-                          [10, 23]]
-
-
-list_circle_position_2 = [[11, 38],
-                          [31, 42],
-                          [31, 38]] # 11, 38
-# 11, 38
-
-list_circle_position_optimal = [[0, 0],
-                                [35, 41],
-                                [14, 41]]
-
-# getAngle(list_circle_position_optimal)points = []
-#img = np.zeros((512,512,3), np.uint8)
-
-'''
-img = cv2.imread('ee.jpg',3)
-points = []
-def draw(event, x,y, flags, params):
-
-    if event==cv2.EVENT_LBUTTONDOWN:
-        points.append([x, y])
-        cv2.circle(img, (x,y), 5, (255,0,0), -1)
-        if (len(points)!=0) :
-            cv2.arrowedLine(img, tuple(points[0]),(x,y), (255,0,0),3)
-        cv2.imshow('image', img)
-        print(points)
-        if len(points)%3==0:
-            degrees = angle()
-
-            print(abs(degrees))
-
-
-def angle():
-    a = points[-2]
-    b = points[-3]
-    c = points[-1]
-
-    m1 = slope(b,a)
-    m2 = slope(b,c)
-    angle = math.atan((m2-m1)/1+m1*m2)
-    angle = round(math.degrees(angle))
-    if angle<0:
-        angle = 180+angle
-    cv2.putText(img, str((angle)), (b[0]-40,b[1]+40), cv2.FONT_HERSHEY_DUPLEX, 2,(0,0,255),2,cv2.LINE_AA)
-    cv2.imshow('image',img)
-    return angle
-
-def slope(p1,p2):
-    return (p2[1]-p1[1])/(p2[0]-p1[0])
-
-while True:
-    cv2.imshow('image', img)
-    cv2.setMouseCallback('image', draw)
-    if cv2.waitKey(1)&0xff==ord('r'):
-        #img = np.zeros((512,512,3), np.uint8)
-        img = cv2.imread('protractor.jpg', 3)
-        points=[]
-        cv2.imshow('image', img)
-        cv2.setMouseCallback('image', draw)
-    if cv2.waitKey(1)&0xff==ord('q'):
-        break
-'''

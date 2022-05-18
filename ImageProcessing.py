@@ -11,7 +11,7 @@ import argparse
 from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import math
-from threading import Thread
+import threading
 
 
 #from HSV_Color_Picker import #
@@ -42,9 +42,9 @@ class ImageProcessing():
     MASK_COLOR_THRESHOLD            = True
     CIRCLE_ID_COLOR_BY_CORDINATE    = True
     CENTER_CORDINATE                = False
-    ROTATE_ROBOT_IMAGE              = False
+    ROTATE_ROBOT_IMAGE              = True
     PRINT_DEBUG                     = False
-    SHOW_MAIN_FIELD                 = False
+    SHOW_MAIN_FIELD                 = True
     ANGLE                           = 166
 
 
@@ -139,7 +139,7 @@ class ImageProcessing():
             cy_blue = 0 
             moment = 0
             i = 0
-            
+            thread_list = []
             """ contours for blue area """
             for contours in contours_blue:
                 blue_area = cv2.contourArea(contours)
@@ -169,9 +169,15 @@ class ImageProcessing():
                     angles = [a*180/np.pi for a in angle]
                     angle_difference = np.max(angles) - np.min(angles)
                     # print(f"angle_difference: {angle_difference}")
-                    self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue)
+                    # self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue)
                     #self.detect_robot_location(cy_blue, cx_blue, robot_num) 
                     robot_num += 1
+                    threads = threading.Thread(target= self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue))    
+                    threads.start()
+                    thread_list.append(threads)
+            
+            for thread in thread_list:
+                thread.join()
         except Exception as e:
             print(e)
                         

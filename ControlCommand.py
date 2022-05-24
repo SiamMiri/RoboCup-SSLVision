@@ -2,7 +2,6 @@ import json
 import cv2
 from ImageProcessing import imgProc
 
-
 # load json file as dictionary in python
 def load_json_config_file():
     """ with this function you can load json file """
@@ -16,6 +15,8 @@ def load_json_config_file():
         print(e)
         data = None
 
+    print(data["CameraConfig"])
+    print(data["FrameConfig"])
     return data
 
 

@@ -8,9 +8,9 @@
 # TODO: 3- Find Robot oriantation in the field
 # TODO: 4- Find Robot ball position (similar to robot position)
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
-
 from ControlCommand import *
-from HSV_Color_Picker import HSV_COLOR_PICKER as HSVColorPicker
+from HSV_Color_Picker import HSV_COLOR_PICKER
+import time
 
 
 # Definition of slots in this class are for futures if there were need to use GUI
@@ -22,21 +22,28 @@ class CaptureImage:
         self.robot_id           = None                         # Robot Id base on Color
         self.robot_location     = None                   # Robot location on the field
         self.robot_orientation  = None                # Robot orientation
+        self.imgProc            = None
 
     def __del__(self):
         """ Destroy All the class objects """
-        finish_capturing_command(self)
+        # finish_capturing_command(self)
+        pass
     def slot_start_capturing(self):
         """ start capturing """
         start_capturing_command(self)
 
     def slot_finish_capturing(self):
         """ Delete Cv2 class to empty the buffer """
-        finish_capturing_command(self)
-
-
+        # finish_capturing_command(self)
+        pass
+ 
 if __name__ == "__main__":   
     cam = CaptureImage()
     cam.slot_start_capturing()
-    # HSVColor = HSVColorPicker()
-    # HSVColor.color_picker(frame=0)
+    # HSVColor = HSV_COLOR_PICKER()
+    # HSV_Color_Selection = HSVColor.color_picker()
+    # # # del HSVColor
+    # time.sleep(1)
+    # if HSV_Color_Selection:
+    #     cam = CaptureImage()
+    #     cam.slot_start_capturing()

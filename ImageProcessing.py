@@ -12,6 +12,14 @@ from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import math
 import threading
+import logging
+import multiprocessing
+from multiprocessing.context import Process
+import time
+import random
+
+from sklearn.datasets import load_sample_image
+#from UDPComminucation import UDP_COMMINUCATION
 
 
 #from HSV_Color_Picker import #
@@ -42,16 +50,25 @@ class ImageProcessing():
     MASK_COLOR_THRESHOLD            = True
     CIRCLE_ID_COLOR_BY_CORDINATE    = True
     CENTER_CORDINATE                = False
-    ROTATE_ROBOT_IMAGE              = True
-    PRINT_DEBUG                     = False
+    ROTATE_ROBOT_IMAGE              = False
+    PRINT_DEBUG                     = True
     SHOW_MAIN_FIELD                 = True
+    SHOW_ROBOTS_IN_NEW_WINDOW       = True
     CAPTURE_ONE_ROBOT_IMAGE         = False
+    FIND_ROBOT_AND_BALL             = True
+    LOAD_IMAGE                      = True 
     ANGLE                           = 0
+    
+    ## NOT DONE
+    SHOW_ROBOT_INFO_IN_MAIN_FRAME   = False
+    SHOW_BALL_INFO_IN_MAIN_FRAME    = False
+    GRAY_SCALE_IMAGE_PROCCESSING    = True
+    
+    ## Image Path
+    IMAGE_PATH                      = "HalfFrame.jpg"
 
 
     def __init__(self):
-        
-        self.camera_capture = cv2.VideoCapture(0)
 
         self.pTime = 0
         self.robot_center_pos = None
@@ -67,8 +84,10 @@ class ImageProcessing():
         self.pose = mpPose.Pose()
 
     def start_capturing(self, camera_config: json):
+        cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        self.camera_capture = cv2.VideoCapture(0) #
         """ Start capturing get camera config from start_capturing_command """
-        self.set_camera_config(camera_config, Fps=False, Res=False, Focus=False)
+        self.set_camera_config(camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
 
         # Set Pixel Value
         try:
@@ -80,32 +99,44 @@ class ImageProcessing():
             print(e)
 
         while True:
-        
-            # ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
-            # frame = cv2.imread("FieldTest_Left_Light_On_Daylight(hight).jpg")
-            frame = cv2.imread("FieldTest_AllLight_Off_Daylight(hight).jpg")
-            # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-            # frame = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-            # self.detect_robot_orientation(frame=frame)
-            # Aplied Filter GaussianBlur and Segmentation
-            frame = self.set_image_filter(frame = frame, Blur= False,  GaussianBlur = False, Segmentation = False, Res = False)
-
-            # Detect Robot 
-            frame =  self.detect_robot_id(frame = frame)
-            
-            # FIXME changed for working on images
-            # if not ret:
-            #     print("failed to grab frame")
-            #     break
-
             cTime = time.time()
+            if ImageProcessing.GRAY_SCALE_IMAGE_PROCCESSING:
+                if ImageProcessing.LOAD_IMAGE:
+                    frame = cv2.imread(ImageProcessing.IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
+                else:
+                    ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+                    
+                    if not ret:
+                        print("failed to grab frame")
+                        break
+                    frame = cv2.cvtColor( frame, cv2.COLOR_BGR2GRAY )
+                if ImageProcessing.FIND_ROBOT_AND_BALL:
+                    # Detect Robot 
+                    frame =  self.detect_robot_id_gray_scale(frame = frame)
+                    # frame =  self.detect_ball(frame = frame)
+                
+            else:
+                if ImageProcessing.LOAD_IMAGE:
+                    frame = cv2.imread(ImageProcessing.IMAGE_PATH)  
+                else:
+                    ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+                    if not ret:
+                        print("failed to grab frame")
+                        break
+                
+                if ImageProcessing.FIND_ROBOT_AND_BALL:
+                    # Detect Robot 
+                    frame, SSL_DetectionRobot =  self.detect_robot_id_HSV_scale(frame = frame)
+                    frame =  self.detect_ball(frame = frame) 
+                    print(SSL_DetectionRobot)
+                
+            
             fps = 1 / (cTime - self.pTime)
             self.pTime = cTime
-            cv2.putText(frame, str(int(fps)), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
+            cv2.putText(frame, str(abs(int(fps))), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
             # Creat windows for the frame
             if ImageProcessing.SHOW_MAIN_FIELD:
-                cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
                 cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
             
             k = cv2.waitKey(1)
@@ -119,32 +150,193 @@ class ImageProcessing():
                 print("Escape hit, closing...")
                 break
 
-    def detect_robot_id(self, frame: cv2.VideoCapture.read):
-        # Contants:
-        robot_num = 1
+    def detect_ball(self, frame: cv2.VideoCapture.read):
+        if_is_ball  = True
+        frame_hsv   = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
         try:
-            frame_hsv   = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # try to load the json file if exist
+            with open("Robo_Color_Config.json") as color_config:
+                color_range = json.load(color_config)
+            b_json = True
+        # Catch Err in this case might be naming diff in json file and print defined
+        except Exception as e:
+            b_json = False
+            color_range = None
+            print(e)
 
-            # Source: https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
-            # Color: blue
-            low_blue    = np.array([90, 150, 0], np.uint8)
-            upper_blue  = np.array([140, 255, 255], np.uint8)        
-            
-            
-            # define masks
-            mask_blue   = cv2.inRange(frame_hsv, low_blue       ,upper_blue)
+        if b_json == True:
+            try:
+                # Color: orange
+                low_orange             = np.array(color_range["Low_Orange"], np.uint8)
+                upper_orange           = np.array(color_range["Up_Orange"], np.uint8) 
+                        
+                # define masks
+                mask_orange            = cv2.inRange(frame_hsv, low_orange ,upper_orange)
 
-            contours_blue       = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
-            contours_blue       = imutils.grab_contours(contours_blue)
+                contours_orange        = cv2.findContours(mask_orange.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+                contours_orange        = imutils.grab_contours(contours_orange)
+            except Exception as e:
+                print(f'Could not open .json file {e}')
+                
+                
+        are_of_circle_min = frame.shape[0]/120
+        are_of_circle_max = frame.shape[0]/45
+
+        are_of_circle_min = pi*are_of_circle_min**2
+        are_of_circle_max = pi*are_of_circle_max**2
+        #if ImageProcessing.PRINT_DEBUG:
+        print(f"Orange_are_of_circle_min {are_of_circle_min}")
+        print(f"Orange_are_of_circle_max {are_of_circle_max}")
+
+
+        """ contours for Orange area """
+        for contours in contours_orange:
+            orange_area = cv2.contourArea(contours)
+            #if ImageProcessing.PRINT_DEBUG:
+            print(f"orange_are {orange_area}")
+            if orange_area < are_of_circle_max and orange_area > are_of_circle_min:
+                
+                if ImageProcessing.MASK_COLOR_THRESHOLD:
+                    frame[mask_orange > 0] = (66, 161 , 245)
+                    
+                moment = cv2.moments(contours) # NOTE: check me again 
+                cx_orange = int(moment["m10"]/moment["m00"])
+                cy_orange = int(moment["m01"]/moment["m00"])
+                print(f'cy_orange: {cy_orange}')
+                if cy_orange < 400:
+                    crop_img  = self.crop_robot_circle(frame, cy_orange, cx_orange, if_is_ball)
+                    if_is_ball = False
+                    break # FIXME : Not currect way to position ball
+                # crop_img = self.creat_circle_id(crop_img, color = "blue", cordinate_list=[cx_orange, cy_orange])
+            #break
+        if if_is_ball != True:
+            cTime = time.time()
+            fps = 1 / (cTime - self.pTime)
+            self.pTime = cTime
+            cv2.putText(crop_img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
+            cv2.namedWindow(f"BALL \tHit Escape to Exit")
+            cv2.imshow(f"BALL \tHit Escape to Exit", crop_img)
+
+        return frame
+    
+    def detect_robot_id_gray_scale(self, frame: cv2.VideoCapture.read):
+        # Contants:
+        
+        robot_num  = 1
+        if_is_ball = False
+        
+        ret, thresh1 = cv2.threshold(frame, 95, 255, cv2.THRESH_BINARY)
+        ret, thresh2 = cv2.threshold(frame, 115, 255, cv2.THRESH_BINARY)
+        blue_thresh = thresh1 - thresh2
+        
+        # ret, thresh1 = cv2.threshold(frame, 158, 255, cv2.THRESH_BINARY)
+        # ret, thresh2 = cv2.threshold(frame, 170, 255, cv2.THRESH_BINARY)
+        # green_thresh = thresh1 - thresh2
+        
+        # ret, thresh1 = cv2.threshold(frame, 115, 255, cv2.THRESH_BINARY)
+        # ret, thresh2 = cv2.threshold(frame, 130, 255, cv2.THRESH_BINARY)
+        # red_thresh = thresh1 - thresh2
+        
+        contours_blue, hierarchy = cv2.findContours(image=blue_thresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+        
+        are_of_circle_min = frame.shape[0]/180
+        are_of_circle_max = frame.shape[0]/175
+
+        are_of_circle_min = pi*are_of_circle_min**2
+        are_of_circle_max = pi*are_of_circle_max**2
+        
+        image_copy = frame.copy()
+        
+        """ contours for blue area """
+        for contours in contours_blue:
+            blue_area = cv2.contourArea(contours)
+            if blue_area < are_of_circle_max and blue_area > are_of_circle_min:
+                moment = cv2.moments(contours) # NOTE: check me again 
+                cx_blue = int(moment["m10"]/moment["m00"])
+                cy_blue = int(moment["m01"]/moment["m00"])
+                cv2.drawContours(image=image_copy, contours=contours, contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
+                crop_img = self.crop_robot_circle(frame, cy_blue, cx_blue, if_is_ball)
+                # crop_img = self.creat_circle_id(crop_img, color = "blue", cordinate_list=[cx_blue, cy_blue])
+        
+        '''
+        # B, G, R channel splitting
+        blue, green, red = cv2.split(frame)
+        contours1, hierarchy1 = cv2.findContours(image=blue, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+        image_contour_blue = blue.copy()
+        cv2.drawContours(image=image_contour_blue, contours=contours1, contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
+        '''
+        return crop_img
+            
+    def detect_robot_id_HSV_scale(self, frame: cv2.VideoCapture.read):
+        # Contants:
+        robot_num  = 1
+        b_json     = False
+        if_is_ball = False
+
+        frame_hsv   = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+        try:
+        # try to load the json file if exist
+            with open("Robo_Color_Config.json") as color_config:
+                color_range = json.load(color_config)
+            b_json = True
+        # Catch Err in this case might be naming diff in json file and print defined
+        except Exception as e:
+            b_json = False
+            color_range = None
+            print(e)
+
+
+        if b_json == True:
+            try:
+                # Source: https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
+                # Color: blue
+                low_blue             = np.array(color_range["Low_Blue"], np.uint8)
+                upper_blue           = np.array(color_range["Up_Blue"], np.uint8) 
+                        
+                # define masks
+                mask_blue            = cv2.inRange(frame_hsv, low_blue ,upper_blue)
+
+                contours_blue        = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+                contours_blue        = imutils.grab_contours(contours_blue)
+            except Exception as e:
+                # Color: blue
+                low_blue             = np.array([90, 150, 0], np.uint8)
+                upper_blue           = np.array([140, 255, 255], np.uint8)
+
+                # define masks
+                mask_blue            = cv2.inRange(frame_hsv, low_blue ,upper_blue)
+
+                contours_blue        = cv2.findContours(mask_blue.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
+                contours_blue        = imutils.grab_contours(contours_blue)
+                b_json = False
+                print(e)
+
+        try:     
             cx_blue = 0 
             cy_blue = 0 
             moment = 0
             i = 0
             thread_list = []
+            
+            are_of_circle_min = frame.shape[0]/200
+            are_of_circle_max = frame.shape[0]/100
+
+            are_of_circle_min = pi*are_of_circle_min**2
+            are_of_circle_max = pi*are_of_circle_max**2
+            
+            if ImageProcessing.PRINT_DEBUG:
+                print(f"blue_are_of_circle_min {are_of_circle_min}")
+                print(f"blue_are_of_circle_max {are_of_circle_max}")
+
+
             """ contours for blue area """
             for contours in contours_blue:
                 blue_area = cv2.contourArea(contours)
-                if blue_area < frame.shape[1]/9 and blue_area > frame.shape[1]/37:
+                if ImageProcessing.PRINT_DEBUG:
+                    print(f"blue_are {blue_area}")
+                if blue_area < are_of_circle_max and blue_area > are_of_circle_min:
                     
                     if ImageProcessing.MASK_COLOR_THRESHOLD:
                         frame[mask_blue > 0] = (255, 0 , 0)
@@ -153,7 +345,7 @@ class ImageProcessing():
                     i += 1
                     cx_blue = int(moment["m10"]/moment["m00"])
                     cy_blue = int(moment["m01"]/moment["m00"])
-                    crop_img = self.crop_robot_circle(frame, cy_blue, cx_blue)
+                    crop_img = self.crop_robot_circle(frame, cy_blue, cx_blue, if_is_ball)
                     crop_img = self.creat_circle_id(crop_img, color = "blue", cordinate_list=[cx_blue, cy_blue])
                     # FIXME: Change for testing orientation
 
@@ -171,20 +363,20 @@ class ImageProcessing():
                     angle_difference = np.max(angles) - np.min(angles)
                     # print(f"angle_difference: {angle_difference}")
                     # self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue)
-                    #self.detect_robot_location(cy_blue, cx_blue, robot_num) 
+                    # self.detect_robot_location(cy_blue, cx_blue, robot_num) 
                     robot_num += 1
-                    threads = threading.Thread(target= self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue))    
-                    threads.start()
-                    thread_list.append(threads)
+                    
+                    # thread_list.append(threads)
+                    # thread_list.update(threads)
                     if ImageProcessing.CAPTURE_ONE_ROBOT_IMAGE:
-                        break
-            
-            for thread in thread_list:
-                thread.join()
+                        SSL_DetectionRobot = self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue, color_range)
+                        return frame, SSL_DetectionRobot
+                    else:
+                        SSL_DetectionRobot = self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue, color_range)
+        
         except Exception as e:
-            print(e)
-                        
-        return frame
+            print(e)                
+        return frame, SSL_DetectionRobot
 
     def detect_robot_orientation(self, frame: cv2.VideoCapture.read):
         counter = 0
@@ -318,21 +510,21 @@ class ImageProcessing():
                 else:
                     print("FPS Configuration is incorrect")
             else:
-                print(".json file config FPS is not set")
+                print("FPS is not set")
 
             if Res is not False:
-                self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-                self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-                # # Change Resolution
-                # if isinstance(camera_config["Resolution"], list):
-                #     # set camera Resolution from Json file
-                #     self.camera_capture.set(3, int(camera_config["Resolution"][0]))
-                #     self.camera_capture.set(4, int(camera_config["Resolution"][1]))
-                #     print("Resolution Set")
-                # else:
-                #     print("Resolution Configuration is incorrect")
+                # self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+                # self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+                # Change Resolution
+                if isinstance(camera_config["Resolution"], list):
+                    # set camera Resolution from Json file
+                    self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, int(camera_config["Resolution"][0]))
+                    self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, int(camera_config["Resolution"][1]))
+                    print("Resolution Set")
+                else:
+                    print("Resolution Configuration is incorrect")
             else:
-                print(".json file config Resolution is not Set")
+                print("Resolution is not Set")
 
             if Focus is not False:
                 # Change Focus
@@ -348,85 +540,107 @@ class ImageProcessing():
                 else:
                     print("Focus Configuration is incorrect")
             else:
-                print(".json file config focus is not Set")
+                print("Focus is not Set")
         else:
             print("Set Boolean value for Camera filter setting ")
             
-    def set_image_filter(self, frame  : cv2.VideoCapture.read, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
-
-        ''' Blur Image '''
-        if Blur is not False:
-            frame = cv2.blur(src=frame, ksize=(5, 5))
-            print("Blur is applied")
-        
-
-        ''' Blured Image '''
-        if GaussianBlur is not False:
-            frame = cv2.GaussianBlur(frame, (5, 5), 0)
-            print("GaussianBlur is applied")
-         
-        
-        ''' Segmentation '''
-        if Segmentation is not False:
-            print("Segmentation is applied")
-          
-            # reshape the image to a 2D array of pixels and 3 color values (RGB) to push it in to the kmeans
-            new_frame = np.float32(frame.reshape((-1, 3)))
-
-            # Define the algorithm termination criteria (the maximum number of iterations and/or the desired accuracy):
-            # In this case the maximum number of iterations is set to 20 and epsilon = 1.0
-            criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-
-            _, labels, centers = cv2.kmeans(new_frame, 4, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    def set_image_filter(self, frame  : cv2.VideoCapture.read, filter_frame = None, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
+        if filter_frame != None :
+            ''' Blur Image '''
+            if Blur is not False:
+                frame = cv2.blur(src=frame, ksize=(filter_frame["Blur"][0], filter_frame["Blur"][1]))
+                print("Blur is applied")
             
-            labels = labels.reshape((frame.shape[:-1]))
-            reduced = np.uint8(centers)[labels]
 
-            # frame = [np.hstack([frame, reduced])]
-            # frame = np.vstack(frame)
-            # frame = reduced
-            for i, c in enumerate(centers):
-                mask  = cv2.inRange(labels, i, i)
-                mask  = np.dstack([mask] * 3)  # Make it 3 channel
-                frame = cv2.bitwise_and(reduced, mask)
-            '''
-            for i, c in enumerate(centers):
-                mask = cv2.inRange(labels, i, i)
-                mask = np.dstack([mask] * 3)  # Make it 3 channel
-                ex_img = cv2.bitwise_and(frame, mask)
-                ex_reduced = cv2.bitwise_and(reduced, mask)
-                frame.append(np.hstack([ex_img, ex_reduced]))
+            ''' Blured Image '''
+            if GaussianBlur is not False:
+                frame = cv2.GaussianBlur(frame, (filter_frame["GaussianBlur"][0], filter_frame["GaussianBlur"][1]), 0)
+                print("GaussianBlur is applied")
+            
+            
+            ''' Segmentation '''
+            if Segmentation is not False:
                 print("Segmentation is applied")
-            '''
-        if Res:
-            try:
-                frame = cv2.resize(frame, (self.xFrameSizePixel ,self.yFrameSizePixel))
-            except Exception as e:
-                print(e)
+            
+                # reshape the image to a 2D array of pixels and 3 color values (RGB) to push it in to the kmeans
+                new_frame = np.float32(frame.reshape((-1, 3)))
+
+                # Define the algorithm termination criteria (the maximum number of iterations and/or the desired accuracy):
+                # In this case the maximum number of iterations is set to 20 and epsilon = 1.0
+                criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+
+                _, labels, centers = cv2.kmeans(new_frame, filter_frame["Segmentation"], None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+                
+                labels = labels.reshape((frame.shape[:-1]))
+                reduced = np.uint8(centers)[labels]
+
+                # frame = [np.hstack([frame, reduced])]
+                # frame = np.vstack(frame)
+                # frame = reduced
+                for i, c in enumerate(centers):
+                    mask  = cv2.inRange(labels, i, i)
+                    mask  = np.dstack([mask] * 3)  # Make it 3 channel
+                    frame = cv2.bitwise_and(reduced, mask)
+                '''
+                for i, c in enumerate(centers):
+                    mask = cv2.inRange(labels, i, i)
+                    mask = np.dstack([mask] * 3)  # Make it 3 channel
+                    ex_img = cv2.bitwise_and(frame, mask)
+                    ex_reduced = cv2.bitwise_and(reduced, mask)
+                    frame.append(np.hstack([ex_img, ex_reduced]))
+                    print("Segmentation is applied")
+                '''
+            if Res is not False:
+                try:
+                    frame = cv2.resize(frame, (filter_frame["resize_frame"][0], filter_frame["resize_frame"][1]))
+                except Exception as e:
+                    print(f'Could not resize image {e}')
+        else: 
+            print("filter .json file is not loaded or it is corrupted")
 
         return frame
 
-    def crop_robot_circle(self, img : cv2.VideoCapture.read, pos_y , pos_x):
-        print(f"diff {pos_x} and {pos_y}")
-        pos_y   = pos_y - int(img.shape[0]/40) 
-        pos_x   = pos_x - int(img.shape[1]/65)
-        radius  = int(img.shape[1] / 65)
+    def crop_robot_circle(self, img : cv2.VideoCapture.read, pos_y , pos_x, if_is_ball):
+        if if_is_ball:
+            # print(f"diff {pos_x} and {pos_y}")
+            pos_y   = pos_y - int(img.shape[0]/40) 
+            pos_x   = pos_x - int(img.shape[1]/65)
+            radius  = int(img.shape[1] / 65)
 
-        # crop image as a square
-        img = img[pos_y:pos_y+radius*2, pos_x:pos_x+radius*2]
-        # create a mask
-        mask = np.full((img.shape[0], img.shape[1]), 0, dtype=np.uint8) 
-        # create circle mask, center, radius, fill color, size of the border
-        cv2.circle(mask,(radius,radius), radius, (255,255,255),-1)
-        # get only the inside pixels
-        fg = cv2.bitwise_or(img, img, mask=mask)
+            # crop image as a square
+            img = img[pos_y:pos_y+radius*2, pos_x:pos_x+radius*2]
+            # create a mask
+            mask = np.full((img.shape[0], img.shape[1]), 0, dtype=np.uint8) 
+            # create circle mask, center, radius, fill color, size of the border
+            cv2.circle(mask,(radius,radius), radius, (255,255,255),-1)
+            # get only the inside pixels
+            fg = cv2.bitwise_or(img, img, mask=mask)
 
-        mask = cv2.bitwise_not(mask)
-        background = np.full(img.shape, 255, dtype=np.uint8)
-        bk = cv2.bitwise_or(background, background, mask=mask)
-        crop_img = cv2.bitwise_or(fg, bk)
-        
-        return crop_img
+            mask = cv2.bitwise_not(mask)
+            background = np.full(img.shape, 255, dtype=np.uint8)
+            bk = cv2.bitwise_or(background, background, mask=mask)
+            crop_img = cv2.bitwise_or(fg, bk)
+            return crop_img
+        else:
+            # print(f"diff {pos_x} and {pos_y}")
+            pos_y   = pos_y - int(img.shape[0]/40) 
+            pos_x   = pos_x - int(img.shape[1]/65)
+            radius  = int(img.shape[1] / 65)
+
+            # crop image as a square
+            img = img[pos_y:pos_y+radius*2, pos_x:pos_x+radius*2]
+            # create a mask
+            mask = np.full((img.shape[0], img.shape[1]), 0, dtype=np.uint8) 
+            # create circle mask, center, radius, fill color, size of the border
+            cv2.circle(mask,(radius,radius), radius, (255,255,255),-1)
+            # get only the inside pixels
+            fg = cv2.bitwise_or(img, img, mask=mask)
+
+            mask = cv2.bitwise_not(mask)
+            background = np.full(img.shape, 255, dtype=np.uint8)
+            bk = cv2.bitwise_or(background, background, mask=mask)
+            crop_img = cv2.bitwise_or(fg, bk)
+            return crop_img
 
     def crop_robot_rec(self, img : cv2.VideoCapture.read, pos_y , pos_x):
         np_crop_img = np.array(img)
@@ -440,19 +654,15 @@ class ImageProcessing():
         
         return crop_img
     
-    def check_if_robot(self, img : cv2.VideoCapture.read, Robo_Num: int, field : cv2.VideoCapture.read, cy: int = None, cx :int = None):
+    def check_if_robot(self, img : cv2.VideoCapture.read, Robo_Num: int, field : cv2.VideoCapture.read, cy: int = None, cx :int = None, color_range = None):
         # constants
         num_of_circle   = 1
         num_of_red      = 0
         num_of_green    = 0
-        list_vector_len = []
 
         b_json = False
         
         num_x_cor   = {'green' : [],
-                        'red'  : []}
-
-        num_y_cor   = {'green' : [],
                         'red'  : []}
 
         circle_pack = {"1":     [],
@@ -460,18 +670,26 @@ class ImageProcessing():
                        "3":     [],
                        "4":     [],
                        "prime": []}
+        
+        SSL_DetectionRobot  = {"robot_id"   :  0,
+                              "x"           :  0,
+                              "y"           :  0,
+                              "orientation" :  0,
+                              "pixel_x"     :  0,
+                              "pixel_y"     :  0}
+        
+        SSL_DetectionBall  =  {"robot_id"   :  0,
+                              "x"           :  0,
+                              "y"           :  0,
+                              "orientation" :  0,
+                              "pixel_x"     :  0,
+                              "pixel_y"     :  0}
 
-        b_if_robot      = False
-        robot_id = Robo_Num
-        try:
-        # try to load the json file if exist
-            with open("Robo_Color_Config.json") as color_config:
-                color_range = json.load(color_config)
-            b_json = True
-        # Catch Err in this case might be naming diff in json file and print defined
-        except Exception as e:
+
+        if color_range == None:
             b_json = False
-            print(e)
+        else:
+            b_json = True
         
         try:
             frame_hsv       = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)      
@@ -544,8 +762,9 @@ class ImageProcessing():
             are_of_circle_min = pi*are_of_circle_min**2
             are_of_circle_max = pi*are_of_circle_max**2
 
-            print(f'area_min: {are_of_circle_min}')
-            print(f'area_max: {are_of_circle_max}')
+            if ImageProcessing.PRINT_DEBUG:
+                print(f'area_min: {are_of_circle_min}')
+                print(f'area_max: {are_of_circle_max}')
             list_circle_cordinate = []             
             
             """ contours for red area  """            
@@ -553,13 +772,15 @@ class ImageProcessing():
                 red_area = cv2.contourArea(contours)
                 # print(f"img.frame {img.shape}")
                 if red_area < are_of_circle_max and red_area > are_of_circle_min:
-                    print(f"red_area {red_area}")
+                    if ImageProcessing.PRINT_DEBUG:
+                        print(f"red_area {red_area}")
                     moment = cv2.moments(contours) # NOTE: check me again 
                     cx_red = int(moment["m10"]/moment["m00"])
                     cy_red = int(moment["m01"]/moment["m00"])
                     list_circle_cordinate.append([cy_red,cx_red])
-                    print(f"cx_red {cx_red}")
-                    print(f"cy_red {cy_red}")
+                    if ImageProcessing.PRINT_DEBUG:
+                        print(f"cx_red {cx_red}")
+                        print(f"cy_red {cy_red}")
                     num_of_red    += 1
                     num_of_circle += 1
                     position = self.check_circle_position(img.shape[0], img.shape[1], cx_red, cy_red)
@@ -567,7 +788,8 @@ class ImageProcessing():
                     for i in circle_pack:
                         if i == position:
                             circle_pack[i] = [cx_red, cy_red]
-                    print(f'Red Position is: {position}')
+                    if ImageProcessing.PRINT_DEBUG:
+                        print(f'Red Position is: {position}')
                     self.creat_circle_id(img,'red', [cx_red, cy_red])
                     # cv2.circle(img, (cx_red, cy_red), radius=num_of_red, color=(255, 255, 255), thickness=-1)
 
@@ -575,13 +797,16 @@ class ImageProcessing():
             """ contours for green area """             
             for contours in contours_green:
                 green_area = cv2.contourArea(contours)
+                if ImageProcessing.PRINT_DEBUG:
+                    print(f"Green_are: {green_area}")
                 if green_area < are_of_circle_max and green_area > are_of_circle_min:
                     moment = cv2.moments(contours) # NOTE: check me again 
-                    print(f"green_area {green_area}")
+                    # print(f"green_area {green_area}")
                     cx_green = int(moment["m10"]/moment["m00"])
                     cy_green = int(moment["m01"]/moment["m00"])
-                    print(f"cx_green {cx_green}")
-                    print(f"cy_green {cy_green}")
+                    if ImageProcessing.PRINT_DEBUG:
+                        print(f"cx_green {cx_green}")
+                        print(f"cy_green {cy_green}")
                     num_of_green  += 1
                     num_of_circle += 1 
                     list_circle_cordinate.append([cy_green,cx_green])
@@ -592,24 +817,34 @@ class ImageProcessing():
                                 circle_pack["prime"] = [cx_green, cy_green]
                             else:
                                 circle_pack[i] = [cx_green, cy_green]
-                    print(f'Green Position is: {position}')
+                    if ImageProcessing.PRINT_DEBUG:
+                        print(f'Green Position is: {position}')
                     num_x_cor['green'].append([position , cx_green, cy_green])
                     self.creat_circle_id(img,'green', [cx_green, cy_green])
                     # cv2.circle(img, (cx_green, cy_green), radius=num_of_green, color=(255, 255, 255), thickness=-1)
                     
             a = num_x_cor['red']
             b = num_x_cor['green']
-            print(f'List Red is : {len(a)}')
-            print(f'List Green is : {len(b)}')
+            if ImageProcessing.PRINT_DEBUG:
+                print(f'List Red is : {len(a)}')
+                print(f'List Green is : {len(b)}')
             A = num_x_cor['green']
             B = num_x_cor['red']
-            print(f'num_x_cor_green : {A}')
-            print(f'num_y_cor_red : {B}')
+            
+            if ImageProcessing.PRINT_DEBUG:
+                print(f'num_x_cor_green : {A}')
+                print(f'num_y_cor_red : {B}')
             for x in list(circle_pack.keys()):
                 if circle_pack[x] == []:
                     del circle_pack[x]
-            print(f'circle_pack: {circle_pack}')
-            self.getOrientation(circle_pack)
+            
+            if ImageProcessing.PRINT_DEBUG:
+                print(f'circle_pack: {circle_pack}')
+            
+            if len(A) + len(B) == 4 :
+                angle = self.getOrientation(circle_pack)
+            else:
+                return
             """ contours for black area              
             for contours in contours_black:
                 black_area = cv2.contourArea(contours)
@@ -626,28 +861,40 @@ class ImageProcessing():
             """
             if ImageProcessing.ROTATE_ROBOT_IMAGE :
                 (h, w) = img.shape[:2]
-                M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), ImageProcessing.ANGLE, 1.0)
+                M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), angle, 1.0)
                 img = cv2.warpAffine(img, M, (w, h))
                 ROBOT_ID = self.match_robot(img)
             else: 
                 imgRotate = img 
                 (h, w) = imgRotate.shape[:2]
-                M = cv2.getRotationMatrix2D((imgRotate.shape[1] // 2, imgRotate.shape[1] // 2), ImageProcessing.ANGLE, 1.0)
+                M = cv2.getRotationMatrix2D((imgRotate.shape[1] // 2, imgRotate.shape[1] // 2), angle, 1.0)
                 imgRotate = cv2.warpAffine(imgRotate, M, (w, h))
                 ROBOT_ID = self.match_robot(imgRotate)
+        
+            SSL_DetectionRobot  = {"robot_id"    :  ROBOT_ID,
+                                   "x"           :  0,
+                                   "y"           :  0,
+                                   "orientation" :  angle,
+                                   "pixel_x"     :  cx,
+                                   "pixel_y"     :  cy}
 
             self.saveRobotImage(frame= img, robot_num= Robo_Num,cx= cx, cy= cy )
             print(f'ROBOT_ID: {ROBOT_ID}')
         except Exception as e:
             print(e)
             
-        cTime = time.time()
-        fps = 1 / (cTime - self.pTime)
-        self.pTime = cTime
-        cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
-        cv2.namedWindow(f"RobotSoccer Robot{ROBOT_ID}\tHit Escape to Exit")
-        cv2.imshow(f"RobotSoccer Robot{ROBOT_ID}\tHit Escape to Exit", img)
-        return ROBOT_ID      
+        if ImageProcessing.SHOW_ROBOTS_IN_NEW_WINDOW:
+            if ROBOT_ID != None:
+                cTime = time.time()
+                fps = 1 / (cTime - self.pTime)
+                self.pTime = cTime
+                cv2.putText(img, str(int(fps)), (0, 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1)
+                cv2.namedWindow(f"RobotSoccer Robot{ROBOT_ID}\tHit Escape to Exit")
+                cv2.imshow(f"RobotSoccer Robot{ROBOT_ID}\tHit Escape to Exit", img)
+            else:
+                return ROBOT_ID
+       
+        return SSL_DetectionRobot     
 
     def check_circle_position(self,img_shape_x, img_shape_y, x, y):
         if x >= img_shape_x//2:
@@ -794,11 +1041,8 @@ class ImageProcessing():
         
         angle = self.angle_between_circle(min_length_list, circle_pack)
         print(f'The final Angle is : {angle}')
-        ImageProcessing.ANGLE = angle
+        # ImageProcessing.ANGLE = angle
         return angle
-
-    def resize_frame(self, frame):
-        return frame
 
     def overlay_image_alpha(self, robo_img, field_img):
         a = np.where(robo_img > 0)

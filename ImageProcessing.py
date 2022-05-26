@@ -27,7 +27,7 @@ from sklearn.datasets import load_sample_image
 # This class receive Images from the ControlCommand
 # It processes images to detect the robot ID, origination
 # and location. The return the data back as needed
-class ImageProcessing():
+class Image_Processing():
     """ This class get images from ControlCommand """
     # This Parameters are belongs to the CLASS
 
@@ -93,16 +93,16 @@ class ImageProcessing():
         try:
             self.xFrameSizePixel = int(camera_config["resize_frame"][0])
             self.yFrameSizePixel = int(camera_config["resize_frame"][1])
-            self.xCoef = ImageProcessing.Field_Size_X_Direction/self.xFrameSizePixel
-            self.yCoef = ImageProcessing.Field_Size_Y_Direction/self.yFrameSizePixel
+            self.xCoef = Image_Processing.Field_Size_X_Direction/self.xFrameSizePixel
+            self.yCoef = Image_Processing.Field_Size_Y_Direction/self.yFrameSizePixel
         except Exception as e: 
             print(e)
 
         while True:
             cTime = time.time()
-            if ImageProcessing.GRAY_SCALE_IMAGE_PROCCESSING:
-                if ImageProcessing.LOAD_IMAGE:
-                    frame = cv2.imread(ImageProcessing.IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
+            if Image_Processing.GRAY_SCALE_IMAGE_PROCCESSING:
+                if Image_Processing.LOAD_IMAGE:
+                    frame = cv2.imread(Image_Processing.IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
                 else:
                     ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
                     
@@ -110,21 +110,21 @@ class ImageProcessing():
                         print("failed to grab frame")
                         break
                     frame = cv2.cvtColor( frame, cv2.COLOR_BGR2GRAY )
-                if ImageProcessing.FIND_ROBOT_AND_BALL:
+                if Image_Processing.FIND_ROBOT_AND_BALL:
                     # Detect Robot 
                     frame =  self.detect_robot_id_gray_scale(frame = frame)
                     # frame =  self.detect_ball(frame = frame)
                 
             else:
-                if ImageProcessing.LOAD_IMAGE:
-                    frame = cv2.imread(ImageProcessing.IMAGE_PATH)  
+                if Image_Processing.LOAD_IMAGE:
+                    frame = cv2.imread(Image_Processing.IMAGE_PATH)  
                 else:
                     ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
                     if not ret:
                         print("failed to grab frame")
                         break
                 
-                if ImageProcessing.FIND_ROBOT_AND_BALL:
+                if Image_Processing.FIND_ROBOT_AND_BALL:
                     # Detect Robot 
                     frame, SSL_DetectionRobot =  self.detect_robot_id_HSV_scale(frame = frame)
                     frame =  self.detect_ball(frame = frame) 
@@ -136,7 +136,7 @@ class ImageProcessing():
             cv2.putText(frame, str(abs(int(fps))), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
             # Creat windows for the frame
-            if ImageProcessing.SHOW_MAIN_FIELD:
+            if Image_Processing.SHOW_MAIN_FIELD:
                 cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
             
             k = cv2.waitKey(1)
@@ -185,7 +185,7 @@ class ImageProcessing():
 
         are_of_circle_min = pi*are_of_circle_min**2
         are_of_circle_max = pi*are_of_circle_max**2
-        #if ImageProcessing.PRINT_DEBUG:
+        #if Image_Processing.PRINT_DEBUG:
         print(f"Orange_are_of_circle_min {are_of_circle_min}")
         print(f"Orange_are_of_circle_max {are_of_circle_max}")
 
@@ -193,11 +193,11 @@ class ImageProcessing():
         """ contours for Orange area """
         for contours in contours_orange:
             orange_area = cv2.contourArea(contours)
-            #if ImageProcessing.PRINT_DEBUG:
+            #if Image_Processing.PRINT_DEBUG:
             print(f"orange_are {orange_area}")
             if orange_area < are_of_circle_max and orange_area > are_of_circle_min:
                 
-                if ImageProcessing.MASK_COLOR_THRESHOLD:
+                if Image_Processing.MASK_COLOR_THRESHOLD:
                     frame[mask_orange > 0] = (66, 161 , 245)
                     
                 moment = cv2.moments(contours) # NOTE: check me again 
@@ -326,7 +326,7 @@ class ImageProcessing():
             are_of_circle_min = pi*are_of_circle_min**2
             are_of_circle_max = pi*are_of_circle_max**2
             
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print(f"blue_are_of_circle_min {are_of_circle_min}")
                 print(f"blue_are_of_circle_max {are_of_circle_max}")
 
@@ -334,11 +334,11 @@ class ImageProcessing():
             """ contours for blue area """
             for contours in contours_blue:
                 blue_area = cv2.contourArea(contours)
-                if ImageProcessing.PRINT_DEBUG:
+                if Image_Processing.PRINT_DEBUG:
                     print(f"blue_are {blue_area}")
                 if blue_area < are_of_circle_max and blue_area > are_of_circle_min:
                     
-                    if ImageProcessing.MASK_COLOR_THRESHOLD:
+                    if Image_Processing.MASK_COLOR_THRESHOLD:
                         frame[mask_blue > 0] = (255, 0 , 0)
                         
                     moment = cv2.moments(contours) # NOTE: check me again 
@@ -349,7 +349,7 @@ class ImageProcessing():
                     crop_img = self.creat_circle_id(crop_img, color = "blue", cordinate_list=[cx_blue, cy_blue])
                     # FIXME: Change for testing orientation
 
-                    if ImageProcessing.CENTER_CORDINATE:
+                    if Image_Processing.CENTER_CORDINATE:
                         cv2.line(crop_img, (0 , int(crop_img.shape[0]/2)), (crop_img.shape[0], int(crop_img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
                         cv2.line(crop_img, (int(crop_img.shape[0]/2) , 0), (int(crop_img.shape[0]/2), crop_img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
                     
@@ -368,7 +368,7 @@ class ImageProcessing():
                     
                     # thread_list.append(threads)
                     # thread_list.update(threads)
-                    if ImageProcessing.CAPTURE_ONE_ROBOT_IMAGE:
+                    if Image_Processing.CAPTURE_ONE_ROBOT_IMAGE:
                         SSL_DetectionRobot = self.check_if_robot(crop_img, robot_num, frame, cy_blue, cx_blue, color_range)
                         return frame, SSL_DetectionRobot
                     else:
@@ -752,7 +752,7 @@ class ImageProcessing():
                 contours_black  = imutils.grab_contours(contours_black)
             
             
-            if ImageProcessing.MASK_COLOR_THRESHOLD:
+            if Image_Processing.MASK_COLOR_THRESHOLD:
                 img[mask_green > 0] = (0  , 255 , 0)
                 img[mask_red   > 0] = (0, 0   , 255)
 
@@ -762,7 +762,7 @@ class ImageProcessing():
             are_of_circle_min = pi*are_of_circle_min**2
             are_of_circle_max = pi*are_of_circle_max**2
 
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print(f'area_min: {are_of_circle_min}')
                 print(f'area_max: {are_of_circle_max}')
             list_circle_cordinate = []             
@@ -772,13 +772,13 @@ class ImageProcessing():
                 red_area = cv2.contourArea(contours)
                 # print(f"img.frame {img.shape}")
                 if red_area < are_of_circle_max and red_area > are_of_circle_min:
-                    if ImageProcessing.PRINT_DEBUG:
+                    if Image_Processing.PRINT_DEBUG:
                         print(f"red_area {red_area}")
                     moment = cv2.moments(contours) # NOTE: check me again 
                     cx_red = int(moment["m10"]/moment["m00"])
                     cy_red = int(moment["m01"]/moment["m00"])
                     list_circle_cordinate.append([cy_red,cx_red])
-                    if ImageProcessing.PRINT_DEBUG:
+                    if Image_Processing.PRINT_DEBUG:
                         print(f"cx_red {cx_red}")
                         print(f"cy_red {cy_red}")
                     num_of_red    += 1
@@ -788,7 +788,7 @@ class ImageProcessing():
                     for i in circle_pack:
                         if i == position:
                             circle_pack[i] = [cx_red, cy_red]
-                    if ImageProcessing.PRINT_DEBUG:
+                    if Image_Processing.PRINT_DEBUG:
                         print(f'Red Position is: {position}')
                     self.creat_circle_id(img,'red', [cx_red, cy_red])
                     # cv2.circle(img, (cx_red, cy_red), radius=num_of_red, color=(255, 255, 255), thickness=-1)
@@ -797,14 +797,14 @@ class ImageProcessing():
             """ contours for green area """             
             for contours in contours_green:
                 green_area = cv2.contourArea(contours)
-                if ImageProcessing.PRINT_DEBUG:
+                if Image_Processing.PRINT_DEBUG:
                     print(f"Green_are: {green_area}")
                 if green_area < are_of_circle_max and green_area > are_of_circle_min:
                     moment = cv2.moments(contours) # NOTE: check me again 
                     # print(f"green_area {green_area}")
                     cx_green = int(moment["m10"]/moment["m00"])
                     cy_green = int(moment["m01"]/moment["m00"])
-                    if ImageProcessing.PRINT_DEBUG:
+                    if Image_Processing.PRINT_DEBUG:
                         print(f"cx_green {cx_green}")
                         print(f"cy_green {cy_green}")
                     num_of_green  += 1
@@ -817,7 +817,7 @@ class ImageProcessing():
                                 circle_pack["prime"] = [cx_green, cy_green]
                             else:
                                 circle_pack[i] = [cx_green, cy_green]
-                    if ImageProcessing.PRINT_DEBUG:
+                    if Image_Processing.PRINT_DEBUG:
                         print(f'Green Position is: {position}')
                     num_x_cor['green'].append([position , cx_green, cy_green])
                     self.creat_circle_id(img,'green', [cx_green, cy_green])
@@ -825,20 +825,20 @@ class ImageProcessing():
                     
             a = num_x_cor['red']
             b = num_x_cor['green']
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print(f'List Red is : {len(a)}')
                 print(f'List Green is : {len(b)}')
             A = num_x_cor['green']
             B = num_x_cor['red']
             
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print(f'num_x_cor_green : {A}')
                 print(f'num_y_cor_red : {B}')
             for x in list(circle_pack.keys()):
                 if circle_pack[x] == []:
                     del circle_pack[x]
             
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print(f'circle_pack: {circle_pack}')
             
             if len(A) + len(B) == 4 :
@@ -859,7 +859,7 @@ class ImageProcessing():
                     # cv2.putText(frame, "green", (cx_green, cy_green), cv2.QT_FONT_NORMAL, 1, (255, 255, 255), 1)
                     # crop_img[mask_green > 0] = (0, 255 , 0)
             """
-            if ImageProcessing.ROTATE_ROBOT_IMAGE :
+            if Image_Processing.ROTATE_ROBOT_IMAGE :
                 (h, w) = img.shape[:2]
                 M = cv2.getRotationMatrix2D((img.shape[1] // 2, img.shape[1] // 2), angle, 1.0)
                 img = cv2.warpAffine(img, M, (w, h))
@@ -883,7 +883,7 @@ class ImageProcessing():
         except Exception as e:
             print(e)
             
-        if ImageProcessing.SHOW_ROBOTS_IN_NEW_WINDOW:
+        if Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW:
             if ROBOT_ID != None:
                 cTime = time.time()
                 fps = 1 / (cTime - self.pTime)
@@ -932,7 +932,7 @@ class ImageProcessing():
         return x, y
 
     def creat_circle_id(self, frame: cv2.VideoCapture.read, color: str = None, cordinate_list :list = None):
-        if ImageProcessing.CIRCLE_ID_COLOR_BY_CORDINATE:
+        if Image_Processing.CIRCLE_ID_COLOR_BY_CORDINATE:
             # Center coordinates
             center_coordinates = [int(frame.shape[0]/2), int(frame.shape[1]/2)]
             # print(f'center_coordinates: {center_coordinates}')
@@ -1009,7 +1009,7 @@ class ImageProcessing():
             length_list.update({ f"{circle_keys[1]}-{circle_keys[2]}" : math.sqrt((circle_pack[circle_keys[1]][0] - circle_pack[circle_keys[2]][0])**2 + (circle_pack[circle_keys[1]][1] - circle_pack[circle_keys[2]][1])**2) })
             length_list.update({ f"{circle_keys[1]}-{circle_keys[3]}" : math.sqrt((circle_pack[circle_keys[1]][0] - circle_pack[circle_keys[3]][0])**2 + (circle_pack[circle_keys[1]][1] - circle_pack[circle_keys[3]][1])**2) })
             length_list.update({ f"{circle_keys[2]}-{circle_keys[3]}" : math.sqrt((circle_pack[circle_keys[2]][0] - circle_pack[circle_keys[3]][0])**2 + (circle_pack[circle_keys[2]][1] - circle_pack[circle_keys[3]][1])**2) })
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print("##############################")
                 print(f'len_all:   {length_list}')
                 print("##############################")
@@ -1020,7 +1020,7 @@ class ImageProcessing():
             length_list.update({ "2-3" : math.sqrt((circle_pack["2"][0] - circle_pack["3"][0])**2 + (circle_pack["2"][1] - circle_pack["3"][1])**2) })
             length_list.update({ "2-4" : math.sqrt((circle_pack["2"][0] - circle_pack["4"][0])**2 + (circle_pack["2"][1] - circle_pack["4"][1])**2) })
             length_list.update({ "3-4" : math.sqrt((circle_pack["3"][0] - circle_pack["4"][0])**2 + (circle_pack["3"][1] - circle_pack["4"][1])**2) })
-            if ImageProcessing.PRINT_DEBUG:
+            if Image_Processing.PRINT_DEBUG:
                 print("##############################")
                 print(f'len_one:   {length_list["1-2"]}')
                 print(f'len_two:   {length_list["1-3"]}')
@@ -1041,7 +1041,7 @@ class ImageProcessing():
         
         angle = self.angle_between_circle(min_length_list, circle_pack)
         print(f'The final Angle is : {angle}')
-        # ImageProcessing.ANGLE = angle
+        # Image_Processing.ANGLE = angle
         return angle
 
     def overlay_image_alpha(self, robo_img, field_img):
@@ -1063,7 +1063,7 @@ class ImageProcessing():
         return field_img
 
     def saveRobotImage(self, frame, robot_num, cx, cy):
-        if ImageProcessing.SAVE_ROBOT_IMAGE == True:
+        if Image_Processing.SAVE_ROBOT_IMAGE == True:
             try:
                 if frame is not None:
                     cv2.imwrite(f"Robot{robot_num}_x{cx}_y{cy}.jpg", frame)
@@ -1664,4 +1664,4 @@ class ImageProcessing():
     def finish_capturing(self):
         cv2.destroyAllWindows()
 
-imgProc = ImageProcessing()
+# imgProc = Image_Processing()

@@ -9,8 +9,18 @@
 # TODO: 4- Find Robot ball position (similar to robot position)
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
 from ControlCommand import *
-from HSV_Color_Picker import HSV_COLOR_PICKER
 import time
+from ImageProcessing import Image_Processing
+
+# Define Color of the Frame/Image
+Image_Processing.GRAY_SCALE_IMAGE_PROCCESSING = False
+
+# Load Class of Color Picker 
+if Image_Processing.GRAY_SCALE_IMAGE_PROCCESSING == False:
+    from HSVColorPicker import HSV_COLOR_PICKER as ColorPicker    
+else:
+    from GrayColorPicker import GRAY_COLOR_PICKER as ColorPicker
+ 
 
 
 # Definition of slots in this class are for futures if there were need to use GUI
@@ -22,7 +32,7 @@ class CaptureImage:
         self.robot_id           = None                         # Robot Id base on Color
         self.robot_location     = None                   # Robot location on the field
         self.robot_orientation  = None                # Robot orientation
-        self.imgProc            = None
+        self.imgProc            = Image_Processing()
 
     def __del__(self):
         """ Destroy All the class objects """
@@ -34,16 +44,15 @@ class CaptureImage:
 
     def slot_finish_capturing(self):
         """ Delete Cv2 class to empty the buffer """
-        # finish_capturing_command(self)
+        finish_capturing_command(self)
         pass
  
 if __name__ == "__main__":   
-    cam = CaptureImage()
-    cam.slot_start_capturing()
-    # HSVColor = HSV_COLOR_PICKER()
-    # HSV_Color_Selection = HSVColor.color_picker()
-    # # # del HSVColor
-    # time.sleep(1)
-    # if HSV_Color_Selection:
-    #     cam = CaptureImage()
-    #     cam.slot_start_capturing()
+    # cam = CaptureImage()
+    # cam.slot_start_capturing()
+    colorpicker = ColorPicker()
+    Color_Selection = colorpicker.color_picker()
+    time.sleep(1)
+    if Color_Selection:
+        cam = CaptureImage()
+        cam.slot_start_capturing()

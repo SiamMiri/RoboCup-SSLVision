@@ -156,7 +156,7 @@ class HSV_COLOR_PICKER():
         while True:
             try:
                 # ret, frame = self.cap.read() 
-                frame = cv.imread('WIN_20220323_11_24_46_Pro.jpg')
+                frame = cv.imread('./ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg')
                 frame = cv.resize(frame, (740,480))
 
                 frame_HSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)

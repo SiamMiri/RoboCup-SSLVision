@@ -9,44 +9,96 @@
 # TODO: 4- Find Robot ball position (similar to robot position)
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
 import time
-# from ImageProcessing import Image_Processing
-from ImageProcessing.CaptureImage import Capture_Image
-# from ImageProcessing import Image_Processing
-from RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
-from ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker  
-import cv2
-DetectRobot.ROTATE_ROBAT_SINGLE_IMAGE = True
-# # # Define Color of the Frame/Image
-# # Image_Processing.GRAY_SCALE_IMAGE_PROCCESSING = False
 
-# # # Load Class of Color Picker 
-# # if Image_Processing.GRAY_SCALE_IMAGE_PROCCESSING == False:
-# #     from HSVColorPicker import HSV_COLOR_PICKER as ColorPicker    
-# # else:
-# #     from GrayColorPicker import GRAY_COLOR_PICKER as ColorPicker
+from cv2 import VideoCapture
+from ImageProcessing.CaptureImage import Capture_Image
+from ImageProcessing.CaptureVideo import Capture_Video
+from RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
+from ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
+from MainGui.MainWindow import Ui_MainWindow  
+import cv2
+from PyQt5.QtWidgets import QFileDialog, QMainWindow
+from PyQt5 import QtCore, QtWidgets
+import sys
+
+DetectRobot.ROTATE_ROBAT_SINGLE_IMAGE = True
  
 
 
 # Definition of slots in this class are for futures if there were need to use GUI
-class Main:
+class Main(QMainWindow, Ui_MainWindow):
 
     def __init__(self)  :
+        QMainWindow.__init__(self)
+        self.setupUi(self)
         self.img_counter        = 0
         self.robot_id           = None                # Robot Id base on Color
         self.robot_location     = None                # Robot location on the field
         self.robot_orientation  = None                # Robot orientation
-
+        self.connectMe()
+        
     def __del__(self):
         """ Destroy all class methods """
-        # finish_capturing_command(self)
-        pass
-    def slot_video_capturing(self):
-        """ start capturing video from camera """
-        start_capturing_command(self)
+        self.slot_finish_capturing()
+    
+    # Define All Signals Here
+    def connectMe(self):
+        self.btn_LoadImageFile.clicked.connect(self.slotLoadImageFile)
+        self.btn_StartImageCapturing.clicked.connect(self.slotImageCapturing)
+        self.btn_StartVideoCapturing.clicked.connect(self.slotVideoCapturing)
+        self.btn_ColorConfiguration.clicked.connect(self.slotColorConfiguration)
+    
+    # Define All Slots Here
+    def slotLoadImageFile(self):
+        filepath = ""
+        filepath = QFileDialog.getOpenFileName(self, "Choose The Image File", "", "Image File (*.jpg .*JPG)")
+        print(filepath)
+        if filepath != "":
+            self.txt_FilePath.setText(str(filepath[0]))
+    
+    def slotImageCapturing(self):
+        self.image_capturing(path= self.txt_FilePath.toPlainText())
         
-    def slot_image_capturing(self):
+    def slotVideoCapturing(self):
+        self.video_capturing()
+        
+    def slotColorConfiguration(self):
+        self.Color_Configuration()
+        
+    def video_capturing(self):
+        """ start capturing video from camera """
+        capturingVideo  = Capture_Video()
+        # imageProcessing = Image_Processing()
+        detectRobot     = DetectRobot()
+        
+        # Creat windows for the frame
+        cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+
+
+        try:
+            while True:
+                filed_frame = capturingVideo.load_image(image_path="./ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg")
+                # imageProcessing.start_process(frame= filed_frame)
+                DetectRobot.SEND_DATA_TO_SERVER = True
+                detectRobot.detect_robot(frame=filed_frame)
+                
+                cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", filed_frame)
+                k = cv2.waitKey(1)
+                if k % 256 == 27:
+                    # ESC pressed
+                    print("Escape hit, closing...")
+                    break
+                
+                if k % 256 == ord("q"):
+                    # Q pressed
+                    print("Escape hit, closing...")
+                    break
+        except Exception as e:
+            print(f'Error in Capture_Image::show_frame {e}')
+        
+    def image_capturing(self, path:str=None):
         """ start capturing image from path"""
-        capturingImage  = Capture_Image(image_path= "FieldTest_AllLight_Off_Daylight(hight).jpg")
+        capturingImage  = Capture_Image(image_path= None)
         # imageProcessing = Image_Processing()
         detectRobot     = DetectRobot()
         
@@ -55,34 +107,44 @@ class Main:
 
         # try:
         while True:
-            filed_frame = capturingImage.show_image(input_image=None)
+            filed_frame = capturingImage.load_image(image_path=path)
             # imageProcessing.start_process(frame= filed_frame)
-            angle = detectRobot.detect_robot(frame=filed_frame)
+            DetectRobot.SEND_DATA_TO_SERVER = True
+            detectRobot.detect_robot(frame=filed_frame)
+            
             cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", filed_frame)
             k = cv2.waitKey(1)
             if k % 256 == 27:
                 # ESC pressed
                 print("Escape hit, closing...")
+                cv2.destroyAllWindows()
                 break
             
             if k % 256 == ord("q"):
                 # Q pressed
                 print("Escape hit, closing...")
+                cv2.destroyAllWindows()
                 break
         # except Exception as e:
         #     print(f'Error in Capture_Image::show_frame {e}')
 
+    def Color_Configuration(self):
+        colorpicker = ColorPicker()
+        Color_Selection = colorpicker.color_picker()
+
     def slot_finish_capturing(self):
         """ Delete Cv2 class to empty the buffer """
-        finish_capturing_command(self)
+        cv2.destroyAllWindows()
         
  
 if __name__ == "__main__":   
-    # cam = Main()
-    # cam.slot_video_capturing()
-    colorpicker = ColorPicker()
-    Color_Selection = colorpicker.color_picker()
-    time.sleep(1)
-    if Color_Selection:
-        main = Main()
-        main.slot_image_capturing()
+    if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+        
+    if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+    
+    app = QtWidgets.QApplication(sys.argv)
+    main = Main()
+    main.show()
+    sys.exit(app.exec_())

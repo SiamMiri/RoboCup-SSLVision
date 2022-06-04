@@ -2,45 +2,49 @@
 import math
 import numpy as np
 from ImageProcessing.ImageProcessing import Image_Processing
+from UDPSockets_SSLClient_ProtoBuf.UDPConnection import UDP_Connection
+import time 
 
 class Detect_Robot_Ball():
+    
     ROTATE_ROBAT_SINGLE_IMAGE = False
-    
-    Robot_Pattern_Dict= { "Robo1"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
-                          "Robo2"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
-                          "Robo3"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
-                          "Robo4"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
-                          "Robo5"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
-                          "Robo6"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
-                          "Robo7"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
-                          "Robo8"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
-                          "Robo9"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
-                          "Robo10" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
-                          "Robo11" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
-                          "Robo12" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
-                          "Robo13" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
-                          "Robo14" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
-                          "Robo15" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
-                          "Robo16" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  }}
-    
+    Robot_Pattern_Dict= { "1"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
+                          "2"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
+                          "3"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
+                          "4"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
+                          "5"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
+                          "6"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
+                          "7"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
+                          "8"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'green'},
+                          "9"  : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
+                          "10" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
+                          "11" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
+                          "12" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
+                          "13" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
+                          "14" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
+                          "15" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
+                          "16" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  }}
     PRINT_DEBUG  = False
+    SEND_DATA_TO_SERVER = False
     
     def __init__(self) -> None: #, package_color_pixel_position:list = None
         Image_Processing.ROTATE_ROBOT_IMAGE = Detect_Robot_Ball.ROTATE_ROBAT_SINGLE_IMAGE
         self.processImage = Image_Processing(self)
+        self.upd_connection = UDP_Connection()
 
         # object global variable
         self.pack                           = None # package_color_pixel_position
         self.shortest_line_pixel_pos_list   = None
         self.crop_robot_image               = None
         self.ROBOT_ID                       = 0
+        self.startTime                      = 0
+        self.endTime                     = 0
         
-    
     def __del__(self):
         pass
     
     def detect_robot(self, frame : np.array = None):
-        
+        self.startTime = time.time()
         if frame is not None:
             self.processImage._start_process(field_frame = frame)
           
@@ -103,11 +107,6 @@ class Detect_Robot_Ball():
         # self.show_robot()
         return angle
     
-    # def show_robot(self):
-    #     self.ROBOT_ID  += 1
-    #     print(self.ROBOT_ID )
-    #     self.processImage.show_single_robot(frame = self.crop_robot_image, frame_name= self.ROBOT_ID)
-        
     def angle_between_shortest_line_circles(self, pixel_position_circle_shortest_line = None, pixel_position_value_shortest_line =  None):
         ppcsl = pixel_position_circle_shortest_line[0] + "__" + pixel_position_circle_shortest_line[1]
         # print(f'ppcsl: {ppcsl}')
@@ -672,11 +671,19 @@ class Detect_Robot_Ball():
                     circle_pixel_pos_pack["DOWN_RIGHT"] = "green"
 
         return self.loop_robot_id_list(color_pattern_list = circle_pixel_pos_pack)
-        
+    
     def loop_robot_id_list(self, color_pattern_list: dict = None):
         for Roboid in Detect_Robot_Ball.Robot_Pattern_Dict:
             if Detect_Robot_Ball.Robot_Pattern_Dict[Roboid] == color_pattern_list:
                 return Roboid
+        if Detect_Robot_Ball.PRINT_DEBUG:       
+            print(f"IT IS NOT ROBOT PATERN, PATERN: {color_pattern_list}")
             
-        
-        print(f"IT IS NOT ROBOT PATERN, PATERN: {color_pattern_list}")
+    def send_data_to_server(self, ssl_message:dict=None):
+        if Detect_Robot_Ball.SEND_DATA_TO_SERVER:
+            self.endTime = time.time()
+            if Detect_Robot_Ball.PRINT_DEBUG:
+                print(f"Data is sending. time takes: {self.endTime - self.startTime}")
+                print(f"Data SSL is {ssl_message}")
+            udp__connection = UDP_Connection()
+            udp__connection.send(payload=ssl_message)

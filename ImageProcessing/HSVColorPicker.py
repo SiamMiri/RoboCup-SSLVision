@@ -6,7 +6,7 @@ import time
 # pip install opencv-contrib-python
 
 class HSV_COLOR_PICKER():
-    def __init__(self):
+    def __init__(self, image_path = None):
         self.max_value = 255
         self.max_value_H = 360//2
         self.low_H = 0
@@ -24,13 +24,7 @@ class HSV_COLOR_PICKER():
         self.high_S_name = 'High S'
         self.high_V_name = 'High V'
         self.cap = cv.VideoCapture(0)
-        
-        # self.camera_capture = None
-        # time.sleep(5)
-    #     # cv.createButton(self.window_detection_name, self.back,None,cv.QT_PUSH_BUTTON,1)
-        
-    # def __del__(self):
-    #     cv.destroyAllWindows()
+        self.imgPath = image_path
     
     def on_low_H_thresh_trackbar(self, val):
         self.low_H = val
@@ -83,12 +77,12 @@ class HSV_COLOR_PICKER():
 
             if inside_red > 0 :
                 try:
-                    with open('Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Red'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Red']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Red HSV Color Range Set")
                 
@@ -97,12 +91,12 @@ class HSV_COLOR_PICKER():
                 
             if inside_green > 0 :
                 try:
-                    with open('Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Green'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Green']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Green HSV Color Range Set")
                 
@@ -111,12 +105,12 @@ class HSV_COLOR_PICKER():
                 
             if inside_orange > 0 :
                 try:
-                    with open('Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Orange'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Orange']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Orange HSV Color Range Set")
                 
@@ -125,12 +119,12 @@ class HSV_COLOR_PICKER():
                 
             if inside_blue > 0 :
                 try:
-                    with open('Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Blue'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Blue']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Blue HSV Color Range Set")
                 
@@ -155,10 +149,13 @@ class HSV_COLOR_PICKER():
 
         while True:
             try:
-                # ret, frame = self.cap.read() 
-                frame = cv.imread('./ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg')
-                frame = cv.resize(frame, (740,480))
-
+                # ret, frame = self.cap.read()
+                if self.imgPath != None: 
+                    frame = cv.imread(self.imgPath)
+                    frame = cv.resize(frame, (740,480))
+                else:
+                    ret, frame = self.cap.read()
+                    
                 frame_HSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
                 frame_threshold = cv.inRange(frame_HSV, (self.low_H, self.low_S, self.low_V), (self.high_H, self.high_S, self.high_V))
                 

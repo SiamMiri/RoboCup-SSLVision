@@ -1,18 +1,26 @@
-import ssl_client_pb2 as TodoList
+from UDPSockets_SSLClient_ProtoBuf import ssl_client_pb2 as SSL_RoboCup_ProtoBuf
 
-my_list = TodoList.SSL_DetectionRobot()
-my_list.confidence = 99
-my_list.robot_id = 1
-my_list.x = 1
-my_list.y = 1
-my_list.orientation = 1
-my_list.pixel_x = 1
-my_list.pixel_y = 1
-my_list.height  = 125
+class Client_Socket_ProtoBuf():
+    def __init__(self, *args):
+        self.ProtoBuf = None
+        print(args)
+        print(args[0])
+        if len(args[0]) == 8:       
+            self.ssl_robot_detection_message(args[0])
+            
+    
+    def __del__(self):
+        pass
+    
+    def ssl_robot_detection_message(self, *args):        
+        message_dic = SSL_RoboCup_ProtoBuf.SSL_DetectionRobot()
+        message_dic.confidence  = args[0]["confidence"]
+        message_dic.robot_id    = args[0]["robot_id"]
+        message_dic.x           = args[0]["x"]
+        message_dic.y           = args[0]["y"]
+        message_dic.orientation = args[0]["orientation"]
+        message_dic.pixel_x     = args[0]["pixel_x"]
+        message_dic.pixel_y     = args[0]["pixel_y"]
+        message_dic.height      = args[0]["height"]        
+        self.ProtoBuf =  message_dic
 
-# first_item = my_list.todos.add()
-# first_item.state = TodoList.TaskState.Value("TASK_DONE")
-# first_item.task = "Test ProtoBuf for Python"
-# first_item.due_date = "31.10.2019"
-
-print(my_list)

@@ -11,13 +11,15 @@
 import time
 
 from cv2 import VideoCapture
+import os.path
+from os import path
 from ImageProcessing.CaptureImage import Capture_Image
 from ImageProcessing.CaptureVideo import Capture_Video
 from RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
 from ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
 from MainGui.MainWindow import Ui_MainWindow  
 import cv2
-from PyQt5.QtWidgets import QFileDialog, QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from PyQt5 import QtCore, QtWidgets
 import sys
 
@@ -36,6 +38,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.robot_location     = None                # Robot location on the field
         self.robot_orientation  = None                # Robot orientation
         self.connectMe()
+        self.msg                = QMessageBox()
         
     def __del__(self):
         """ Destroy all class methods """
@@ -46,7 +49,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.btn_LoadImageFile.clicked.connect(self.slotLoadImageFile)
         self.btn_StartImageCapturing.clicked.connect(self.slotImageCapturing)
         self.btn_StartVideoCapturing.clicked.connect(self.slotVideoCapturing)
-        self.btn_ColorConfiguration.clicked.connect(self.slotColorConfiguration)
+        self.btn_ImageColorConfiguration.clicked.connect(self.slotColorConfiguration)
     
     # Define All Slots Here
     def slotLoadImageFile(self):
@@ -57,7 +60,7 @@ class Main(QMainWindow, Ui_MainWindow):
             self.txt_FilePath.setText(str(filepath[0]))
     
     def slotImageCapturing(self):
-        self.image_capturing(path= self.txt_FilePath.toPlainText())
+        self.image_capturing(img_path= self.txt_FilePath.toPlainText())
         
     def slotVideoCapturing(self):
         self.video_capturing()
@@ -96,41 +99,68 @@ class Main(QMainWindow, Ui_MainWindow):
         except Exception as e:
             print(f'Error in Capture_Image::show_frame {e}')
         
-    def image_capturing(self, path:str=None):
+    def image_capturing(self, img_path:str=None):
         """ start capturing image from path"""
-        capturingImage  = Capture_Image(image_path= None)
-        # imageProcessing = Image_Processing()
-        detectRobot     = DetectRobot()
-        
-        # Creat windows for the frame
-        cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        if len(img_path) != 0:
+            if path.exists(img_path):
+                capturingImage  = Capture_Image(image_path= None)
+                # imageProcessing = Image_Processing()
+                detectRobot     = DetectRobot()
+                # Creat windows for the frame
+                cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
 
-        # try:
-        while True:
-            filed_frame = capturingImage.load_image(image_path=path)
-            # imageProcessing.start_process(frame= filed_frame)
-            DetectRobot.SEND_DATA_TO_SERVER = True
-            detectRobot.detect_robot(frame=filed_frame)
+                # try:
+                while True:
+                    filed_frame = capturingImage.load_image(image_path=img_path)
+                    # imageProcessing.start_process(frame= filed_frame)
+                    DetectRobot.SEND_DATA_TO_SERVER = True
+                    detectRobot.detect_robot(frame=filed_frame)
+                    
+                    cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", filed_frame)
+                    k = cv2.waitKey(1)
+                    if k % 256 == 27:
+                        # ESC pressed
+                        print("Escape hit, closing...")
+                        cv2.destroyAllWindows()
+                        break
+                    
+                    if k % 256 == ord("q"):
+                        # Q pressed
+                        print("Escape hit, closing...")
+                        cv2.destroyAllWindows()
+                        break
+            else:
+                self.msg.setIcon(QMessageBox.Information)
+                self.msg.setText("The Image Path does not exist, PLEASE REENTER YOUR FILE PATH !!")
+                self.msg.setWindowTitle("Error")
+                self.msg.setStandardButtons(QMessageBox.Ok)
+                self.msg.show()
+        else:
+            self.msg.setIcon(QMessageBox.Information)
+            self.msg.setText("The Image Path is Empty, PLEASE LOAD YOUR FILE !!")
+            self.msg.setWindowTitle("Error")
+            self.msg.setStandardButtons(QMessageBox.Ok)
+            self.msg.show()
             
-            cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", filed_frame)
-            k = cv2.waitKey(1)
-            if k % 256 == 27:
-                # ESC pressed
-                print("Escape hit, closing...")
-                cv2.destroyAllWindows()
-                break
-            
-            if k % 256 == ord("q"):
-                # Q pressed
-                print("Escape hit, closing...")
-                cv2.destroyAllWindows()
-                break
-        # except Exception as e:
-        #     print(f'Error in Capture_Image::show_frame {e}')
 
     def Color_Configuration(self):
-        colorpicker = ColorPicker()
-        Color_Selection = colorpicker.color_picker()
+        imgPath = self.txt_FilePath.toPlainText()
+        if len(imgPath) != 0:
+            if path.exists(imgPath):
+                colorpicker = ColorPicker(image_path= imgPath)
+                Color_Selection = colorpicker.color_picker()
+            else:
+                    self.msg.setIcon(QMessageBox.Information)
+                    self.msg.setText("The Image Path does not exist, PLEASE REENTER YOUR FILE PATH !!")
+                    self.msg.setWindowTitle("Error")
+                    self.msg.setStandardButtons(QMessageBox.Ok)
+                    self.msg.show()
+        else:
+            self.msg.setIcon(QMessageBox.Information)
+            self.msg.setText("The Image Path is Empty, PLEASE LOAD YOUR FILE !!")
+            self.msg.setWindowTitle("Error")
+            self.msg.setStandardButtons(QMessageBox.Ok)
+            self.msg.show()
 
     def slot_finish_capturing(self):
         """ Delete Cv2 class to empty the buffer """
@@ -138,6 +168,7 @@ class Main(QMainWindow, Ui_MainWindow):
         
  
 if __name__ == "__main__":   
+    
     if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
         QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
         

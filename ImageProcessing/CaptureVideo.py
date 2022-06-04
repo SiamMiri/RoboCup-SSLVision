@@ -147,6 +147,3 @@ class Capture_Video():
             print(f"ERROR: Unable To Load Json File {e}")
             self.camera_config = None
 
-
-cam = Capture_Video()
-frame  = cam.start_video_capturing()

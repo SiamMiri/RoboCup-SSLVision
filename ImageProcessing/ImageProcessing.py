@@ -74,6 +74,7 @@ class Image_Processing():
         self.RoboXRatioFrame  = 0
         self.RoboYRatioFrame  = 0 
         self.color_range      = None 
+        self.ConfigFrame      = None
 
         mpPose = mp.solutions.pose
         self.pose = mpPose.Pose()
@@ -88,8 +89,19 @@ class Image_Processing():
         except Exception as e:
             self.color_range = None
             print(f'Could Not Find Color Config .json File {e}')
+            
+        try:
+        
+        # try to load the json file if exist
+            with open("./src/CameraConfig.json") as color_config:
+                self.ConfigFrame = json.load(color_config)
+        # Catch Err in this case might be naming diff in json file and print defined
+        except Exception as e:
+            self.ConfigFrame = None
+            print(f'Could Not Find Color Config .json File {e}')
 
     def _start_process(self, field_frame: np.array = None):
+        
         # Set Pixel Value
         try:
             self.xFrameSizePixel = int(field_frame.shape[0]) # Setting the length of the X direction
@@ -101,7 +113,9 @@ class Image_Processing():
             print(f"_start_process {e}")
 
         # Detect Robot 
-        # frame, SSL_DetectionRobot_List =  self._detect_blue_circle(frame = self.frame)
+        field_frame = self.set_image_filter(frame = field_frame , filterJsonFile = self.ConfigFrame["FrameConfig"],
+                                            Blur  = False,GaussianBlur = False , Segmentation = False,
+                                            Res   = True)
         self._detect_blue_circle(frame = field_frame)
 
     def _detect_blue_circle(self, frame: cv2.VideoCapture.read = None):
@@ -248,17 +262,17 @@ class Image_Processing():
         else:
             return contours, mask
     
-    def set_image_filter(self, frame  : cv2.VideoCapture.read, filter_frame = None, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
-        if filter_frame != None :
+    def set_image_filter(self, frame  : cv2.VideoCapture.read, filterJsonFile = None, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
+        if filterJsonFile != None :
             ''' Blur Image '''
             if Blur is not False:
-                frame = cv2.blur(src=frame, ksize=(filter_frame["Blur"][0], filter_frame["Blur"][1]))
+                frame = cv2.blur(src=frame, ksize=(filterJsonFile["Blur"][0], filterJsonFile["Blur"][1]))
                 print("Blur is applied")
             
 
             ''' Blured Image '''
             if GaussianBlur is not False:
-                frame = cv2.GaussianBlur(frame, (filter_frame["GaussianBlur"][0], filter_frame["GaussianBlur"][1]), 0)
+                frame = cv2.GaussianBlur(frame, (filterJsonFile["GaussianBlur"][0], filterJsonFile["GaussianBlur"][1]), 0)
                 print("GaussianBlur is applied")
             
             
@@ -273,7 +287,7 @@ class Image_Processing():
                 # In this case the maximum number of iterations is set to 20 and epsilon = 1.0
                 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
 
-                _, labels, centers = cv2.kmeans(new_frame, filter_frame["Segmentation"], None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+                _, labels, centers = cv2.kmeans(new_frame, filterJsonFile["Segmentation"], None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
                 
                 labels = labels.reshape((frame.shape[:-1]))
                 reduced = np.uint8(centers)[labels]
@@ -294,9 +308,13 @@ class Image_Processing():
                     frame.append(np.hstack([ex_img, ex_reduced]))
                     print("Segmentation is applied")
                 '''
+            
+            ''' Resolution '''
             if Res is not False:
                 try:
-                    frame = cv2.resize(frame, (filter_frame["resize_frame"][0], filter_frame["resize_frame"][1]))
+                    x = (filterJsonFile["resize_frame"][0], filterJsonFile["resize_frame"][1])
+                    print(f"Resolution changed to: {x}")
+                    frame = cv2.resize(frame, x)
                 except Exception as e:
                     print(f'set_image_filter: Could not resize image {e}')
         else: 
@@ -541,7 +559,6 @@ class Image_Processing():
         return x, y
 
     def creat_circle_color_id_mask(self, frame: cv2.VideoCapture.read, color: str = None, cordinate_list :list = None):
-        print("HI_1")
 
         # Center coordinates
         center_coordinates = (int(frame.shape[0]/2), int(frame.shape[1]/2))
@@ -551,13 +568,11 @@ class Image_Processing():
         # radius = int(x / 1)         
         # Line thickness of -1 px
         thickness = -1
-        print("HI_2")
         if color == "blue":
             # blue color in BGR
             color = (255, 0, 0)
             radius = int(frame.shape[0]/6)
             # print(f'radias is : {radius}')
-            print("HI_3")
             frame = cv2.circle(frame, center_coordinates, radius, color, thickness)
             # print("Cicle done!")
             return frame

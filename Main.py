@@ -49,7 +49,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.btn_LoadImageFile.clicked.connect(self.slotLoadImageFile)
         self.btn_StartImageCapturing.clicked.connect(self.slotImageCapturing)
         self.btn_StartVideoCapturing.clicked.connect(self.slotVideoCapturing)
-        self.btn_ImageColorConfiguration.clicked.connect(self.slotColorConfiguration)
+        self.btn_ImageColorConfiguration.clicked.connect(self.slotImageColorConfiguration)
+        self.btn_VideoColorConfiguration.clicked.connect(self.slotVideoColorConfiguration)
     
     # Define All Slots Here
     def slotLoadImageFile(self):
@@ -65,9 +66,14 @@ class Main(QMainWindow, Ui_MainWindow):
     def slotVideoCapturing(self):
         self.video_capturing()
         
-    def slotColorConfiguration(self):
-        self.Color_Configuration()
+    def slotImageColorConfiguration(self):
+        self.image_color_configuration()
         
+    def slotVideoColorConfiguration(self):
+        self.video_color_configuration()
+        
+    
+    # Methods calls by slots
     def video_capturing(self):
         """ start capturing video from camera """
         capturingVideo  = Capture_Video()
@@ -142,13 +148,16 @@ class Main(QMainWindow, Ui_MainWindow):
             self.msg.setStandardButtons(QMessageBox.Ok)
             self.msg.show()
             
-
-    def Color_Configuration(self):
+    def video_color_configuration(self):
+        colorpicker = ColorPicker(image_path= None)
+        colorpicker.color_picker()
+                
+    def image_color_configuration(self):
         imgPath = self.txt_FilePath.toPlainText()
         if len(imgPath) != 0:
             if path.exists(imgPath):
                 colorpicker = ColorPicker(image_path= imgPath)
-                Color_Selection = colorpicker.color_picker()
+                colorpicker.color_picker()
             else:
                     self.msg.setIcon(QMessageBox.Information)
                     self.msg.setText("The Image Path does not exist, PLEASE REENTER YOUR FILE PATH !!")

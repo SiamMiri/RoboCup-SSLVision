@@ -22,7 +22,7 @@ class Capture_Video():
         self.load_json_config_file()
 
         """ Start capturing get camera config from start_process_command """
-        self.set_camera_config(self.camera_config['CameraConfig'], Fps=True, Res=False, Focus=False)
+        self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=False, Focus=False)
 
     def __del__(self) -> None:
         self.finish_capturing()
@@ -38,38 +38,26 @@ class Capture_Video():
         
         image_processing = Image_Processing()
 
-        while True:
+        # while True:
             # Calculate FPS
-            cTime = time.time()
+            # cTime = time.time()
 
-            ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
-            if not ret:
-                print("failed to grab frame")
-                break
-
-            frame, _ = image_processing.start_process(frame= frame)
+        ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+        if not ret:
+            print("failed to grab frame")
+            return None
         
-            fps = 1 / (cTime - self.pTime)
-            self.pTime = cTime
+        return frame
+            # frame, _ = image_processing.start_process(frame= frame)
+        
+            # fps = 1 / (cTime - self.pTime)
+            # self.pTime = cTime
 
-            # Set FPS on the frame
-            cv2.putText(frame, str(abs(int(fps))), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
+            # # Set FPS on the frame
+            # cv2.putText(frame, str(abs(int(fps))), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
             # show image
-            cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
-            
-            k = cv2.waitKey(1)
-            
-            # Press Keys to close the windows
-            if k % 256 == 27:
-                # ESC pressed
-                print("Escape hit, closing...")
-                break
-            
-            if k % 256 == ord("q"):
-                # Q pressed
-                print("Escape hit, closing...")
-                break
+            # cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
 
     ##########################################
     # destroy opencv camera and free the camera 
@@ -139,7 +127,7 @@ class Capture_Video():
         """ with this function you can load json file """
         try:
             # try to load the json file if exist
-            with open("CameraConfig.json") as config_file:
+            with open("./src/CameraConfig.json") as config_file:
                 self.camera_config = json.load(config_file)
 
         # Catch Err in this case might be naming diff in json file and print defined

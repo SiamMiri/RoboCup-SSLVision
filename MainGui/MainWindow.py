@@ -69,5 +69,5 @@ class Ui_MainWindow(object):
         self.btn_StartImageCapturing.setText(_translate("MainWindow", "Start Image Capturing"))
         self.btn_StartVideoCapturing.setText(_translate("MainWindow", "Start Video Capturing"))
         self.btn_ImageColorConfiguration.setText(_translate("MainWindow", "Configure Color Image"))
-        self.lbl_version.setText(_translate("MainWindow", "version: 1.1.4"))
+        self.lbl_version.setText(_translate("MainWindow", "version: 1.2.1"))
         self.btn_VideoColorConfiguration.setText(_translate("MainWindow", "Configure Color Video"))

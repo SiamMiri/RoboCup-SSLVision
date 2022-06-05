@@ -72,7 +72,6 @@ class Main(QMainWindow, Ui_MainWindow):
     def slotVideoColorConfiguration(self):
         self.video_color_configuration()
         
-    
     # Methods calls by slots
     def video_capturing(self):
         """ start capturing video from camera """
@@ -86,12 +85,14 @@ class Main(QMainWindow, Ui_MainWindow):
 
         try:
             while True:
-                filed_frame = capturingVideo.load_image(image_path="./ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg")
-                # imageProcessing.start_process(frame= filed_frame)
+                field_frame = capturingVideo.start_video_capturing()
+                if field_frame is None:
+                    break
+                # imageProcessing.start_process(frame= field_frame)
                 DetectRobot.SEND_DATA_TO_SERVER = True
-                detectRobot.detect_robot(frame=filed_frame)
+                detectRobot.detect_robot(frame=field_frame)
                 
-                cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", filed_frame)
+                cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
                 k = cv2.waitKey(1)
                 if k % 256 == 27:
                     # ESC pressed
@@ -117,12 +118,12 @@ class Main(QMainWindow, Ui_MainWindow):
 
                 # try:
                 while True:
-                    filed_frame = capturingImage.load_image(image_path=img_path)
-                    # imageProcessing.start_process(frame= filed_frame)
+                    field_frame = capturingImage.load_image(image_path=img_path)
+                    # imageProcessing.start_process(frame= field_frame)
                     DetectRobot.SEND_DATA_TO_SERVER = True
-                    detectRobot.detect_robot(frame=filed_frame)
+                    detectRobot.detect_robot(frame=field_frame)
                     
-                    cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", filed_frame)
+                    cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
                     k = cv2.waitKey(1)
                     if k % 256 == 27:
                         # ESC pressed

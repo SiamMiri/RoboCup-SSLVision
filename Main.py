@@ -10,7 +10,7 @@
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
 import time
 import logging
-logging.basicConfig(filename="RoboCupLoggingFile", encoding="utf-8", level=logging.DEBUG)
+logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encoding="utf-8",
 from cv2 import VideoCapture
 import os.path
 from os import path
@@ -75,7 +75,7 @@ class Main(QMainWindow, Ui_MainWindow):
     # Methods calls by slots
     def video_capturing(self):
         """ start capturing video from camera """
-        capturingVideo  = Capture_Video()s
+        capturingVideo  = Capture_Video()
         capturingVideo.load_json_config_file()
         capturingVideo.set_camera_config(Fps=False, Res=True, Focus=False)
         detectRobot     = DetectRobot()
@@ -93,8 +93,8 @@ class Main(QMainWindow, Ui_MainWindow):
             detectRobot.detect_robot(frame=field_frame)
             endTime = time.time()
             
-            logging.info(f'Passed Time From Main After Image Processing = {endTime - startTime}')
-            logging.info(f'FPS From Main After Image Processing: {1/(endTime - startTime)}')
+            logging.info(f'\nPassed Time From Main After Image Processing = {endTime - startTime}')
+            logging.info(f'FPS From Main After Image Processing: {1/(endTime - startTime)} \n')
             
             cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
             k = cv2.waitKey(1)
@@ -120,10 +120,16 @@ class Main(QMainWindow, Ui_MainWindow):
 
                 # try:
                 while True:
+                    startTime = time.time()
                     field_frame = capturingImage.load_image(image_path=img_path)
                     # imageProcessing.start_process(frame= field_frame)
                     DetectRobot.SEND_DATA_TO_SERVER = True
                     detectRobot.detect_robot(frame=field_frame)
+                    
+                    endTime = time.time()
+                    
+                    logging.info(f'\nPassed Time From Main After Image Processing = {endTime - startTime}')
+                    logging.info(f'FPS From Main After Image Processing: {1/(endTime - startTime)} \n')
                     
                     cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
                     k = cv2.waitKey(1)

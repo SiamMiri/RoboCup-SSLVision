@@ -3,8 +3,6 @@ from UDPSockets_SSLClient_ProtoBuf import ssl_client_pb2 as SSL_RoboCup_ProtoBuf
 class Client_Socket_ProtoBuf():
     def __init__(self, *args):
         self.ProtoBuf = None
-        print(args)
-        print(args[0])
         if len(args[0]) == 8:       
             self.ssl_robot_detection_message(args[0])
             

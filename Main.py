@@ -9,7 +9,8 @@
 # TODO: 4- Find Robot ball position (similar to robot position)
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
 import time
-
+import logging
+logging.basicConfig(filename="RoboCupLoggingFile", encoding="utf-8", level=logging.DEBUG)
 from cv2 import VideoCapture
 import os.path
 from os import path
@@ -74,7 +75,7 @@ class Main(QMainWindow, Ui_MainWindow):
     # Methods calls by slots
     def video_capturing(self):
         """ start capturing video from camera """
-        capturingVideo  = Capture_Video()
+        capturingVideo  = Capture_Video()s
         capturingVideo.load_json_config_file()
         capturingVideo.set_camera_config(Fps=False, Res=True, Focus=False)
         detectRobot     = DetectRobot()
@@ -83,12 +84,17 @@ class Main(QMainWindow, Ui_MainWindow):
         cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
 
         while True:
+            startTime = time.time()
             field_frame = capturingVideo.start_video_capturing()
             if field_frame is None:
                 break
             # imageProcessing.start_process(frame= field_frame)
             DetectRobot.SEND_DATA_TO_SERVER = True
             detectRobot.detect_robot(frame=field_frame)
+            endTime = time.time()
+            
+            logging.info(f'Passed Time From Main After Image Processing = {endTime - startTime}')
+            logging.info(f'FPS From Main After Image Processing: {1/(endTime - startTime)}')
             
             cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
             k = cv2.waitKey(1)

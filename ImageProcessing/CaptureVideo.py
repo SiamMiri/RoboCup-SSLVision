@@ -3,6 +3,9 @@ from ImageProcessing.ImageProcessing import Image_Processing
 import cv2
 import json
 import time
+import logging
+
+
 
 # FIXME: Change the frame size would cause high FPS Drop
 
@@ -39,9 +42,9 @@ class Capture_Video():
             print("failed to grab frame")
             return None
         endTime = time.time()
-        
-        print(f'passed time = {endTime - startTime}')
-        print(f'FPS : {1/(endTime - startTime)}')
+        logging.info(f'Current Resolution is: {len(frame[0])} {len(frame[1])}')
+        logging.info(f'Passed Time From Capturinng Video Class = {endTime - startTime}')
+        logging.info(f'FPS From Capturing Frame Withough any Image Processig: {1/(endTime - startTime)}')
         return frame
 
     ##########################################

@@ -1,6 +1,7 @@
 # import ImageProcessing
 import cv2
-
+import logging
+import time
 
 class Capture_Image():
     def __init__(self, image_path = None) -> None:
@@ -14,11 +15,18 @@ class Capture_Image():
         pass
     
     def load_image(self, image_path = None):
+        
+        startTime = time.time()
        
         if image_path is not None:
             self.frame = cv2.imread(image_path)
         else:
             self.frame = cv2.imread(self.image_path)
+        
+        endTime = time.time()
+        
+        logging.info(f'\nPassed Time from capturing image = {endTime - startTime}')
+        logging.info(f'FPS after loading image before image processing: {1/(endTime - startTime)} \n')
         
         return self.frame
     

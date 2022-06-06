@@ -56,7 +56,6 @@ class Main(QMainWindow, Ui_MainWindow):
     def slotLoadImageFile(self):
         filepath = ""
         filepath = QFileDialog.getOpenFileName(self, "Choose The Image File", "", "Image File (*.jpg .*JPG)")
-        print(filepath)
         if filepath != "":
             self.txt_FilePath.setText(str(filepath[0]))
     
@@ -76,35 +75,32 @@ class Main(QMainWindow, Ui_MainWindow):
     def video_capturing(self):
         """ start capturing video from camera """
         capturingVideo  = Capture_Video()
-        # imageProcessing = Image_Processing()
+        capturingVideo.load_json_config_file()
+        capturingVideo.set_camera_config(Fps=False, Res=True, Focus=False)
         detectRobot     = DetectRobot()
         
         # Creat windows for the frame
         cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
 
-
-        try:
-            while True:
-                field_frame = capturingVideo.start_video_capturing()
-                if field_frame is None:
-                    break
-                # imageProcessing.start_process(frame= field_frame)
-                DetectRobot.SEND_DATA_TO_SERVER = True
-                detectRobot.detect_robot(frame=field_frame)
-                
-                cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
-                k = cv2.waitKey(1)
-                if k % 256 == 27:
-                    # ESC pressed
-                    print("Escape hit, closing...")
-                    break
-                
-                if k % 256 == ord("q"):
-                    # Q pressed
-                    print("Escape hit, closing...")
-                    break
-        except Exception as e:
-            print(f'Error in Capture_Image::show_frame {e}')
+        while True:
+            field_frame = capturingVideo.start_video_capturing()
+            if field_frame is None:
+                break
+            # imageProcessing.start_process(frame= field_frame)
+            DetectRobot.SEND_DATA_TO_SERVER = True
+            detectRobot.detect_robot(frame=field_frame)
+            
+            cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
+            k = cv2.waitKey(1)
+            if k % 256 == 27:
+                # ESC pressed
+                print("Escape hit, closing...")
+                break
+            
+            if k % 256 == ord("q"):
+                # Q pressed
+                print("Escape hit, closing...")
+                break
         
     def image_capturing(self, img_path:str=None):
         """ start capturing image from path"""

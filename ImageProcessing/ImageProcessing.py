@@ -313,7 +313,8 @@ class Image_Processing():
             if Res is not False:
                 try:
                     x = (filterJsonFile["resize_frame"][0], filterJsonFile["resize_frame"][1])
-                    print(f"Resolution changed to: {x}")
+                    if Image_Processing.PRINT_DEBUG:
+                        print(f"Resolution changed to: {x}")
                     frame = cv2.resize(frame, x)
                 except Exception as e:
                     print(f'set_image_filter: Could not resize image {e}')
@@ -423,7 +424,6 @@ class Image_Processing():
                 if red_area < area_of_circle_max and red_area > area_of_circle_min:
                     if Image_Processing.PRINT_DEBUG:
                         print(f"red_area {red_area}")
-                    print(f"red_area {red_area}")
                     moment = cv2.moments(contours) # NOTE: check me again 
                     cx_red = int(moment["m10"]/moment["m00"])
                     cy_red = int(moment["m01"]/moment["m00"])
@@ -449,7 +449,6 @@ class Image_Processing():
                 
                 if green_area < area_of_circle_max and green_area > area_of_circle_min:
                     moment = cv2.moments(contours) # NOTE: check me again 
-                    print(f"Green_are: {green_area}")
                     cx_green = int(moment["m10"]/moment["m00"])
                     cy_green = int(moment["m01"]/moment["m00"])
                     if Image_Processing.PRINT_DEBUG:
@@ -483,11 +482,6 @@ class Image_Processing():
                 # print(f'num_y_cor_red :     {B}')
                 print(f'circle_pack: {circlePack}')
               
-            A = num_x_cor['green']
-            B = num_x_cor['red']
-            print(f'num_x_cor_green :   {A}')
-            print(f'num_y_cor_red :     {B}')
-            print(f'circle_pack: {circlePack}')
             Angle = None
             Id = None
             if len(circlePack) == 4 :

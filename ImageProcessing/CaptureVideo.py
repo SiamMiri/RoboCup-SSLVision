@@ -19,10 +19,10 @@ class Capture_Video():
         self.camera_capture = cv2.VideoCapture(0)
 
         """ Load Json File For Setting Camera Configuration """
-        self.load_json_config_file()
+        # self.load_json_config_file()
 
         """ Start capturing get camera config from start_process_command """
-        self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=False, Focus=False)
+        # self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
 
     def __del__(self) -> None:
         self.finish_capturing()
@@ -33,31 +33,16 @@ class Capture_Video():
     ##########################################
     def start_video_capturing(self):
 
-        # Initiate Windows Name
-        cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
-        
-        image_processing = Image_Processing()
-
-        # while True:
-            # Calculate FPS
-            # cTime = time.time()
-
+        startTime =  time.time()
         ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
         if not ret:
             print("failed to grab frame")
             return None
+        endTime = time.time()
         
+        print(f'passed time = {endTime - startTime}')
+        print(f'FPS : {1/(endTime - startTime)}')
         return frame
-            # frame, _ = image_processing.start_process(frame= frame)
-        
-            # fps = 1 / (cTime - self.pTime)
-            # self.pTime = cTime
-
-            # # Set FPS on the frame
-            # cv2.putText(frame, str(abs(int(fps))), (30, 40), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
-
-            # show image
-            # cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
 
     ##########################################
     # destroy opencv camera and free the camera 
@@ -68,17 +53,17 @@ class Capture_Video():
     ##########################################
     # set camera configuration
     ##########################################
-    def set_camera_config(self, camera_config: json, Fps=False, Res=False, Focus=False):
+    def set_camera_config(self, Fps=False, Res=False, Focus=False):
         try:
             if isinstance(Fps, bool) and isinstance(Res, bool) and isinstance(Focus, bool):
                 
                 if Fps is not False:
                     # Change FPS
-                    if isinstance(camera_config["FPS"], int):
-                        self.camera_capture.set(cv2.CAP_PROP_FPS, camera_config["FPS"])  # set camera FPS from Json file
+                    if isinstance(self.camera_config["CameraConfig"]["FPS"], int):
+                        self.camera_capture.set(cv2.CAP_PROP_FPS, self.camera_config["CameraConfig"]["FPS"])  # set camera FPS from Json file
                         print("FPS Set")
-                    elif isinstance(camera_config["FPS"], float):
-                        self.camera_capture.set(cv2.CAP_PROP_FPS, int(camera_config["FPS"]))  # set camera FPS from Json file
+                    elif isinstance(self.camera_config["CameraConfig"]["FPS"], float):
+                        self.camera_capture.set(cv2.CAP_PROP_FPS, int(self.camera_config["CameraConfig"]["FPS"]))  # set camera FPS from Json file
                         print("FPS Set")
                     else:
                         print("FPS Configuration is incorrect")
@@ -89,10 +74,10 @@ class Capture_Video():
                     # self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
                     # self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
                     # Change Resolution
-                    if isinstance(camera_config["Resolution"], list):
+                    if isinstance(self.camera_config["CameraConfig"]["Resolution"], list):
                         # set camera Resolution from Json file
-                        self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, int(camera_config["Resolution"][0]))
-                        self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, int(camera_config["Resolution"][1]))
+                        self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, int(self.camera_config["CameraConfig"]["Resolution"][0]))
+                        self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, int(self.camera_config["CameraConfig"]["Resolution"][1]))
                         print("Resolution Set")
                     else:
                         print("Resolution Configuration is incorrect")
@@ -101,14 +86,14 @@ class Capture_Video():
 
                 if Focus is not False:
                     # Change Focus
-                    if isinstance(camera_config["focus"], int):
+                    if isinstance(self.camera_config["CameraConfig"]["focus"], int):
                         # set camera Resolution from Json file
-                        self.camera_capture.set(cv2.CAP_PROP_FOCUS, camera_config["focus"])
+                        self.camera_capture.set(cv2.CAP_PROP_FOCUS, self.camera_config["CameraConfig"]["focus"])
                         print("focus Set")
-                    elif isinstance(camera_config["focus"], float):
+                    elif isinstance(self.camera_config["CameraConfig"]["focus"], float):
                         # set camera Resolution from Json file
-                        # self.camera_capture.set(cv2.CAP_PROP_FOCUS, int(camera_config["focus"])) // This may not work
-                        self.camera_capture.set(28, int(camera_config["focus"]))
+                        # self.camera_capture.set(cv2.CAP_PROP_FOCUS, int(self.camera_config["CameraConfig"]["focus"])) // This may not work
+                        self.camera_capture.set(28, int(self.camera_config["CameraConfig"]["focus"]))
                         print("focus Set")
                     else:
                         print("Focus Configuration is incorrect")

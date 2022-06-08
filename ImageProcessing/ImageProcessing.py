@@ -1,16 +1,11 @@
 import json
-from pickle import FALSE
-from tokenize import String
 import cv2
 import numpy as np
 import time
-import mediapipe as mp
 import imutils
-from collections import deque
-import argparse
 from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
-import math
+import logging
 # from sklearn.datasets import load_sample_image
 # from Detect_Robot_Ball import Detect_Robot_Ball as s
 
@@ -27,7 +22,8 @@ class Image_Processing():
     #                                           #
     #                                           #
     #                                           #
-#   Y                                           #
+#   Y                 center                    #
+    #                                           #
     #                                           #
     #                                           #
     #############################################
@@ -44,7 +40,7 @@ class Image_Processing():
     ROTATE_ROBOT_IMAGE              = False
     PRINT_DEBUG                     = False
     SHOW_MAIN_FIELD                 = True
-    SHOW_ROBOTS_IN_NEW_WINDOW       = True
+    SHOW_ROBOTS_IN_NEW_WINDOW       = False
     CAPTURE_ONE_ROBOT_IMAGE         = False
     FIND_ROBOT_AND_BALL             = True
     LOAD_IMAGE                      = True 
@@ -57,11 +53,11 @@ class Image_Processing():
         self.Parent = parent
         
         self.SSL_DetectionRobot_List  = {"robot_id"    :  0,
-                                        "x"           :  0,
-                                        "y"           :  0,
-                                        "orientation" :  0,
-                                        "pixel_x"     :  0,
-                                        "pixel_y"     :  0}
+                                         "x"           :  0,
+                                         "y"           :  0,
+                                         "orientation" :  0,
+                                         "pixel_x"     :  0,
+                                         "pixel_y"     :  0}
         
             
         self.pTime = 0
@@ -75,9 +71,7 @@ class Image_Processing():
         self.RoboYRatioFrame  = 0 
         self.color_range      = None 
         self.ConfigFrame      = None
-
-        mpPose = mp.solutions.pose
-        self.pose = mpPose.Pose()
+        
         self.__read_color_config_json_file()
 
     def __read_color_config_json_file(self):
@@ -142,6 +136,7 @@ class Image_Processing():
 
             """ contours for blue area """
             for contours in contours_blue:
+                startTime = time.time()
                 blue_area = cv2.contourArea(contours)
                 if Image_Processing.PRINT_DEBUG:
                     print(f"blue_are {blue_area}")
@@ -167,6 +162,8 @@ class Image_Processing():
                         # return pack, crop_img
                     else:
                         self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
+                        endTime = time.time()
+                        logging.info(f'Elappsed time for finding each robot: {endTime - startTime}')
                         # return pack, crop_img
         except Exception as e:
             print(f"_detect_blue_circle: {e}")                
@@ -193,7 +190,7 @@ class Image_Processing():
         return area_of_circle_min , area_of_circle_max
 
     def find_contours_mask(self, frame = None, circle_color:str = None):
-        
+        startTime = time.time()
         contours = None
         mask     = None
         frameHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -207,6 +204,8 @@ class Image_Processing():
             # find contours
             contours             = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
             contours             = imutils.grab_contours(contours)
+            endTime = time.time()
+            logging.info(f'\nTime passed to find blue contourse: {endTime-startTime}\n')
             return contours, mask
         
         # Color: Red

@@ -1,0 +1,17 @@
+{
+    "CameraConfig":
+    {
+        "_comment" : "The Variable for camera config section should be acceptable base on opencv",
+        "FPS":30,
+        "Resolution":[1280 , 720],
+        "focus": 255
+    },
+    "FrameConfig":
+    {
+        "_comment" : "Do not use two blur and GaussianBlur at the same time, keep the one that it not needed as None",
+        "GaussianBlur": [37, 37],
+        "Blur": [5,5],
+        "Segmentation": 5,
+        "resize_frame": [1280 , 720]
+    }
+}

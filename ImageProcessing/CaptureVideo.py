@@ -1,9 +1,10 @@
 from http.client import IM_USED
-from ImageProcessing.ImageProcessing import Image_Processing
 import cv2
 import json
 import time
 import logging
+
+logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encoding="utf-8",
 
 
 
@@ -34,18 +35,33 @@ class Capture_Video():
     ##########################################
     # start image capturing
     ##########################################
-    def start_video_capturing(self):
-
-        startTime =  time.time()
-        ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
-        if not ret:
-            print("failed to grab frame")
-            return None
-        endTime = time.time()
-        logging.info(f'Current Resolution is: {len(frame[0])} {len(frame[1])}')
-        logging.info(f'Passed Time From Capturinng Video Class = {endTime - startTime}')
-        logging.info(f'FPS From Capturing Frame Withough any Image Processig: {1/(endTime - startTime)}')
-        return frame
+    def start_video_capturing(self): # FRAME_FROM_CAM
+        cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        while True:
+            startTime =  time.time()
+            ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+            if not ret:
+                print("failed to grab frame")
+                return None
+            endTime = time.time()
+            logging.info(f'Current Resolution is: {len(frame[0])} {len(frame[1])}')
+            logging.info(f'Passed Time From Capturinng Video Class = {endTime - startTime}')
+            logging.info(f'FPS From Capturing Frame Withough any Image Processig: {1/(endTime - startTime)}')
+            #FRAME_FROM_CAM.put(frame)
+            cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
+            k = cv2.waitKey(1)
+            if k % 256 == 27:
+                # ESC pressed
+                self.slot_finish_capturing()
+                print("Escape hit, closing...")
+                break
+            
+            if k % 256 == ord("q"):
+                # Q pressed
+                print("Escape hit, closing...")
+                self.slot_finish_capturing()
+                break
+        #return frame
 
     ##########################################
     # destroy opencv camera and free the camera 
@@ -123,3 +139,7 @@ class Capture_Video():
             print(f"ERROR: Unable To Load Json File {e}")
             self.camera_config = None
 
+cap = Capture_Video()
+cap.load_json_config_file()
+cap.set_camera_config(Fps=True, Res=True, Focus=False)
+cap.start_video_capturing()

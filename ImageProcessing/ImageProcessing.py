@@ -40,7 +40,7 @@ class Image_Processing():
     ROTATE_ROBOT_IMAGE              = False
     PRINT_DEBUG                     = False
     SHOW_MAIN_FIELD                 = True
-    SHOW_ROBOTS_IN_NEW_WINDOW       = False
+    SHOW_ROBOTS_IN_NEW_WINDOW       = True
     CAPTURE_ONE_ROBOT_IMAGE         = False
     FIND_ROBOT_AND_BALL             = True
     LOAD_IMAGE                      = True 

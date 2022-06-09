@@ -2,8 +2,8 @@
     "CameraConfig":
     {
         "_comment" : "The Variable for camera config section should be acceptable base on opencv",
-        "FPS":30,
-        "Resolution":[1280 , 720],
+        "FPS":90,
+        "Resolution":[1280, 720],
         "focus": 255
     },
     "FrameConfig":

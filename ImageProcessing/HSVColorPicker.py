@@ -23,7 +23,7 @@ class HSV_COLOR_PICKER():
         self.high_H_name = 'High H'
         self.high_S_name = 'High S'
         self.high_V_name = 'High V'
-        self.cap = cv.VideoCapture(0)
+        self.cap = cv.VideoCapture(1)
         self.imgPath = image_path
     
     def on_low_H_thresh_trackbar(self, val):
@@ -77,12 +77,12 @@ class HSV_COLOR_PICKER():
 
             if inside_red > 0 :
                 try:
-                    with open('./src/Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Red'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Red']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('./src/Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Red HSV Color Range Set")
                 
@@ -91,12 +91,12 @@ class HSV_COLOR_PICKER():
                 
             if inside_green > 0 :
                 try:
-                    with open('./src/Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Green'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Green']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('./src/Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Green HSV Color Range Set")
                 
@@ -105,12 +105,12 @@ class HSV_COLOR_PICKER():
                 
             if inside_orange > 0 :
                 try:
-                    with open('./src/Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Orange'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Orange']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('./src/Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Orange HSV Color Range Set")
                 
@@ -119,12 +119,12 @@ class HSV_COLOR_PICKER():
                 
             if inside_blue > 0 :
                 try:
-                    with open('./src/Robo_Color_Config.json', 'r') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
                         data['Low_Blue'] = [self.low_H, self.low_S, self.low_V]
                         data['Up_Blue']  = [self.high_H, self.high_S, self.high_V]
                     
-                    with open('./src/Robo_Color_Config.json', 'w') as file:
+                    with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
                         print("Blue HSV Color Range Set")
                 
@@ -152,7 +152,7 @@ class HSV_COLOR_PICKER():
                 # ret, frame = self.cap.read()
                 if self.imgPath != None: 
                     frame = cv.imread(self.imgPath)
-                    frame = cv.resize(frame, (740,480))
+                    frame = cv.resize(frame, (1280,1280))
                 else:
                     ret, frame = self.cap.read()
                     
@@ -179,10 +179,12 @@ class HSV_COLOR_PICKER():
                 
                 key = cv.waitKey(30)
                 if key == ord('q') or key == 27:
+                    # self.cap.release()
                     # cv.destroyAllWindows()
                     cv.destroyWindow(self.window_capture_name)
                     cv.destroyWindow(self.window_detection_name)
                     self.cap.release()
+                    # cv.destroyAllWindows()
                     return True
             except Exception as err:
                 print(err)

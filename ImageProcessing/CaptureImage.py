@@ -25,8 +25,8 @@ class Capture_Image():
         
         endTime = time.time()
         
-        logging.info(f'\nPassed Time from capturing image = {endTime - startTime}')
-        logging.info(f'FPS after loading image before image processing: {1/(endTime - startTime)} \n')
+        logging.info(f'Time takes read Image: {endTime - startTime}')
+        logging.info(f'FPS Read Image       : {1/(endTime - startTime)}\n\n')
         
         return self.frame
     

@@ -36,39 +36,47 @@ class Capture_Video():
     # start image capturing
     ##########################################
     def start_video_capturing(self): # FRAME_FROM_CAM
-        cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
-        while True:
-            startTime =  time.time()
-            ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
-            if not ret:
-                print("failed to grab frame")
-                return None
-            endTime = time.time()
-            logging.info(f'Current Resolution is: {len(frame[0])} {len(frame[1])}')
-            logging.info(f'Passed Time From Capturinng Video Class = {endTime - startTime}')
-            logging.info(f'FPS From Capturing Frame Withough any Image Processig: {1/(endTime - startTime)}')
-            #FRAME_FROM_CAM.put(frame)
-            cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
-            k = cv2.waitKey(1)
-            if k % 256 == 27:
-                # ESC pressed
-                self.slot_finish_capturing()
-                print("Escape hit, closing...")
-                break
+        # cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        # while True:
+        startTime =  time.time()
+        ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
+        
+            # if not ret:
+            #     print("failed to grab frame")
+            #     break
+        endTime = time.time()
+        logging.info(f'Current Resolution is:    {len(frame[0])} {len(frame[1])}')
+        logging.info(f'Time takes to read frame: {endTime - startTime}')
+        logging.info(f'Raw FPS:                  {1/(endTime - startTime)}\n\n')
+
+        if ret:
+            return frame
+        else:
+            return None
+            # FRAME_FROM_CAM.put(frame)
+            # cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
+        #     k = cv2.waitKey(1)
+        #     if k % 256 == 27:
+        #         # ESC pressed
+        #         print("Escape hit, closing...")
+        #         break
             
-            if k % 256 == ord("q"):
-                # Q pressed
-                print("Escape hit, closing...")
-                self.slot_finish_capturing()
-                break
-        #return frame
+        #     if k % 256 == ord("q"):
+        #         # Q pressed
+        #         print("Escape hit, closing...")
+        #         break
+            
+        # FRAME_FROM_CAM.put(None)
+        # FRAME_FROM_CAM.close()
 
     ##########################################
     # destroy opencv camera and free the camera 
     ##########################################
     def finish_capturing(self):
-        cv2.destroyAllWindows()
-    
+        # cv2.destroyAllWindows() #FIXME: Check it makes any different
+        self.camera_capture.release()
+        pass
+
     ##########################################
     # set camera configuration
     ##########################################
@@ -131,7 +139,7 @@ class Capture_Video():
         """ with this function you can load json file """
         try:
             # try to load the json file if exist
-            with open("./src/CameraConfig.json") as config_file:
+            with open("./src/Config/CameraConfig.json") as config_file:
                 self.camera_config = json.load(config_file)
 
         # Catch Err in this case might be naming diff in json file and print defined
@@ -139,7 +147,7 @@ class Capture_Video():
             print(f"ERROR: Unable To Load Json File {e}")
             self.camera_config = None
 
-cap = Capture_Video()
-cap.load_json_config_file()
-cap.set_camera_config(Fps=True, Res=True, Focus=False)
-cap.start_video_capturing()
+# cap = Capture_Video()
+# cap.load_json_config_file()
+# cap.set_camera_config(Fps=True, Res=True, Focus=False)
+# cap.start_video_capturing()

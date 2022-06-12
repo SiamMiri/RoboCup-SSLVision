@@ -28,7 +28,7 @@ message SSL_DetectionRobot {
      float  pixel_y     =  7;
      float  height      =  8;
   }
-
+// TODO: Add frame number , Capturing time 
   message SSL_DetectionFrame {
      uint32             frame_number  = 1;
      double             t_capture     = 2;

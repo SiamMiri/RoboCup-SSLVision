@@ -6,6 +6,7 @@ import imutils
 from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import logging
+import threading
 # from sklearn.datasets import load_sample_image
 # from Detect_Robot_Ball import Detect_Robot_Ball as s
 
@@ -15,7 +16,7 @@ import logging
 
 class Image_Processing():
     
-    """ This class get images from Capture_Video """
+    """ This class get images from DetectRobotBall """
     # This Parameters are belongs to the CLASS
     ########## Dimension in cintimeteres ########
 #   0 ################## X ######################
@@ -52,32 +53,33 @@ class Image_Processing():
         # parent.__init__()
         self.Parent = parent
         
-        self.SSL_DetectionRobot_List  = {"robot_id"    :  0,
-                                         "x"           :  0,
-                                         "y"           :  0,
-                                         "orientation" :  0,
-                                         "pixel_x"     :  0,
-                                         "pixel_y"     :  0}
-        
+        self.__Dict_SSL_List    = {}
+        self.__list_num         = 0
+        self.__Dict_Robot_Image = {}
             
         self.pTime = 0
         self.robot_center_pos = None
 
-        self.xCoef            = 0
-        self.yCoef            = 0
-        self.xFrameSizePixel  = 0 
-        self.yFrameSizePixel  = 0
-        self.RoboXRatioFrame  = 0
-        self.RoboYRatioFrame  = 0 
-        self.color_range      = None 
-        self.ConfigFrame      = None
+        self.xCoef              = 0
+        self.yCoef              = 0
+        self.xFrameSizePixel    = 0 
+        self.yFrameSizePixel    = 0
+        self.RoboXRatioFrame    = 0
+        self.RoboYRatioFrame    = 0 
+        self.color_range        = None 
+        self.ConfigFrame        = None
+        self.dict_crop_img_info = {}
         
         self.__read_color_config_json_file()
 
+    def __del__(self):
+        #cv2.destroyAllWindows()
+        pass
+    
     def __read_color_config_json_file(self):
         try:
         # try to load the json file if exist
-            with open("./src/Robo_Color_Config.json") as color_config:
+            with open("./src/Config/Robo_Color_Config.json") as color_config:
                 self.color_range = json.load(color_config)
         # Catch Err in this case might be naming diff in json file and print defined
         except Exception as e:
@@ -87,7 +89,7 @@ class Image_Processing():
         try:
         
         # try to load the json file if exist
-            with open("./src/CameraConfig.json") as color_config:
+            with open("./src/Config/CameraConfig.json") as color_config:
                 self.ConfigFrame = json.load(color_config)
         # Catch Err in this case might be naming diff in json file and print defined
         except Exception as e:
@@ -110,21 +112,19 @@ class Image_Processing():
         field_frame = self.set_image_filter(frame = field_frame , filterJsonFile = self.ConfigFrame["FrameConfig"],
                                             Blur  = False,GaussianBlur = False , Segmentation = False,
                                             Res   = True)
-        self._detect_blue_circle(frame = field_frame)
-
+        mylist = self._detect_blue_circle(frame = field_frame)
+        return mylist, self.__Dict_Robot_Image
+        
     def _detect_blue_circle(self, frame: cv2.VideoCapture.read = None):
         # Constants:
         blue_color_num          = 1
         if_is_ball              = False
-        pack = []
         crop_img = None
-        SSL_DetectionRobot_List = None
 
         # The X_Position and Y_Position of the circle blue 
         cx_blue = 0 
         cy_blue = 0 
         moment  = 0
-        i       = 0
 
         contours_blue, mask_blue = self.find_contours_mask(frame= frame, circle_color= "Blue")
         area_of_circle_min , area_of_circle_max = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
@@ -141,12 +141,11 @@ class Image_Processing():
                 if Image_Processing.PRINT_DEBUG:
                     print(f"blue_are {blue_area}")
                 if blue_area < area_of_circle_max and blue_area > area_of_circle_min:
-                    
                     if Image_Processing.MASK_COLOR_THRESHOLD:
                         frame[mask_blue > 0] = (255, 0 , 0)
                     
                     moment = cv2.moments(contours) 
-                    i += 1
+
                     cx_blue = int(moment["m10"]/moment["m00"])
                     cy_blue = int(moment["m01"]/moment["m00"])
                     crop_img = self._crop_robot_circle(frame, cy_blue, cx_blue, if_is_ball)
@@ -155,16 +154,30 @@ class Image_Processing():
                         cv2.line(crop_img, (0 , int(crop_img.shape[0]/2)), (crop_img.shape[0], int(crop_img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
                         cv2.line(crop_img, (int(crop_img.shape[0]/2) , 0), (int(crop_img.shape[0]/2), crop_img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
                     
+                    myList = {blue_color_num: [crop_img, cy_blue, cx_blue]}
+                    self.dict_crop_img_info.update(myList)
                     blue_color_num += 1
-                    if Image_Processing.CAPTURE_ONE_ROBOT_IMAGE:
-                        self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
-                        # return frame, SSL_DetectionRobot_List
-                        # return pack, crop_img
-                    else:
-                        self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
-                        endTime = time.time()
-                        logging.info(f'Elappsed time for finding each robot: {endTime - startTime}')
-                        # return pack, crop_img
+                    
+                    
+            if Image_Processing.CAPTURE_ONE_ROBOT_IMAGE:
+                self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
+                # return frame, SSL_DetectionRobot_List
+                # return pack, crop_img
+            else:
+                for num in self.dict_crop_img_info:
+                    print(num)
+                    MyThread  = threading.Thread(target = self._find_red_green_circle, args = (self.dict_crop_img_info[num][0],
+                                                                                        num, 
+                                                                                        self.dict_crop_img_info[num][1], 
+                                                                                        self.dict_crop_img_info[num][2]))#self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
+                    MyThread.start()
+                    # logging.info(f'Elappsed time for finding each robot: {endTime - startTime}')
+                    # return pack, crop_img
+            MyThread.join()
+            endTime = time.time()
+            print(f'Elappsed time for finding all robots: {endTime - startTime}')
+            # print(self.__Dict_SSL_List)            
+            return self.__Dict_SSL_List
         except Exception as e:
             print(f"_detect_blue_circle: {e}")                
 
@@ -376,13 +389,13 @@ class Image_Processing():
         
         return crop_img
     
-    def _find_red_green_circle(self, img : cv2.VideoCapture.read = None, Robo_Num: int = None, field : cv2.VideoCapture.read = None, cy: int = None, cx :int = None):
+    def _find_red_green_circle(self, img : cv2.VideoCapture.read = None, Robo_Num: int = None, cy: int = None, cx :int = None):
         
         # constants
         num_of_circle   = 1
         num_of_red      = 0
         num_of_green    = 0
-        ssl_message_ = {"confidence"   : 0,
+        ssl_message_ = {"confidence"  : 0,
                         "robot_id"    : 0,
                         "x"           : 0,
                         "y"           : 0,
@@ -485,7 +498,6 @@ class Image_Processing():
             Id = None
             if len(circlePack) == 4 :
                 Angle = self.Parent.list_min_dist_between_circle(circle_pixel_pos_pack = circlePack)
-            
                 ssl_message_["orientation"] = Angle
                 if Angle is not None:    
                     if Image_Processing.rotate_image_by_degree:
@@ -498,10 +510,15 @@ class Image_Processing():
                     ssl_message_["robot_id"] = int(Id) 
                     ssl_message_["pixel_x"]  = cx
                     ssl_message_["pixel_y"]  = cy
-                    if Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW and Angle is not None:
-                        self.Parent.send_data_to_server(ssl_message = ssl_message_)
-                        self.show_single_robot(frame = img, frame_name = " " + str(Id )+ " " +str (Angle) + " ")
-            
+                    if Angle is not None:
+                        # self.Parent.send_data_to_server(ssl_message = ssl_message_)
+                        # self.show_single_robot(frame = img, frame_name = " " + str(Id))# + " " +str (Angle) + " "
+                        if Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW:
+                            imgDict = {Id: img}
+                            self.__Dict_Robot_Image.update(imgDict)
+                        mydict = {self.__list_num: ssl_message_}
+                        self.__Dict_SSL_List.update(mydict)
+                        self.__list_num += 1
         except Exception as e:
             print(f'_find_red_green_circle: {e}')
    
@@ -513,8 +530,9 @@ class Image_Processing():
         return imgRotated
     
     def show_single_robot(self, frame = np.array, frame_name = None):
-        cv2.namedWindow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit")
-        cv2.imshow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit", frame)
+        #cv2.namedWindow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit")
+        #cv2.imshow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit", frame)
+        print("HI")
     
     def check_circle_position(self,img_shape_x, img_shape_y, x, y):
         if x >= img_shape_x//2:
@@ -704,7 +722,7 @@ class Image_Processing():
         
         try:
         # try to load the json file if exist
-            with open("./src/Robo_Color_Config.json") as color_config:
+            with open("./src/Config/Robo_Color_Config.json") as color_config:
                 color_range = json.load(color_config)
             b_json = True
         # Catch Err in this case might be naming diff in json file and print defined

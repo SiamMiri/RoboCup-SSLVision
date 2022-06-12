@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
-    <height>352</height>
+    <width>674</width>
+    <height>382</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
-    <width>550</width>
-    <height>352</height>
+    <width>700</width>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -33,77 +33,64 @@
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QLabel" name="lbl_Date">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>0</y>
-      <width>201</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btn_LoadImageFile">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>90</y>
+      <y>80</y>
       <width>111</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Load Image</string>
+     <string>Image Path</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_StartImageCapturing">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>170</y>
-      <width>171</width>
+      <y>130</y>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Start Image Capturing</string>
+     <string>Start Processing Image</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_StartVideoCapturing">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>170</y>
-      <width>171</width>
+      <x>460</x>
+      <y>130</y>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Start Video Capturing</string>
+     <string>Start Processing Video</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_ImageColorConfiguration">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>210</y>
-      <width>171</width>
+      <y>180</y>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Configure Color Image</string>
+     <string>Configure Color for Image</string>
     </property>
    </widget>
    <widget class="QTextEdit" name="txt_FilePath">
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>90</y>
-      <width>371</width>
+      <y>80</y>
+      <width>491</width>
       <height>31</height>
      </rect>
     </property>
@@ -111,27 +98,125 @@
    <widget class="QLabel" name="lbl_version">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>270</y>
+      <x>20</x>
+      <y>10</y>
       <width>101</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>version: 1.1.1</string>
+     <string>version: 1.2.2</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_VideoColorConfiguration">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>210</y>
-      <width>171</width>
+      <x>460</x>
+      <y>180</y>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Configure Color Video</string>
+     <string>Configure Color for  Video</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_NumFrameToSave">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>181</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of frame to save:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_NumRoboImageToSave">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>300</y>
+      <width>221</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of robot image to save:</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_NumFrameToSave">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>250</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_NumRoboImageToSave">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>290</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_ShowRobotindividualWindow">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>250</y>
+      <width>241</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>show robot in individual window</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_ServerInformation">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>130</y>
+      <width>141</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Server Information:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_IP">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>160</y>
+      <width>201</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>IP:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_Group">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>190</y>
+      <width>201</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Group:</string>
     </property>
    </widget>
   </widget>
@@ -140,7 +225,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>544</width>
+     <width>674</width>
      <height>22</height>
     </rect>
    </property>

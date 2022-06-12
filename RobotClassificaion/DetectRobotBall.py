@@ -3,9 +3,10 @@ import math
 import numpy as np
 from ImageProcessing.ImageProcessing import Image_Processing
 from UDPSockets_SSLClient_ProtoBuf.UDPConnection import UDP_Connection
+import multiprocessing
 import time 
 
-class Detect_Robot_Ball():
+class Detect_Robot_Ball(multiprocessing.Process):
     
     ROTATE_ROBAT_SINGLE_IMAGE = False
     Robot_Pattern_Dict= { "1"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
@@ -24,10 +25,13 @@ class Detect_Robot_Ball():
                           "14" : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'green', "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  },
                           "15" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'green'},
                           "16" : {"TOP_RIGHT": 'green', "TOP_LEFT": 'red'  , "DOWN_LEFT": 'red'  , "DOWN_RIGHT": 'red'  }}
-    PRINT_DEBUG  = False
-    SEND_DATA_TO_SERVER = False
     
-    def __init__(self) -> None: #, package_color_pixel_position:list = None
+    PRINT_DEBUG         = False
+    SEND_DATA_TO_SERVER = False
+    SHOW_CROPED_IMAGE   = False
+    
+    def __init__(self, SslListQueue, CropImageQueue, frameIdx) -> None: #, package_color_pixel_position:list = None
+        super(multiprocessing.Process, self).__init__()
         Image_Processing.ROTATE_ROBOT_IMAGE = Detect_Robot_Ball.ROTATE_ROBAT_SINGLE_IMAGE
         self.processImage = Image_Processing(self)
         self.upd_connection = UDP_Connection()
@@ -38,15 +42,29 @@ class Detect_Robot_Ball():
         self.crop_robot_image               = None
         self.ROBOT_ID                       = 0
         self.startTime                      = 0
-        self.endTime                     = 0
+        self.endTime                        = 0
+        self.frameProcess                   = 0
+        self.queue                          = SslListQueue
+        self.crop_frame_queue               = CropImageQueue
+        self.frameIdx                       = 0
+        
+        if self.SHOW_CROPED_IMAGE == False:
+            Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW = False
         
     def __del__(self):
-        pass
+        self.terminate()
     
-    def detect_robot(self, frame : np.array = None):
+    def run(self):
         self.startTime = time.time()
-        if frame is not None:
-            self.processImage._start_process(field_frame = frame)
+        if self.frameProcess is not None:
+            ssl_list, crop_image_list = (self.processImage._start_process(field_frame = self.frameProcess))
+            self.queue.put(ssl_list)
+            self.crop_frame_queue.put(crop_image_list)
+    
+    def detect_robot(self, frame : np.array ):# , dataQueue 
+        self.frameProcess = frame
+        self.start()
+        
           
     def list_min_dist_between_circle(self, circle_pixel_pos_pack:list = None ):
         length_list = {}

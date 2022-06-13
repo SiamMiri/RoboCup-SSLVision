@@ -186,12 +186,12 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def image_capturing(self, img_path:str=None):
         self.deactive()
+        DetectRobot.SHOW_CROPED_IMAGE = Main.SHOW_CROP_IMAGE
         """ start capturing image from path"""
         if len(img_path) != 0:
             if path.exists(img_path):
                 frameIdx = 0
                 capturingImage  = Capture_Image(image_path= None)
-                DetectRobot.SHOW_CROPED_IMAGE = Main.SHOW_CROP_IMAGE
                 
                 # Creat windows for the frame
                 cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
@@ -205,6 +205,10 @@ class Main(QMainWindow, Ui_MainWindow):
                     detectRobot     = DetectRobot(SslListQueue=Main.DICT_SSL_LIST, CropImageQueue = Main.CROP_FRAME_DICT, frameIdx = frameIdx)
                     detectRobot.detect_robot(frame=field_frame)
                     detectRobot.join()
+                    endTime = time.time()
+                    
+                    logging.info(f'Time takes for Image Processing: {endTime - startTime}')
+                    logging.info(f'FPS Image Processing:            {1/(endTime - startTime)}\n\n')
                     
                     if Main.DICT_SSL_LIST.empty():
                         continue
@@ -213,14 +217,9 @@ class Main(QMainWindow, Ui_MainWindow):
                     for key in cropImagList:
                         cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
                         cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
-                        
-                    endTime = time.time()
-                    
-                    logging.info(f'Time takes for Image Processing: {endTime - startTime}')
-                    logging.info(f'FPS Image Processing:            {1/(endTime - startTime)}\n\n')
                     
                     cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
-                    k = cv2.waitKey(1)
+                    k = cv2                                      .waitKey(1)
                     if k % 256 == 27:
                         # ESC pressed
                         print("Escape hit, closing...")

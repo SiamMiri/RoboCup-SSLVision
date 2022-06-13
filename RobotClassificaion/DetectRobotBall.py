@@ -1,4 +1,5 @@
 # import ImageProcessing
+from asyncio.log import logger
 import math
 import numpy as np
 from ImageProcessing.ImageProcessing import Image_Processing
@@ -57,9 +58,20 @@ class Detect_Robot_Ball(multiprocessing.Process):
     def run(self):
         self.startTime = time.time()
         if self.frameProcess is not None:
+            startTime1 = time.time()
+            
             ssl_list, crop_image_list = (self.processImage._start_process(field_frame = self.frameProcess))
+            
+            startTime2 = time.time()
+            
             self.queue.put(ssl_list)
             self.crop_frame_queue.put(crop_image_list)
+            
+            endTime2 = time.time()
+            logger.info(f"Put Data Takes: {endTime2 - startTime2} s")
+            
+            endTime1 = time.time()
+            logger.info(f"The Image Processing Takes: {endTime1 - startTime1} s")
     
     def detect_robot(self, frame : np.array ):# , dataQueue 
         self.frameProcess = frame

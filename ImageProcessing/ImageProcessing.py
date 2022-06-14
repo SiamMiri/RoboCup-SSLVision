@@ -9,6 +9,7 @@ import logging
 import threading
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Process, Queue
+from Detect_Robot_Ball import Detect_Robot_Ball
 
 # from sklearn.datasets import load_sample_image
 # from Detect_Robot_Ball import Detect_Robot_Ball as s

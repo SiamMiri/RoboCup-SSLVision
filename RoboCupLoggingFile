@@ -1,1872 +1,295 @@
-INFO:root:Time takes read Image: 0.041706085205078125
-INFO:root:FPS Read Image       : 23.977316381597
+INFO:root:Time takes read Image: 0.05049633979797363
+INFO:root:FPS Read Image       : 19.803415534686515
 
 
 INFO:root:
-Time passed to find blue contourse: 0.011066436767578125
+Time passed to find blue contourse: 0.012949705123901367
 
-INFO:root:Elappsed time for finding all robots: 0.09558463096618652
-INFO:asyncio:Put Data Takes: 0.0011031627655029297 s
-INFO:asyncio:The Image Processing Takes: 0.10585546493530273 s
-INFO:root:Time takes for Image Processing: 0.12827849388122559
-INFO:root:FPS Image Processing:            7.795538985092159
+INFO:root:Elappsed time for finding all robots: 0.03661346435546875
+INFO:asyncio:Put Data Takes: 0.0013964176177978516 s
+INFO:asyncio:The Image Processing Takes: 0.06089925765991211 s
+INFO:root:Time takes for Image Processing: 0.08365964889526367
+INFO:root:FPS Image Processing:            11.953193842014967
 
 
-INFO:root:Time takes read Image: 0.056737422943115234
-INFO:root:FPS Read Image       : 17.625051476211688
+INFO:root:Time takes read Image: 0.0544896125793457
+INFO:root:FPS Read Image       : 18.352121673536182
 
 
 INFO:root:
-Time passed to find blue contourse: 0.018223047256469727
+Time passed to find blue contourse: 0.013138055801391602
 
-INFO:root:Time takes read Image: 0.04654812812805176
-INFO:root:FPS Read Image       : 21.483141002986116
+INFO:root:Elappsed time for finding all robots: 0.03812408447265625
+INFO:asyncio:Put Data Takes: 0.0015876293182373047 s
+INFO:asyncio:The Image Processing Takes: 0.062059640884399414 s
+INFO:root:Time takes for Image Processing: 0.10229349136352539
+INFO:root:FPS Image Processing:            9.775793031115255
 
+##########################################################################
+##########################################################################
+INFO:root:Time takes read Image: 0.03895449638366699
+INFO:root:FPS Read Image       : 25.670977495149554
 
-INFO:root:
-Time passed to find blue contourse: 0.009496927261352539
-
-INFO:root:Elappsed time for finding all robots: 0.09346890449523926
-INFO:asyncio:Put Data Takes: 0.0015947818756103516 s
-INFO:asyncio:The Image Processing Takes: 0.10392475128173828 s
-INFO:root:Time takes for Image Processing: 0.13955140113830566
-INFO:root:FPS Image Processing:            7.165818414169319
-
-
-INFO:root:Time takes read Image: 0.06967306137084961
-INFO:root:FPS Read Image       : 14.352749546590015
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014383792877197266
-
-INFO:root:Elappsed time for finding all robots: 0.09216499328613281
-INFO:asyncio:Put Data Takes: 0.010723590850830078 s
-INFO:asyncio:The Image Processing Takes: 0.1237938404083252 s
-INFO:root:Time takes for Image Processing: 0.1448516845703125
-INFO:root:FPS Image Processing:            6.903613188665332
-
-
-INFO:root:Time takes read Image: 0.04274320602416992
-INFO:root:FPS Read Image       : 23.395530963085264
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011871099472045898
-
-INFO:root:Elappsed time for finding all robots: 0.08549261093139648
-INFO:asyncio:Put Data Takes: 0.001322031021118164 s
-INFO:asyncio:The Image Processing Takes: 0.10499191284179688 s
-INFO:root:Time takes read Image: 0.043564558029174805
-INFO:root:FPS Read Image       : 22.954439233156197
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013030052185058594
-
-INFO:root:Time takes read Image: 0.041875600814819336
-INFO:root:FPS Read Image       : 23.88025438541554
-
-
-INFO:root:
-Time passed to find blue contourse: 0.006768465042114258
-
-INFO:root:Elappsed time for finding all robots: 0.038419246673583984
-INFO:asyncio:Put Data Takes: 0.005054950714111328 s
-INFO:asyncio:The Image Processing Takes: 0.07015132904052734 s
-INFO:root:Time takes for Image Processing: 0.09148120880126953
-INFO:root:FPS Image Processing:            10.931206671879073
-
-
-INFO:root:Time takes read Image: 0.06283712387084961
-INFO:root:FPS Read Image       : 15.91415931218176
-
-
-INFO:root:
-Time passed to find blue contourse: 0.010527610778808594
-
-INFO:root:Elappsed time for finding all robots: 0.03827357292175293
-INFO:asyncio:Put Data Takes: 0.001928567886352539 s
-INFO:asyncio:The Image Processing Takes: 0.06859230995178223 s
-INFO:root:Time takes for Image Processing: 0.11375665664672852
-INFO:root:FPS Image Processing:            8.790694360027665
-
-
-INFO:root:Time takes read Image: 0.052498817443847656
-INFO:root:FPS Read Image       : 19.048048102599502
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011457443237304688
-
-INFO:root:Elappsed time for finding all robots: 0.03193211555480957
-INFO:asyncio:Put Data Takes: 0.0017292499542236328 s
-INFO:asyncio:The Image Processing Takes: 0.05703616142272949 s
-INFO:root:Time takes for Image Processing: 0.07941365242004395
-INFO:root:FPS Image Processing:            12.592293258477566
-
-
-INFO:root:Time takes read Image: 0.03916645050048828
-INFO:root:FPS Read Image       : 25.532055808517374
-
-
-INFO:root:
-Time passed to find blue contourse: 0.008023738861083984
-
-INFO:root:Elappsed time for finding all robots: 0.02688312530517578
-INFO:asyncio:Put Data Takes: 0.001422882080078125 s
-INFO:asyncio:The Image Processing Takes: 0.05466961860656738 s
-INFO:root:Time takes for Image Processing: 0.07677626609802246
-INFO:root:FPS Image Processing:            13.024858472842002
-
-
-INFO:root:Time takes read Image: 0.036952972412109375
-INFO:root:FPS Read Image       : 27.06142252503355
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007333278656005859
-
-INFO:root:Elappsed time for finding all robots: 0.027302980422973633
-INFO:asyncio:Put Data Takes: 0.002691984176635742 s
-INFO:asyncio:The Image Processing Takes: 0.05738639831542969 s
-INFO:root:Time takes for Image Processing: 0.07933425903320312
-INFO:root:FPS Image Processing:            12.604894936769726
-
-
-INFO:root:Time takes read Image: 0.0509030818939209
-INFO:root:FPS Read Image       : 19.64517594600544
-
-
-INFO:root:
-Time passed to find blue contourse: 0.010823488235473633
-
-INFO:root:Elappsed time for finding all robots: 0.03015875816345215
-INFO:asyncio:Put Data Takes: 0.001482248306274414 s
-INFO:asyncio:The Image Processing Takes: 0.057270050048828125 s
-INFO:root:Time takes for Image Processing: 0.08232307434082031
-INFO:root:FPS Image Processing:            12.147262575009847
-
-
-INFO:root:Time takes read Image: 0.04118037223815918
-INFO:root:FPS Read Image       : 24.283413326540185
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011780261993408203
-
-INFO:root:Elappsed time for finding all robots: 0.03671741485595703
-INFO:asyncio:Put Data Takes: 0.0023534297943115234 s
-INFO:asyncio:The Image Processing Takes: 0.06722092628479004 s
-INFO:root:Time takes for Image Processing: 0.09407424926757812
-INFO:root:FPS Image Processing:            10.629901463849803
-
-
-INFO:root:Time takes read Image: 0.04088234901428223
-INFO:root:FPS Read Image       : 24.46043400418725
-
-
-INFO:root:
-Time passed to find blue contourse: 0.008094072341918945
-
-INFO:root:Elappsed time for finding all robots: 0.027350187301635742
-INFO:asyncio:Put Data Takes: 0.0014159679412841797 s
-INFO:asyncio:The Image Processing Takes: 0.05647158622741699 s
-INFO:root:Time takes for Image Processing: 0.07726502418518066
-INFO:root:FPS Image Processing:            12.942466666460952
-
-
-INFO:root:Time takes read Image: 0.04030752182006836
-INFO:root:FPS Read Image       : 24.809265239971136
-
-
-INFO:root:
-Time passed to find blue contourse: 0.010970830917358398
-
-INFO:root:Elappsed time for finding all robots: 0.036397695541381836
-INFO:asyncio:Put Data Takes: 0.00799107551574707 s
-INFO:asyncio:The Image Processing Takes: 0.07823061943054199 s
-INFO:root:Time takes for Image Processing: 0.09480166435241699
-INFO:root:FPS Image Processing:            10.548338015275622
-
-
-INFO:root:Time takes read Image: 0.03768181800842285
-INFO:root:FPS Read Image       : 26.537997709571084
-
-
-INFO:root:
-Time passed to find blue contourse: 0.008090496063232422
-
-INFO:root:Elappsed time for finding all robots: 0.03623652458190918
-INFO:asyncio:Put Data Takes: 0.017596960067749023 s
-INFO:asyncio:The Image Processing Takes: 0.0876607894897461 s
-INFO:root:Time takes for Image Processing: 0.1084136962890625
-INFO:root:FPS Image Processing:            9.223926812104152
-
-
-INFO:root:Time takes read Image: 0.053949594497680664
-INFO:root:FPS Read Image       : 18.53582050636156
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007512331008911133
-
-INFO:root:Elappsed time for finding all robots: 0.02977585792541504
-INFO:asyncio:Put Data Takes: 0.003279447555541992 s
-INFO:asyncio:The Image Processing Takes: 0.05841803550720215 s
-INFO:root:Time takes for Image Processing: 0.08404779434204102
-INFO:root:FPS Image Processing:            11.897992182048213
-
-
-INFO:root:Time takes read Image: 0.046011924743652344
-INFO:root:FPS Read Image       : 21.73349638319481
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007672548294067383
-
-INFO:root:Elappsed time for finding all robots: 0.033457279205322266
-INFO:asyncio:Put Data Takes: 0.006003141403198242 s
-INFO:asyncio:The Image Processing Takes: 0.0659945011138916 s
-INFO:root:Time takes for Image Processing: 0.09155440330505371
-INFO:root:FPS Image Processing:            10.922467559185119
-
-
-INFO:root:Time takes read Image: 0.04409480094909668
-INFO:root:FPS Read Image       : 22.67841057167729
-
-
-INFO:root:
-Time passed to find blue contourse: 0.008167743682861328
-
-INFO:root:Elappsed time for finding all robots: 0.03207898139953613
-INFO:asyncio:Put Data Takes: 0.0015079975128173828 s
-INFO:asyncio:The Image Processing Takes: 0.05354762077331543 s
-INFO:root:Time takes for Image Processing: 0.08114123344421387
-INFO:root:FPS Image Processing:            12.324190273586597
-
-
-INFO:root:Time takes read Image: 0.05606341361999512
-INFO:root:FPS Read Image       : 17.836944549579623
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013655662536621094
-
-INFO:root:Elappsed time for finding all robots: 0.041811227798461914
-INFO:asyncio:Put Data Takes: 0.007717132568359375 s
-INFO:asyncio:The Image Processing Takes: 0.08160877227783203 s
-INFO:root:Time takes for Image Processing: 0.10146760940551758
-INFO:root:FPS Image Processing:            9.855361783517315
-
-
-INFO:root:Time takes read Image: 0.05653810501098633
-INFO:root:FPS Read Image       : 17.68718636405806
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01533365249633789
-
-INFO:root:Elappsed time for finding all robots: 0.04751420021057129
-INFO:asyncio:Put Data Takes: 0.005383729934692383 s
-INFO:asyncio:The Image Processing Takes: 0.09748005867004395 s
-INFO:root:Time takes for Image Processing: 0.12012720108032227
-INFO:root:FPS Image Processing:            8.324509278555125
-
-
-INFO:root:Time takes read Image: 0.05019640922546387
-INFO:root:FPS Read Image       : 19.921743714941176
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012299299240112305
-
-INFO:root:Elappsed time for finding all robots: 0.039429426193237305
-INFO:asyncio:Put Data Takes: 0.003786802291870117 s
-INFO:asyncio:The Image Processing Takes: 0.08078193664550781 s
-INFO:root:Time takes for Image Processing: 0.10976719856262207
-INFO:root:FPS Image Processing:            9.110189684120444
-
-
-INFO:root:Time takes read Image: 0.05869555473327637
-INFO:root:FPS Read Image       : 17.037065320264677
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011599540710449219
-
-INFO:root:Elappsed time for finding all robots: 0.0427093505859375
-INFO:asyncio:Put Data Takes: 0.00956869125366211 s
-INFO:asyncio:The Image Processing Takes: 0.08270001411437988 s
-INFO:root:Time takes for Image Processing: 0.10183000564575195
-INFO:root:FPS Image Processing:            9.82028817202287
-
-
-INFO:root:Time takes read Image: 0.05655050277709961
-INFO:root:FPS Read Image       : 17.683308739828828
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013360023498535156
-
-INFO:root:Elappsed time for finding all robots: 0.04103803634643555
-INFO:asyncio:Put Data Takes: 0.001434326171875 s
-INFO:asyncio:The Image Processing Takes: 0.06685590744018555 s
-INFO:root:Time takes for Image Processing: 0.10080432891845703
-INFO:root:FPS Image Processing:            9.920208891117397
-
-
-INFO:root:Time takes read Image: 0.04266619682312012
-INFO:root:FPS Read Image       : 23.43775809561063
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01624321937561035
-
-INFO:root:Elappsed time for finding all robots: 0.04945564270019531
-INFO:asyncio:Put Data Takes: 0.013926506042480469 s
-INFO:asyncio:The Image Processing Takes: 0.09450316429138184 s
-INFO:root:Time takes for Image Processing: 0.11609625816345215
-INFO:root:FPS Image Processing:            8.613542036747628
-
-
-INFO:root:Time takes read Image: 0.04924368858337402
-INFO:root:FPS Read Image       : 20.30717090387958
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014041662216186523
-
-INFO:root:Elappsed time for finding all robots: 0.04144430160522461
-INFO:asyncio:Put Data Takes: 0.0010523796081542969 s
-INFO:asyncio:The Image Processing Takes: 0.07383847236633301 s
-INFO:root:Time takes for Image Processing: 0.10315942764282227
-INFO:root:FPS Image Processing:            9.693733504051474
-
-
-INFO:root:Time takes read Image: 0.052147865295410156
-INFO:root:FPS Read Image       : 19.176240375998976
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013127803802490234
-
-INFO:root:Elappsed time for finding all robots: 0.041595458984375
-INFO:asyncio:Put Data Takes: 0.001241445541381836 s
-INFO:asyncio:The Image Processing Takes: 0.07183313369750977 s
-INFO:root:Time takes for Image Processing: 0.0965263843536377
-INFO:root:FPS Image Processing:            10.35986177972193
-
-
-INFO:root:Time takes read Image: 0.05345487594604492
-INFO:root:FPS Read Image       : 18.707367331828763
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011481285095214844
-
-INFO:root:Elappsed time for finding all robots: 0.039006948471069336
-INFO:asyncio:Put Data Takes: 0.0044782161712646484 s
-INFO:asyncio:The Image Processing Takes: 0.0726776123046875 s
-INFO:root:Time takes for Image Processing: 0.09365105628967285
-INFO:root:FPS Image Processing:            10.677936155967016
-
-
-INFO:root:Time takes read Image: 0.045426368713378906
-INFO:root:FPS Read Image       : 22.013646001721497
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014175653457641602
-
-INFO:root:Elappsed time for finding all robots: 0.042186737060546875
-INFO:asyncio:Put Data Takes: 0.012392759323120117 s
-INFO:asyncio:The Image Processing Takes: 0.08748650550842285 s
-INFO:root:Time takes for Image Processing: 0.10997223854064941
-INFO:root:FPS Image Processing:            9.093204005576068
-
-
-INFO:root:Time takes read Image: 0.0523676872253418
-INFO:root:FPS Read Image       : 19.095744971454067
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012698888778686523
-
-INFO:root:Elappsed time for finding all robots: 0.040592193603515625
-INFO:asyncio:Put Data Takes: 0.006119966506958008 s
-INFO:asyncio:The Image Processing Takes: 0.07731819152832031 s
-INFO:root:Time takes for Image Processing: 0.10720944404602051
-INFO:root:FPS Image Processing:            9.327536476830735
-
-
-INFO:root:Time takes read Image: 0.04844307899475098
-INFO:root:FPS Read Image       : 20.642783670054385
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013730049133300781
-
-INFO:root:Elappsed time for finding all robots: 0.04233813285827637
-INFO:asyncio:Put Data Takes: 0.0010867118835449219 s
-INFO:asyncio:The Image Processing Takes: 0.07548785209655762 s
-INFO:root:Time takes for Image Processing: 0.10200905799865723
-INFO:root:FPS Image Processing:            9.803051019382645
-
-
-INFO:root:Time takes read Image: 0.0583348274230957
-INFO:root:FPS Read Image       : 17.14241807466261
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01402139663696289
-
-INFO:root:Elappsed time for finding all robots: 0.04485821723937988
-INFO:asyncio:Put Data Takes: 0.003952503204345703 s
-INFO:asyncio:The Image Processing Takes: 0.07699155807495117 s
-INFO:root:Time takes for Image Processing: 0.10368037223815918
-INFO:root:FPS Image Processing:            9.645027100239844
-
-
-INFO:root:Time takes read Image: 0.0489811897277832
-INFO:root:FPS Read Image       : 20.416000623046894
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012534856796264648
-
-INFO:root:Elappsed time for finding all robots: 0.04477381706237793
-INFO:asyncio:Put Data Takes: 0.004260540008544922 s
-INFO:asyncio:The Image Processing Takes: 0.0767061710357666 s
-INFO:root:Time takes for Image Processing: 0.11002707481384277
-INFO:root:FPS Image Processing:            9.088672053600643
-
-
-INFO:root:Time takes read Image: 0.05762052536010742
-INFO:root:FPS Read Image       : 17.354926803432665
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012539386749267578
-
-INFO:root:Elappsed time for finding all robots: 0.051442623138427734
-INFO:asyncio:Put Data Takes: 0.007879972457885742 s
-INFO:asyncio:The Image Processing Takes: 0.0868065357208252 s
-INFO:root:Time takes for Image Processing: 0.10876750946044922
-INFO:root:FPS Image Processing:            9.193922017343118
-
-
-INFO:root:Time takes read Image: 0.04710984230041504
-INFO:root:FPS Read Image       : 21.22698678596914
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013298511505126953
-
-INFO:root:Elappsed time for finding all robots: 0.04286670684814453
-INFO:asyncio:Put Data Takes: 0.002798795700073242 s
-INFO:asyncio:The Image Processing Takes: 0.07648348808288574 s
-INFO:root:Time takes for Image Processing: 0.11672782897949219
-INFO:root:FPS Image Processing:            8.566937368257651
-
-
-INFO:root:Time takes read Image: 0.05431079864501953
-INFO:root:FPS Read Image       : 18.412544557411017
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012149810791015625
-
-INFO:root:Elappsed time for finding all robots: 0.045366764068603516
-INFO:asyncio:Put Data Takes: 0.0012555122375488281 s
-INFO:asyncio:The Image Processing Takes: 0.0722498893737793 s
-INFO:root:Time takes for Image Processing: 0.10211539268493652
-INFO:root:FPS Image Processing:            9.792842917280524
-
-
-INFO:root:Time takes read Image: 0.05493760108947754
-INFO:root:FPS Read Image       : 18.20246935011392
-
-
-INFO:root:
-Time passed to find blue contourse: 0.016483306884765625
-
-INFO:root:Elappsed time for finding all robots: 0.048648834228515625
-INFO:asyncio:Put Data Takes: 0.0015323162078857422 s
-INFO:asyncio:The Image Processing Takes: 0.08733129501342773 s
-INFO:root:Time takes for Image Processing: 0.12112832069396973
-INFO:root:FPS Image Processing:            8.25570761875331
-
-
-INFO:root:Time takes read Image: 0.045732736587524414
-INFO:root:FPS Read Image       : 21.86617453093313
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012653112411499023
-
-INFO:root:Elappsed time for finding all robots: 0.040200233459472656
-INFO:asyncio:Put Data Takes: 0.013618946075439453 s
-INFO:asyncio:The Image Processing Takes: 0.08597278594970703 s
-INFO:root:Time takes for Image Processing: 0.10912704467773438
-INFO:root:FPS Image Processing:            9.163631279057574
-
-
-INFO:root:Time takes read Image: 0.04677128791809082
-INFO:root:FPS Read Image       : 21.380638518042748
-
-
-INFO:root:
-Time passed to find blue contourse: 0.015143871307373047
-
-INFO:root:Elappsed time for finding all robots: 0.052787065505981445
-INFO:asyncio:Put Data Takes: 0.009566068649291992 s
-INFO:asyncio:The Image Processing Takes: 0.09708094596862793 s
-INFO:root:Time takes for Image Processing: 0.14349889755249023
-INFO:root:FPS Image Processing:            6.96869465240464
-
-
-INFO:root:Time takes read Image: 0.04965972900390625
-INFO:root:FPS Read Image       : 20.13704102012598
-
-
-INFO:root:
-Time passed to find blue contourse: 0.010679483413696289
-
-INFO:root:Elappsed time for finding all robots: 0.04237008094787598
-INFO:asyncio:Put Data Takes: 0.018035888671875 s
-INFO:asyncio:The Image Processing Takes: 0.10941076278686523 s
-INFO:root:Time takes for Image Processing: 0.13583898544311523
-INFO:root:FPS Image Processing:            7.361656867046951
-
-
-INFO:root:Time takes read Image: 0.046555280685424805
-INFO:root:FPS Read Image       : 21.479840423625088
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012695074081420898
-
-INFO:root:Elappsed time for finding all robots: 0.04039263725280762
-INFO:asyncio:Put Data Takes: 0.013177156448364258 s
-INFO:asyncio:The Image Processing Takes: 0.10345220565795898 s
-INFO:root:Time takes for Image Processing: 0.12652230262756348
-INFO:root:FPS Image Processing:            7.903744867366533
-
-
-INFO:root:Time takes read Image: 0.04963350296020508
-INFO:root:FPS Read Image       : 20.14768131118562
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01589512825012207
-
-INFO:root:Elappsed time for finding all robots: 0.05320096015930176
-INFO:asyncio:Put Data Takes: 0.0013844966888427734 s
-INFO:asyncio:The Image Processing Takes: 0.08679890632629395 s
-INFO:root:Time takes for Image Processing: 0.12910175323486328
-INFO:root:FPS Image Processing:            7.7458281932143045
-
-
-INFO:root:Time takes read Image: 0.05788707733154297
-INFO:root:FPS Read Image       : 17.275012767920394
-
-
-INFO:root:
-Time passed to find blue contourse: 0.022478103637695312
-
-INFO:root:Elappsed time for finding all robots: 0.058652400970458984
-INFO:asyncio:Put Data Takes: 0.01080012321472168 s
-INFO:asyncio:The Image Processing Takes: 0.10952162742614746 s
-INFO:root:Time takes for Image Processing: 0.14235162734985352
-INFO:root:FPS Image Processing:            7.02485822337899
-
-
-INFO:root:Time takes read Image: 0.054921627044677734
-INFO:root:FPS Read Image       : 18.20776356801153
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014375448226928711
-
-INFO:root:Elappsed time for finding all robots: 0.04330754280090332
-INFO:asyncio:Put Data Takes: 0.0036361217498779297 s
-INFO:asyncio:The Image Processing Takes: 0.0778956413269043 s
-INFO:root:Time takes for Image Processing: 0.10572314262390137
-INFO:root:FPS Image Processing:            9.458666997417886
-
-
-INFO:root:Time takes read Image: 0.05859875679016113
-INFO:root:FPS Read Image       : 17.06520845793613
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013120889663696289
-
-INFO:root:Elappsed time for finding all robots: 0.04139113426208496
-INFO:asyncio:Put Data Takes: 0.0013878345489501953 s
-INFO:asyncio:The Image Processing Takes: 0.0729057788848877 s
-INFO:root:Time takes for Image Processing: 0.11560726165771484
-INFO:root:FPS Image Processing:            8.649975664684094
-
-
-INFO:root:Time takes read Image: 0.04715275764465332
-INFO:root:FPS Read Image       : 21.20766737623437
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013420343399047852
-
-INFO:root:Elappsed time for finding all robots: 0.0419921875
-INFO:asyncio:Put Data Takes: 0.0031762123107910156 s
-INFO:asyncio:The Image Processing Takes: 0.07918381690979004 s
-INFO:root:Time takes for Image Processing: 0.12035393714904785
-INFO:root:FPS Image Processing:            8.308826646539924
-
-
-INFO:root:Time takes read Image: 0.05768632888793945
-INFO:root:FPS Read Image       : 17.33512981806459
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012970209121704102
-
-INFO:root:Elappsed time for finding all robots: 0.05295705795288086
-INFO:asyncio:Put Data Takes: 0.006182670593261719 s
-INFO:asyncio:The Image Processing Takes: 0.08977222442626953 s
-INFO:root:Time takes for Image Processing: 0.12227606773376465
-INFO:root:FPS Image Processing:            8.17821523486779
-
-
-INFO:root:Time takes read Image: 0.060810089111328125
-INFO:root:FPS Read Image       : 16.444639608556553
-
-
-INFO:root:
-Time passed to find blue contourse: 0.015335559844970703
-
-INFO:root:Elappsed time for finding all robots: 0.0443572998046875
-INFO:asyncio:Put Data Takes: 0.007060050964355469 s
-INFO:asyncio:The Image Processing Takes: 0.10234212875366211 s
-INFO:root:Time takes for Image Processing: 0.1383953094482422
-INFO:root:FPS Image Processing:            7.225678413429072
-
-
-INFO:root:Time takes read Image: 0.052547454833984375
-INFO:root:FPS Read Image       : 19.030417422867515
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012831926345825195
-
-INFO:root:Elappsed time for finding all robots: 0.04758191108703613
-INFO:asyncio:Put Data Takes: 0.002271890640258789 s
-INFO:asyncio:The Image Processing Takes: 0.07736802101135254 s
-INFO:root:Time takes for Image Processing: 0.1057274341583252
-INFO:root:FPS Image Processing:            9.45828306494713
-
-
-INFO:root:Time takes read Image: 0.05279874801635742
-INFO:root:FPS Read Image       : 18.939843037380225
-
-
-INFO:root:
-Time passed to find blue contourse: 0.016825199127197266
-
-INFO:root:Elappsed time for finding all robots: 0.04944872856140137
-INFO:asyncio:Put Data Takes: 0.005065202713012695 s
-INFO:asyncio:The Image Processing Takes: 0.08968496322631836 s
-INFO:root:Time takes for Image Processing: 0.12009263038635254
-INFO:root:FPS Image Processing:            8.326905629286983
-
-
-INFO:root:Time takes read Image: 0.06290698051452637
-INFO:root:FPS Read Image       : 15.896487032453923
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014770030975341797
-
-INFO:root:Elappsed time for finding all robots: 0.0462346076965332
-INFO:asyncio:Put Data Takes: 0.008984088897705078 s
-INFO:asyncio:The Image Processing Takes: 0.09166264533996582 s
-INFO:root:Time takes for Image Processing: 0.13157439231872559
-INFO:root:FPS Image Processing:            7.600263108778809
-
-
-INFO:root:Time takes read Image: 0.05124235153198242
-INFO:root:FPS Read Image       : 19.515107525380827
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013470649719238281
-
-INFO:root:Elappsed time for finding all robots: 0.04205155372619629
-INFO:asyncio:Put Data Takes: 0.0014023780822753906 s
-INFO:asyncio:The Image Processing Takes: 0.08341145515441895 s
-INFO:root:Time takes for Image Processing: 0.12591814994812012
-INFO:root:FPS Image Processing:            7.941666871789434
-
-
-INFO:root:Time takes read Image: 0.04570770263671875
-INFO:root:FPS Read Image       : 21.87815055917209
-
-
-INFO:root:
-Time passed to find blue contourse: 0.016706228256225586
-
-INFO:root:Elappsed time for finding all robots: 0.046144723892211914
-INFO:asyncio:Put Data Takes: 0.0015416145324707031 s
-INFO:asyncio:The Image Processing Takes: 0.08029651641845703 s
-INFO:root:Time takes for Image Processing: 0.1223297119140625
-INFO:root:FPS Image Processing:            8.174628913558688
-
-
-INFO:root:Time takes read Image: 0.04824686050415039
-INFO:root:FPS Read Image       : 20.72673723327502
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011453390121459961
-
-INFO:root:Elappsed time for finding all robots: 0.04067635536193848
-INFO:asyncio:Put Data Takes: 0.0012531280517578125 s
-INFO:asyncio:The Image Processing Takes: 0.06964683532714844 s
-INFO:root:Time takes for Image Processing: 0.09989404678344727
-INFO:root:FPS Image Processing:            10.010606559646384
-
-
-INFO:root:Time takes read Image: 0.04814410209655762
-INFO:root:FPS Read Image       : 20.77097622455195
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012082338333129883
-
-INFO:root:Elappsed time for finding all robots: 0.04022049903869629
-INFO:asyncio:Put Data Takes: 0.001714944839477539 s
-INFO:asyncio:The Image Processing Takes: 0.07198357582092285 s
-INFO:root:Time takes for Image Processing: 0.1048274040222168
-INFO:root:FPS Image Processing:            9.539490263329073
-
-
-INFO:root:Time takes read Image: 0.060178518295288086
-INFO:root:FPS Read Image       : 16.617225354288905
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01350545883178711
-
-INFO:root:Elappsed time for finding all robots: 0.05108451843261719
-INFO:asyncio:Put Data Takes: 0.00574946403503418 s
-INFO:asyncio:The Image Processing Takes: 0.09343671798706055 s
-INFO:root:Time takes for Image Processing: 0.1285855770111084
-INFO:root:FPS Image Processing:            7.776921978688254
-
-
-INFO:root:Time takes read Image: 0.05317950248718262
-INFO:root:FPS Read Image       : 18.804237595886143
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014029979705810547
-
-INFO:root:Elappsed time for finding all robots: 0.049508094787597656
-INFO:asyncio:Put Data Takes: 0.0013399124145507812 s
-INFO:asyncio:The Image Processing Takes: 0.08337664604187012 s
-INFO:root:Time takes for Image Processing: 0.11843299865722656
-INFO:root:FPS Image Processing:            8.443592675502874
-
-
-INFO:root:Time takes read Image: 0.06161928176879883
-INFO:root:FPS Read Image       : 16.228686399690464
-
-
-INFO:root:
-Time passed to find blue contourse: 0.019713640213012695
-
-INFO:root:Elappsed time for finding all robots: 0.05314302444458008
-INFO:asyncio:Put Data Takes: 0.00543665885925293 s
-INFO:asyncio:The Image Processing Takes: 0.09840631484985352 s
-INFO:root:Time takes for Image Processing: 0.12537527084350586
-INFO:root:FPS Image Processing:            7.976054554236663
-
-
-INFO:root:Time takes read Image: 0.0493931770324707
-INFO:root:FPS Read Image       : 20.245711251629096
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012809991836547852
-
-INFO:root:Elappsed time for finding all robots: 0.04265761375427246
-INFO:asyncio:Put Data Takes: 0.010334968566894531 s
-INFO:asyncio:The Image Processing Takes: 0.08702874183654785 s
-INFO:root:Time takes for Image Processing: 0.10949945449829102
-INFO:root:FPS Image Processing:            9.132465586991643
-
-
-INFO:root:Time takes read Image: 0.056383371353149414
-INFO:root:FPS Read Image       : 17.735725551716992
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011589765548706055
-
-INFO:root:Elappsed time for finding all robots: 0.04342055320739746
-INFO:asyncio:Put Data Takes: 0.01195669174194336 s
-INFO:asyncio:The Image Processing Takes: 0.08440685272216797 s
-INFO:root:Time takes for Image Processing: 0.11624574661254883
-INFO:root:FPS Image Processing:            8.602465287035708
-
-
-INFO:root:Time takes read Image: 0.0533444881439209
-INFO:root:FPS Read Image       : 18.746079206947257
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012307167053222656
-
-INFO:root:Elappsed time for finding all robots: 0.039464473724365234
-INFO:asyncio:Put Data Takes: 0.01590251922607422 s
-INFO:asyncio:The Image Processing Takes: 0.08011627197265625 s
-INFO:root:Time takes for Image Processing: 0.10220122337341309
-INFO:root:FPS Image Processing:            9.78461868647399
-
-
-INFO:root:Time takes read Image: 0.052280426025390625
-INFO:root:FPS Read Image       : 19.127617657789127
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01593184471130371
-
-INFO:root:Elappsed time for finding all robots: 0.04412078857421875
-INFO:asyncio:Put Data Takes: 0.0015702247619628906 s
-INFO:asyncio:The Image Processing Takes: 0.0733804702758789 s
-INFO:root:Time takes for Image Processing: 0.10267424583435059
-INFO:root:FPS Image Processing:            9.73954073754142
-
-
-INFO:root:Time takes read Image: 0.04718756675720215
-INFO:root:FPS Read Image       : 21.1920229993078
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01628732681274414
-
-INFO:root:Elappsed time for finding all robots: 0.04686856269836426
-INFO:asyncio:Put Data Takes: 0.0016019344329833984 s
-INFO:asyncio:The Image Processing Takes: 0.08505368232727051 s
-INFO:root:Time takes for Image Processing: 0.1256566047668457
-INFO:root:FPS Image Processing:            7.958196879945052
-
-
-INFO:root:Time takes read Image: 0.04221224784851074
-INFO:root:FPS Read Image       : 23.689806891799538
-
-
-INFO:root:
-Time passed to find blue contourse: 0.009294509887695312
-
-INFO:root:Elappsed time for finding all robots: 0.037149906158447266
-INFO:asyncio:Put Data Takes: 0.007326841354370117 s
-INFO:asyncio:The Image Processing Takes: 0.0746452808380127 s
-INFO:root:Time takes for Image Processing: 0.11147308349609375
-INFO:root:FPS Image Processing:            8.970775443159264
-
-
-INFO:root:Time takes read Image: 0.05508089065551758
-INFO:root:FPS Read Image       : 18.155116740107175
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012303829193115234
-
-INFO:root:Elappsed time for finding all robots: 0.03817248344421387
-INFO:asyncio:Put Data Takes: 0.00395512580871582 s
-INFO:asyncio:The Image Processing Takes: 0.07569551467895508 s
-INFO:root:Time takes for Image Processing: 0.10517001152038574
-INFO:root:FPS Image Processing:            9.508413905670857
-
-
-INFO:root:Time takes read Image: 0.04287528991699219
-INFO:root:FPS Read Image       : 23.323457449174786
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013007164001464844
-
-INFO:root:Elappsed time for finding all robots: 0.042604684829711914
-INFO:asyncio:Put Data Takes: 0.004155397415161133 s
-INFO:asyncio:The Image Processing Takes: 0.08490943908691406 s
-INFO:root:Time takes for Image Processing: 0.11467814445495605
-INFO:root:FPS Image Processing:            8.720057381053858
-
-
-INFO:root:Time takes read Image: 0.052016496658325195
-INFO:root:FPS Read Image       : 19.224670330425855
-
-
-INFO:root:
-Time passed to find blue contourse: 0.024080991744995117
-
-INFO:root:Elappsed time for finding all robots: 0.057145118713378906
-INFO:asyncio:Put Data Takes: 0.0018460750579833984 s
-INFO:asyncio:The Image Processing Takes: 0.094085693359375 s
-INFO:root:Time takes for Image Processing: 0.1380140781402588
-INFO:root:FPS Image Processing:            7.245637644181021
-
-
-INFO:root:Time takes read Image: 0.05727982521057129
-INFO:root:FPS Read Image       : 17.4581538320659
-
-
-INFO:root:
-Time passed to find blue contourse: 0.015822887420654297
-
-INFO:root:Elappsed time for finding all robots: 0.05371356010437012
-INFO:asyncio:Put Data Takes: 0.011437416076660156 s
-INFO:asyncio:The Image Processing Takes: 0.1015172004699707 s
-INFO:root:Time takes for Image Processing: 0.1676938533782959
-INFO:root:FPS Image Processing:            5.963247786692144
-
-
-INFO:root:Time takes read Image: 0.057977914810180664
-INFO:root:FPS Read Image       : 17.247946968668913
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011028766632080078
-
-INFO:root:Elappsed time for finding all robots: 0.04213261604309082
-INFO:asyncio:Put Data Takes: 0.012724161148071289 s
-INFO:asyncio:The Image Processing Takes: 0.08182573318481445 s
-INFO:root:Time takes for Image Processing: 0.10422945022583008
-INFO:root:FPS Image Processing:            9.594217352517328
-
-
-INFO:root:Time takes read Image: 0.04496145248413086
-INFO:root:FPS Read Image       : 22.241274352801433
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012794017791748047
-
-INFO:root:Elappsed time for finding all robots: 0.04113197326660156
-INFO:asyncio:Put Data Takes: 0.002330303192138672 s
-INFO:asyncio:The Image Processing Takes: 0.07108616828918457 s
-INFO:root:Time takes for Image Processing: 0.09933233261108398
-INFO:root:FPS Image Processing:            10.067215514965318
-
-
-INFO:root:Time takes read Image: 0.05628061294555664
-INFO:root:FPS Read Image       : 17.768107837904243
-
-
-INFO:root:
-Time passed to find blue contourse: 0.019280672073364258
-
-INFO:root:Elappsed time for finding all robots: 0.05101943016052246
-INFO:asyncio:Put Data Takes: 0.001672506332397461 s
-INFO:asyncio:The Image Processing Takes: 0.09041810035705566 s
-INFO:root:Time takes for Image Processing: 0.1265885829925537
-INFO:root:FPS Image Processing:            7.899606555030502
-
-
-INFO:root:Time takes read Image: 0.0471949577331543
-INFO:root:FPS Read Image       : 21.18870421823693
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012338638305664062
-
-INFO:root:Elappsed time for finding all robots: 0.04152393341064453
-INFO:asyncio:Put Data Takes: 0.009801864624023438 s
-INFO:asyncio:The Image Processing Takes: 0.08021354675292969 s
-INFO:root:Time takes for Image Processing: 0.1021873950958252
-INFO:root:FPS Image Processing:            9.785942767816522
-
-
-INFO:root:Time takes read Image: 0.05938839912414551
-INFO:root:FPS Read Image       : 16.838305371889213
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013893365859985352
-
-INFO:root:Elappsed time for finding all robots: 0.04639840126037598
-INFO:asyncio:Put Data Takes: 0.012494564056396484 s
-INFO:asyncio:The Image Processing Takes: 0.08759951591491699 s
-INFO:root:Time takes for Image Processing: 0.11180496215820312
-INFO:root:FPS Image Processing:            8.944146849090723
-
-
-INFO:root:Time takes read Image: 0.04624676704406738
-INFO:root:FPS Read Image       : 21.62313311646466
-
-
-INFO:root:
-Time passed to find blue contourse: 0.016216278076171875
-
-INFO:root:Elappsed time for finding all robots: 0.05488443374633789
-INFO:asyncio:Put Data Takes: 0.0014188289642333984 s
-INFO:asyncio:The Image Processing Takes: 0.0676889419555664 s
-INFO:root:Time takes for Image Processing: 0.08947587013244629
-INFO:root:FPS Image Processing:            11.17619754375961
-
-
-INFO:root:Time takes read Image: 0.050693511962890625
-INFO:root:FPS Read Image       : 19.726390247573182
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01180720329284668
-
-INFO:root:Elappsed time for finding all robots: 0.06794571876525879
-INFO:asyncio:Put Data Takes: 0.0012972354888916016 s
-INFO:asyncio:The Image Processing Takes: 0.0951375961303711 s
-INFO:root:Time takes for Image Processing: 0.114654541015625
-INFO:root:FPS Image Processing:            8.721852541921747
-
-
-INFO:root:Time takes read Image: 0.06115078926086426
-INFO:root:FPS Read Image       : 16.35301869505039
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01407170295715332
-
-INFO:root:Elappsed time for finding all robots: 0.05069255828857422
-INFO:asyncio:Put Data Takes: 0.0011911392211914062 s
-INFO:asyncio:The Image Processing Takes: 0.07305073738098145 s
-INFO:root:Time takes for Image Processing: 0.09734702110290527
-INFO:root:FPS Image Processing:            10.272528000039186
-
-
-INFO:root:Time takes read Image: 0.03928494453430176
-INFO:root:FPS Read Image       : 25.455044212340614
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007359743118286133
-
-INFO:root:Elappsed time for finding all robots: 0.038709163665771484
-INFO:asyncio:Put Data Takes: 0.0011088848114013672 s
-INFO:asyncio:The Image Processing Takes: 0.055626630783081055 s
-INFO:root:Time takes for Image Processing: 0.07427334785461426
-INFO:root:FPS Image Processing:            13.463779792954016
-
-
-INFO:root:Time takes read Image: 0.044229745864868164
-INFO:root:FPS Read Image       : 22.609218760949368
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007967948913574219
-
-INFO:root:Elappsed time for finding all robots: 0.041365623474121094
-INFO:asyncio:Put Data Takes: 0.0014147758483886719 s
-INFO:asyncio:The Image Processing Takes: 0.059023141860961914 s
-INFO:root:Time takes for Image Processing: 0.07542800903320312
-INFO:root:FPS Image Processing:            13.257674606787033
-
-
-INFO:root:Time takes read Image: 0.04457855224609375
-INFO:root:FPS Read Image       : 22.43231216840664
-
-
-INFO:root:
-Time passed to find blue contourse: 0.0091705322265625
-
-INFO:root:Elappsed time for finding all robots: 0.04716181755065918
-INFO:asyncio:Put Data Takes: 0.0021181106567382812 s
-INFO:asyncio:The Image Processing Takes: 0.07023453712463379 s
-INFO:root:Time takes for Image Processing: 0.09011268615722656
-INFO:root:FPS Image Processing:            11.09721663668113
-
-
-INFO:root:Time takes read Image: 0.044895172119140625
-INFO:root:FPS Read Image       : 22.274109949868297
-
-
-INFO:root:
-Time passed to find blue contourse: 0.008455991744995117
-
-INFO:root:Elappsed time for finding all robots: 0.04919314384460449
-INFO:asyncio:Put Data Takes: 0.0014536380767822266 s
-INFO:asyncio:The Image Processing Takes: 0.06639456748962402 s
-INFO:root:Time takes for Image Processing: 0.08688545227050781
-INFO:root:FPS Image Processing:            11.509406625249708
-
-
-INFO:root:Time takes read Image: 0.0448915958404541
-INFO:root:FPS Read Image       : 22.27588441172878
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007842302322387695
-
-INFO:root:Elappsed time for finding all robots: 0.046265602111816406
-INFO:asyncio:Put Data Takes: 0.0013689994812011719 s
-INFO:asyncio:The Image Processing Takes: 0.06268882751464844 s
-INFO:root:Time takes for Image Processing: 0.08624076843261719
-INFO:root:FPS Image Processing:            11.595443989826386
-
-
-INFO:root:Time takes read Image: 0.03825783729553223
-INFO:root:FPS Read Image       : 26.13843517277911
-
-
-INFO:root:
-Time passed to find blue contourse: 0.008439064025878906
-
-INFO:root:Elappsed time for finding all robots: 0.049103736877441406
-INFO:asyncio:Put Data Takes: 0.0066416263580322266 s
-INFO:asyncio:The Image Processing Takes: 0.0733649730682373 s
-INFO:root:Time takes for Image Processing: 0.09028267860412598
-INFO:root:FPS Image Processing:            11.076321786871523
-
-
-INFO:root:Time takes read Image: 0.04439663887023926
-INFO:root:FPS Read Image       : 22.524227631797995
-
-
-INFO:root:
-Time passed to find blue contourse: 0.00814962387084961
-
-INFO:root:Elappsed time for finding all robots: 0.05068850517272949
-INFO:asyncio:Put Data Takes: 0.005431652069091797 s
-INFO:asyncio:The Image Processing Takes: 0.07781767845153809 s
-INFO:root:Time takes for Image Processing: 0.09627270698547363
-INFO:root:FPS Image Processing:            10.387159884793597
-
-
-INFO:root:Time takes read Image: 0.046126604080200195
-INFO:root:FPS Read Image       : 21.679462859682946
-
-
-INFO:root:
-Time passed to find blue contourse: 0.00949239730834961
-
-INFO:root:Elappsed time for finding all robots: 0.054471731185913086
-INFO:asyncio:Put Data Takes: 0.0015513896942138672 s
-INFO:asyncio:The Image Processing Takes: 0.07603764533996582 s
-INFO:root:Time takes for Image Processing: 0.09578371047973633
-INFO:root:FPS Image Processing:            10.440188576861997
-
-
-INFO:root:Time takes read Image: 0.048111915588378906
-INFO:root:FPS Read Image       : 20.784871850779997
-
-
-INFO:root:
-Time passed to find blue contourse: 0.007549285888671875
-
-INFO:root:Elappsed time for finding all robots: 0.042256832122802734
-INFO:asyncio:Put Data Takes: 0.006973981857299805 s
-INFO:asyncio:The Image Processing Takes: 0.06689286231994629 s
-INFO:root:Time takes for Image Processing: 0.0877542495727539
-INFO:root:FPS Image Processing:            11.395459534651206
-
-
-INFO:root:Time takes read Image: 0.051552772521972656
-INFO:root:FPS Read Image       : 19.397598830863718
-
-
-INFO:root:
-Time passed to find blue contourse: 0.015524148941040039
-
-INFO:root:Elappsed time for finding all robots: 0.0640714168548584
-INFO:asyncio:Put Data Takes: 0.0011289119720458984 s
-INFO:asyncio:The Image Processing Takes: 0.09264492988586426 s
-INFO:root:Time takes for Image Processing: 0.12122082710266113
-INFO:root:FPS Image Processing:            8.24940749788076
-
-
-INFO:root:Time takes read Image: 0.04549717903137207
-INFO:root:FPS Read Image       : 21.979384684717733
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013386726379394531
-
-INFO:root:Elappsed time for finding all robots: 0.06016731262207031
-INFO:asyncio:Put Data Takes: 0.0011646747589111328 s
-INFO:asyncio:The Image Processing Takes: 0.0775458812713623 s
-INFO:root:Time takes for Image Processing: 0.09791088104248047
-INFO:root:FPS Image Processing:            10.213369437112217
-
-
-INFO:root:Time takes read Image: 0.05564069747924805
-INFO:root:FPS Read Image       : 17.972456229057222
-
 
 INFO:root:
-Time passed to find blue contourse: 0.013529539108276367
+Time passed to find blue contourse: 0.006084918975830078
 
-INFO:root:Elappsed time for finding all robots: 0.059356689453125
-INFO:asyncio:Put Data Takes: 0.0013778209686279297 s
-INFO:asyncio:The Image Processing Takes: 0.08161473274230957 s
-INFO:root:Time takes for Image Processing: 0.10582232475280762
-INFO:root:FPS Image Processing:            9.449801847917431
+INFO:root:Elappsed time for finding all robots: 0.05567789077758789
+INFO:asyncio:Put Data Takes: 0.0014965534210205078 s
+INFO:asyncio:The Image Processing Takes: 0.06638765335083008 s
+INFO:root:Time takes for Image Processing: 0.08545827865600586
+INFO:root:FPS Image Processing:            11.701616458076431
 
 
-INFO:root:Time takes read Image: 0.04432868957519531
-INFO:root:FPS Read Image       : 22.558753926251022
+INFO:root:Time takes read Image: 0.04469156265258789
+INFO:root:FPS Read Image       : 22.375588156841825
 
 
 INFO:root:
-Time passed to find blue contourse: 0.013324975967407227
+Time passed to find blue contourse: 0.007877349853515625
 
-INFO:root:Elappsed time for finding all robots: 0.05830097198486328
-INFO:asyncio:Put Data Takes: 0.0025954246520996094 s
-INFO:asyncio:The Image Processing Takes: 0.08817315101623535 s
-INFO:root:Time takes for Image Processing: 0.10779118537902832
-INFO:root:FPS Image Processing:            9.277196428294946
+INFO:root:Elappsed time for finding all robots: 0.055032968521118164
+INFO:asyncio:Put Data Takes: 0.0013082027435302734 s
+INFO:asyncio:The Image Processing Takes: 0.07647347450256348 s
+INFO:root:Time takes for Image Processing: 0.0945432186126709
+INFO:root:FPS Image Processing:            10.57717321954996
 
 
-INFO:root:Time takes read Image: 0.057524681091308594
-INFO:root:FPS Read Image       : 17.383842570334387
+INFO:root:Time takes read Image: 0.04506278038024902
+INFO:root:FPS Read Image       : 22.19126275746401
 
 
 INFO:root:
-Time passed to find blue contourse: 0.014109611511230469
+Time passed to find blue contourse: 0.006085634231567383
 
-INFO:root:Elappsed time for finding all robots: 0.06546783447265625
-INFO:asyncio:Put Data Takes: 0.0016684532165527344 s
-INFO:asyncio:The Image Processing Takes: 0.08997631072998047 s
-INFO:root:Time takes for Image Processing: 0.1090848445892334
-INFO:root:FPS Image Processing:            9.167176281595944
+INFO:root:Elappsed time for finding all robots: 0.0562593936920166
+INFO:asyncio:Put Data Takes: 0.0010418891906738281 s
+INFO:asyncio:The Image Processing Takes: 0.06993889808654785 s
+INFO:root:Time takes for Image Processing: 0.09265756607055664
+INFO:root:FPS Image Processing:            10.792426807741988
 
 
-INFO:root:Time takes read Image: 0.0504605770111084
-INFO:root:FPS Read Image       : 19.817450755267025
+INFO:root:Time takes read Image: 0.04322361946105957
+INFO:root:FPS Read Image       : 23.135498888539548
 
 
 INFO:root:
-Time passed to find blue contourse: 0.011334896087646484
+Time passed to find blue contourse: 0.01416921615600586
 
-INFO:root:Elappsed time for finding all robots: 0.06333112716674805
-INFO:asyncio:Put Data Takes: 0.0011515617370605469 s
-INFO:asyncio:The Image Processing Takes: 0.08382678031921387 s
-INFO:root:Time takes for Image Processing: 0.10354161262512207
-INFO:root:FPS Image Processing:            9.657952726895932
+INFO:root:Elappsed time for finding all robots: 0.0697939395904541
+INFO:asyncio:Put Data Takes: 0.0015137195587158203 s
+INFO:asyncio:The Image Processing Takes: 0.08762454986572266 s
+INFO:root:Time takes for Image Processing: 0.10758090019226074
+INFO:root:FPS Image Processing:            9.295330288302784
 
 
-INFO:root:Time takes read Image: 0.042650461196899414
-INFO:root:FPS Read Image       : 23.446405312791732
+INFO:root:Time takes read Image: 0.030137062072753906
+INFO:root:FPS Read Image       : 33.181734755229265
 
 
 INFO:root:
-Time passed to find blue contourse: 0.012176275253295898
+Time passed to find blue contourse: 0.00733637809753418
 
-INFO:root:Elappsed time for finding all robots: 0.06235051155090332
-INFO:asyncio:Put Data Takes: 0.0012364387512207031 s
-INFO:asyncio:The Image Processing Takes: 0.08314752578735352 s
-INFO:root:Time takes for Image Processing: 0.10212063789367676
-INFO:root:FPS Image Processing:            9.792339928792389
+INFO:root:Elappsed time for finding all robots: 0.05602526664733887
+INFO:asyncio:Put Data Takes: 0.001359701156616211 s
+INFO:asyncio:The Image Processing Takes: 0.07425880432128906 s
+INFO:root:Time takes for Image Processing: 0.09750652313232422
+INFO:root:FPS Image Processing:            10.25572410825191
 
 
-INFO:root:Time takes read Image: 0.042993783950805664
-INFO:root:FPS Read Image       : 23.25917628334877
+INFO:root:Time takes read Image: 0.03886270523071289
+INFO:root:FPS Read Image       : 25.731610655083987
 
 
 INFO:root:
-Time passed to find blue contourse: 0.011292695999145508
+Time passed to find blue contourse: 0.007314205169677734
 
-INFO:root:Elappsed time for finding all robots: 0.05855107307434082
-INFO:asyncio:Put Data Takes: 0.004218101501464844 s
-INFO:asyncio:The Image Processing Takes: 0.08380889892578125 s
-INFO:root:Time takes for Image Processing: 0.10349488258361816
-INFO:root:FPS Image Processing:            9.662313488708536
+INFO:root:Elappsed time for finding all robots: 0.05861473083496094
+INFO:asyncio:Put Data Takes: 0.003087282180786133 s
+INFO:asyncio:The Image Processing Takes: 0.07711172103881836 s
+INFO:root:Time takes for Image Processing: 0.0989997386932373
+INFO:root:FPS Image Processing:            10.101036762315315
 
 
-INFO:root:Time takes read Image: 0.03990769386291504
-INFO:root:FPS Read Image       : 25.05782477521881
+INFO:root:Time takes read Image: 0.0338292121887207
+INFO:root:FPS Read Image       : 29.56025089858341
 
 
 INFO:root:
-Time passed to find blue contourse: 0.013079404830932617
+Time passed to find blue contourse: 0.010803461074829102
 
-INFO:root:Elappsed time for finding all robots: 0.055197715759277344
-INFO:asyncio:Put Data Takes: 0.0011627674102783203 s
-INFO:asyncio:The Image Processing Takes: 0.08152246475219727 s
-INFO:root:Time takes for Image Processing: 0.1003580093383789
-INFO:root:FPS Image Processing:            9.964326779622361
+INFO:root:Elappsed time for finding all robots: 0.060720205307006836
+INFO:asyncio:Put Data Takes: 0.0018510818481445312 s
+INFO:asyncio:The Image Processing Takes: 0.07641005516052246 s
+INFO:root:Time takes for Image Processing: 0.10106039047241211
+INFO:root:FPS Image Processing:            9.895073582493076
 
 
-INFO:root:Time takes read Image: 0.04740405082702637
-INFO:root:FPS Read Image       : 21.095243603735913
+INFO:root:Time takes read Image: 0.035978078842163086
+INFO:root:FPS Read Image       : 27.79470255727189
 
 
 INFO:root:
-Time passed to find blue contourse: 0.012573719024658203
+Time passed to find blue contourse: 0.0070416927337646484
 
-INFO:root:Elappsed time for finding all robots: 0.06073617935180664
-INFO:asyncio:Put Data Takes: 0.0012423992156982422 s
-INFO:asyncio:The Image Processing Takes: 0.08047294616699219 s
-INFO:root:Time takes for Image Processing: 0.10624003410339355
-INFO:root:FPS Image Processing:            9.41264758091844
+INFO:root:Elappsed time for finding all robots: 0.05757427215576172
+INFO:asyncio:Put Data Takes: 0.0018491744995117188 s
+INFO:asyncio:The Image Processing Takes: 0.0790562629699707 s
+INFO:root:Time takes for Image Processing: 0.10224270820617676
+INFO:root:FPS Image Processing:            9.780648591422848
 
 
-INFO:root:Time takes read Image: 0.04921579360961914
-INFO:root:FPS Read Image       : 20.318680786335054
+INFO:root:Time takes read Image: 0.03511214256286621
+INFO:root:FPS Read Image       : 28.480176002064223
 
 
 INFO:root:
-Time passed to find blue contourse: 0.01427912712097168
+Time passed to find blue contourse: 0.007165670394897461
 
-INFO:root:Elappsed time for finding all robots: 0.05898261070251465
-INFO:asyncio:Put Data Takes: 0.002338886260986328 s
-INFO:asyncio:The Image Processing Takes: 0.07850408554077148 s
-INFO:root:Time takes for Image Processing: 0.1005246639251709
-INFO:root:FPS Image Processing:            9.947807443001107
+INFO:root:Elappsed time for finding all robots: 0.05530238151550293
+INFO:asyncio:Put Data Takes: 0.0013480186462402344 s
+INFO:asyncio:The Image Processing Takes: 0.0811469554901123 s
+INFO:root:Time takes for Image Processing: 0.10583877563476562
+INFO:root:FPS Image Processing:            9.448333032978915
 
 
-INFO:root:Time takes read Image: 0.044805288314819336
-INFO:root:FPS Read Image       : 22.318793999797794
+INFO:root:Time takes read Image: 0.03065037727355957
+INFO:root:FPS Read Image       : 32.626025809563075
 
 
 INFO:root:
-Time passed to find blue contourse: 0.012756824493408203
+Time passed to find blue contourse: 0.006781101226806641
 
-INFO:root:Elappsed time for finding all robots: 0.06341314315795898
-INFO:asyncio:Put Data Takes: 0.002637147903442383 s
-INFO:asyncio:The Image Processing Takes: 0.09122991561889648 s
-INFO:root:Time takes for Image Processing: 0.11793112754821777
-INFO:root:FPS Image Processing:            8.479525472111984
+INFO:root:Elappsed time for finding all robots: 0.054309844970703125
+INFO:asyncio:Put Data Takes: 0.0013053417205810547 s
+INFO:asyncio:The Image Processing Takes: 0.07125067710876465 s
+INFO:root:Time takes for Image Processing: 0.09511137008666992
+INFO:root:FPS Image Processing:            10.513990063320014
 
 
-INFO:root:Time takes read Image: 0.04450416564941406
-INFO:root:FPS Read Image       : 22.469806711524452
+INFO:root:Time takes read Image: 0.03383612632751465
+INFO:root:FPS Read Image       : 29.554210500355836
 
 
 INFO:root:
-Time passed to find blue contourse: 0.012362003326416016
+Time passed to find blue contourse: 0.007101535797119141
 
-INFO:root:Elappsed time for finding all robots: 0.0518951416015625
-INFO:asyncio:Put Data Takes: 0.0013113021850585938 s
-INFO:asyncio:The Image Processing Takes: 0.07171440124511719 s
-INFO:root:Time takes for Image Processing: 0.09222245216369629
-INFO:root:FPS Image Processing:            10.843346457812512
+INFO:root:Elappsed time for finding all robots: 0.06875300407409668
+INFO:asyncio:Put Data Takes: 0.0013546943664550781 s
+INFO:asyncio:The Image Processing Takes: 0.0856931209564209 s
+INFO:root:Time takes for Image Processing: 0.10720157623291016
+INFO:root:FPS Image Processing:            9.328221049915932
 
 
-INFO:root:Time takes read Image: 0.042131900787353516
-INFO:root:FPS Read Image       : 23.73498421177722
+INFO:root:Time takes read Image: 0.033840179443359375
+INFO:root:FPS Read Image       : 29.55067072483373
 
 
 INFO:root:
-Time passed to find blue contourse: 0.019919872283935547
+Time passed to find blue contourse: 0.0068933963775634766
 
-INFO:root:Elappsed time for finding all robots: 0.0761404037475586
-INFO:asyncio:Put Data Takes: 0.0014111995697021484 s
-INFO:asyncio:The Image Processing Takes: 0.09863710403442383 s
-INFO:root:Time takes for Image Processing: 0.11520957946777344
-INFO:root:FPS Image Processing:            8.679833783090244
+INFO:root:Elappsed time for finding all robots: 0.05474042892456055
+INFO:asyncio:Put Data Takes: 0.0015075206756591797 s
+INFO:asyncio:The Image Processing Takes: 0.0720360279083252 s
+INFO:root:Time takes for Image Processing: 0.09350037574768066
+INFO:root:FPS Image Processing:            10.695144185287464
 
 
-INFO:root:Time takes read Image: 0.051683664321899414
-INFO:root:FPS Read Image       : 19.348473315896058
+INFO:root:Time takes read Image: 0.04880690574645996
+INFO:root:FPS Read Image       : 20.48890386935729
 
 
 INFO:root:
-Time passed to find blue contourse: 0.011539697647094727
+Time passed to find blue contourse: 0.011646270751953125
 
-INFO:root:Elappsed time for finding all robots: 0.06195783615112305
-INFO:asyncio:Put Data Takes: 0.001313924789428711 s
-INFO:asyncio:The Image Processing Takes: 0.08468031883239746 s
-INFO:root:Time takes for Image Processing: 0.10813212394714355
-INFO:root:FPS Image Processing:            9.247945601150066
+INFO:root:Elappsed time for finding all robots: 0.09545421600341797
+INFO:asyncio:Put Data Takes: 0.006387472152709961 s
+INFO:asyncio:The Image Processing Takes: 0.12482905387878418 s
+INFO:root:Time takes for Image Processing: 0.14408135414123535
+INFO:root:FPS Image Processing:            6.940523331143548
 
 
-INFO:root:Time takes read Image: 0.04271578788757324
-INFO:root:FPS Read Image       : 23.410547936794984
+INFO:root:Time takes read Image: 0.045346736907958984
+INFO:root:FPS Read Image       : 22.05230338909978
 
 
 INFO:root:
-Time passed to find blue contourse: 0.01239156723022461
+Time passed to find blue contourse: 0.010142803192138672
 
-INFO:root:Elappsed time for finding all robots: 0.06099247932434082
-INFO:asyncio:Put Data Takes: 0.0016069412231445312 s
-INFO:asyncio:The Image Processing Takes: 0.08257889747619629 s
-INFO:root:Time takes for Image Processing: 0.10578489303588867
-INFO:root:FPS Image Processing:            9.453145636407074
+INFO:root:Elappsed time for finding all robots: 0.07308483123779297
+INFO:asyncio:Put Data Takes: 0.009274482727050781 s
+INFO:asyncio:The Image Processing Takes: 0.10260868072509766 s
+INFO:root:Time takes for Image Processing: 0.12288308143615723
+INFO:root:FPS Image Processing:            8.13781676299793
 
 
-INFO:root:Time takes read Image: 0.05292773246765137
-INFO:root:FPS Read Image       : 18.89368679474763
+INFO:root:Time takes read Image: 0.045833587646484375
+INFO:root:FPS Read Image       : 21.8180607573866
 
 
 INFO:root:
-Time passed to find blue contourse: 0.015240192413330078
+Time passed to find blue contourse: 0.00830388069152832
 
-INFO:root:Elappsed time for finding all robots: 0.05794072151184082
+INFO:root:Elappsed time for finding all robots: 0.07371950149536133
 INFO:asyncio:Put Data Takes: 0.001007080078125 s
-INFO:asyncio:The Image Processing Takes: 0.07907819747924805 s
-INFO:root:Time takes for Image Processing: 0.0973196029663086
-INFO:root:FPS Image Processing:            10.27542210942017
+INFO:asyncio:The Image Processing Takes: 0.09043240547180176 s
+INFO:root:Time takes for Image Processing: 0.11927056312561035
+INFO:root:FPS Image Processing:            8.384298470586119
 
 
-INFO:root:Time takes read Image: 0.051258087158203125
-INFO:root:FPS Read Image       : 19.509116618292772
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011886358261108398
-
-INFO:root:Elappsed time for finding all robots: 0.06132698059082031
-INFO:asyncio:Put Data Takes: 0.001581430435180664 s
-INFO:asyncio:The Image Processing Takes: 0.0833578109741211 s
-INFO:root:Time takes for Image Processing: 0.10710358619689941
-INFO:root:FPS Image Processing:            9.336755523401413
-
-
-INFO:root:Time takes read Image: 0.0450434684753418
-INFO:root:FPS Read Image       : 22.200777023808264
+INFO:root:Time takes read Image: 0.041764259338378906
+INFO:root:FPS Read Image       : 23.943917977759003
 
 
 INFO:root:
-Time passed to find blue contourse: 0.013701200485229492
+Time passed to find blue contourse: 0.010693788528442383
 
-INFO:root:Elappsed time for finding all robots: 0.06188011169433594
-INFO:asyncio:Put Data Takes: 0.0035004615783691406 s
-INFO:asyncio:The Image Processing Takes: 0.08588361740112305 s
-INFO:root:Time takes for Image Processing: 0.11129975318908691
-INFO:root:FPS Image Processing:            8.984745889787394
-
-
-INFO:root:Time takes read Image: 0.04215502738952637
-INFO:root:FPS Read Image       : 23.72196300003959
+INFO:root:Elappsed time for finding all robots: 0.07495713233947754
+INFO:asyncio:Put Data Takes: 0.0056421756744384766 s
+INFO:asyncio:The Image Processing Takes: 0.0965721607208252 s
+INFO:root:Time takes for Image Processing: 0.12299489974975586
+INFO:root:FPS Image Processing:            8.130418432264992
 
 
-INFO:root:
-Time passed to find blue contourse: 0.012616157531738281
-
-INFO:root:Elappsed time for finding all robots: 0.05661725997924805
-INFO:asyncio:Put Data Takes: 0.0013213157653808594 s
-INFO:asyncio:The Image Processing Takes: 0.07842612266540527 s
-INFO:root:Time takes for Image Processing: 0.10197019577026367
-INFO:root:FPS Image Processing:            9.806787095446744
-
-
-INFO:root:Time takes read Image: 0.050222158432006836
-INFO:root:FPS Read Image       : 19.911529715590536
+INFO:root:Time takes read Image: 0.04781484603881836
+INFO:root:FPS Read Image       : 20.91400648217402
 
 
 INFO:root:
-Time passed to find blue contourse: 0.011343240737915039
+Time passed to find blue contourse: 0.010458946228027344
 
-INFO:root:Elappsed time for finding all robots: 0.05818319320678711
-INFO:asyncio:Put Data Takes: 0.004419565200805664 s
-INFO:asyncio:The Image Processing Takes: 0.08591389656066895 s
-INFO:root:Time takes for Image Processing: 0.10731744766235352
-INFO:root:FPS Image Processing:            9.31814930174486
-
-
-INFO:root:Time takes read Image: 0.05472445487976074
-INFO:root:FPS Read Image       : 18.273366124837167
+INFO:root:Elappsed time for finding all robots: 0.07069563865661621
+INFO:asyncio:Put Data Takes: 0.001674652099609375 s
+INFO:asyncio:The Image Processing Takes: 0.09140300750732422 s
+INFO:root:Time takes for Image Processing: 0.11353540420532227
+INFO:root:FPS Image Processing:            8.807825250628936
 
 
-INFO:root:
-Time passed to find blue contourse: 0.0133209228515625
-
-INFO:root:Elappsed time for finding all robots: 0.06943464279174805
-INFO:asyncio:Put Data Takes: 0.0054357051849365234 s
-INFO:asyncio:The Image Processing Takes: 0.09423542022705078 s
-INFO:root:Time takes for Image Processing: 0.11386251449584961
-INFO:root:FPS Image Processing:            8.782521661564491
-
-
-INFO:root:Time takes read Image: 0.04607272148132324
-INFO:root:FPS Read Image       : 21.704817250818916
+INFO:root:Time takes read Image: 0.04383111000061035
+INFO:root:FPS Read Image       : 22.81484543708966
 
 
 INFO:root:
-Time passed to find blue contourse: 0.012842416763305664
+Time passed to find blue contourse: 0.010857105255126953
 
-INFO:root:Elappsed time for finding all robots: 0.0615081787109375
-INFO:asyncio:Put Data Takes: 0.0037894248962402344 s
-INFO:asyncio:The Image Processing Takes: 0.09114527702331543 s
-INFO:root:Time takes for Image Processing: 0.1157371997833252
-INFO:root:FPS Image Processing:            8.640264339141845
-
-
-INFO:root:Time takes read Image: 0.04797196388244629
-INFO:root:FPS Read Image       : 20.845508898707315
+INFO:root:Elappsed time for finding all robots: 0.06997513771057129
+INFO:asyncio:Put Data Takes: 0.0017545223236083984 s
+INFO:asyncio:The Image Processing Takes: 0.08825922012329102 s
+INFO:root:Time takes for Image Processing: 0.11279988288879395
+INFO:root:FPS Image Processing:            8.865257431037143
 
 
-INFO:root:
-Time passed to find blue contourse: 0.012415170669555664
-
-INFO:root:Elappsed time for finding all robots: 0.058962345123291016
-INFO:asyncio:Put Data Takes: 0.0010690689086914062 s
-INFO:asyncio:The Image Processing Takes: 0.07952356338500977 s
-INFO:root:Time takes for Image Processing: 0.10839653015136719
-INFO:root:FPS Image Processing:            9.22538755256814
-
-
-INFO:root:Time takes read Image: 0.047197818756103516
-INFO:root:FPS Read Image       : 21.18741980784191
+INFO:root:Time takes read Image: 0.04562187194824219
+INFO:root:FPS Read Image       : 21.919311007985282
 
 
 INFO:root:
-Time passed to find blue contourse: 0.019389867782592773
-
-INFO:root:Elappsed time for finding all robots: 0.07203149795532227
-INFO:asyncio:Put Data Takes: 0.0023872852325439453 s
-INFO:asyncio:The Image Processing Takes: 0.09509134292602539 s
-INFO:root:Time takes for Image Processing: 0.13045239448547363
-INFO:root:FPS Image Processing:            7.665631619443779
-
-
-INFO:root:Time takes read Image: 0.052702903747558594
-INFO:root:FPS Read Image       : 18.97428659319979
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012670040130615234
-
-INFO:root:Elappsed time for finding all robots: 0.06702470779418945
-INFO:asyncio:Put Data Takes: 0.0019812583923339844 s
-INFO:asyncio:The Image Processing Takes: 0.08809351921081543 s
-INFO:root:Time takes for Image Processing: 0.11237335205078125
-INFO:root:FPS Image Processing:            8.898906918324395
-
-
-INFO:root:Time takes read Image: 0.05094194412231445
-INFO:root:FPS Read Image       : 19.630189173757174
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011646747589111328
-
-INFO:root:Elappsed time for finding all robots: 0.06371450424194336
-INFO:asyncio:Put Data Takes: 0.0015218257904052734 s
-INFO:asyncio:The Image Processing Takes: 0.08770513534545898 s
-INFO:root:Time takes for Image Processing: 0.1156163215637207
-INFO:root:FPS Image Processing:            8.649297836801187
-
-
-INFO:root:Time takes read Image: 0.04271578788757324
-INFO:root:FPS Read Image       : 23.410547936794984
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014188051223754883
-
-INFO:root:Elappsed time for finding all robots: 0.07123374938964844
-INFO:asyncio:Put Data Takes: 0.0011606216430664062 s
-INFO:asyncio:The Image Processing Takes: 0.0916440486907959 s
-INFO:root:Time takes for Image Processing: 0.11369442939758301
-INFO:root:FPS Image Processing:            8.795505683950939
-
-
-INFO:root:Time takes read Image: 0.0535738468170166
-INFO:root:FPS Read Image       : 18.66582408046105
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014074325561523438
-
-INFO:root:Elappsed time for finding all robots: 0.06138944625854492
-INFO:asyncio:Put Data Takes: 0.0018107891082763672 s
-INFO:asyncio:The Image Processing Takes: 0.07976984977722168 s
-INFO:root:Time takes for Image Processing: 0.10150599479675293
-INFO:root:FPS Image Processing:            9.851634891144272
-
-
-INFO:root:Time takes read Image: 0.04753565788269043
-INFO:root:FPS Read Image       : 21.036839386294446
-
-
-INFO:root:
-Time passed to find blue contourse: 0.01171731948852539
-
-INFO:root:Elappsed time for finding all robots: 0.06409072875976562
-INFO:asyncio:Put Data Takes: 0.002851724624633789 s
-INFO:asyncio:The Image Processing Takes: 0.08777689933776855 s
-INFO:root:Time takes for Image Processing: 0.11423635482788086
-INFO:root:FPS Image Processing:            8.753780716363833
-
-
-INFO:root:Time takes read Image: 0.04676365852355957
-INFO:root:FPS Read Image       : 21.384126725162
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013721704483032227
-
-INFO:root:Elappsed time for finding all robots: 0.06893420219421387
-INFO:asyncio:Put Data Takes: 0.0014834403991699219 s
-INFO:asyncio:The Image Processing Takes: 0.0893564224243164 s
-INFO:root:Time takes for Image Processing: 0.11440753936767578
-INFO:root:FPS Image Processing:            8.740682699120576
-
-
-INFO:root:Time takes read Image: 0.04394221305847168
-INFO:root:FPS Read Image       : 22.75716060703066
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011329174041748047
-
-INFO:root:Elappsed time for finding all robots: 0.05514883995056152
-INFO:asyncio:Put Data Takes: 0.0017809867858886719 s
-INFO:asyncio:The Image Processing Takes: 0.0761575698852539 s
-INFO:root:Time takes for Image Processing: 0.1043233871459961
-INFO:root:FPS Image Processing:            9.585578338254518
-
-
-INFO:root:Time takes read Image: 0.055080413818359375
-INFO:root:FPS Read Image       : 18.15527391093566
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013101577758789062
-
-INFO:root:Elappsed time for finding all robots: 0.0672769546508789
-INFO:asyncio:Put Data Takes: 0.004171848297119141 s
-INFO:asyncio:The Image Processing Takes: 0.0970301628112793 s
-INFO:root:Time takes for Image Processing: 0.11957359313964844
-INFO:root:FPS Image Processing:            8.36305051761816
-
-
-INFO:root:Time takes read Image: 0.05172538757324219
-INFO:root:FPS Read Image       : 19.332866256130387
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011204004287719727
-
-INFO:root:Elappsed time for finding all robots: 0.0704813003540039
-INFO:asyncio:Put Data Takes: 0.0042951107025146484 s
-INFO:asyncio:The Image Processing Takes: 0.10291814804077148 s
-INFO:root:Time takes for Image Processing: 0.1278684139251709
-INFO:root:FPS Image Processing:            7.82053964151932
-
-
-INFO:root:Time takes read Image: 0.04603004455566406
-INFO:root:FPS Read Image       : 21.724940952223097
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013219833374023438
-
-INFO:root:Elappsed time for finding all robots: 0.05756568908691406
-INFO:asyncio:Put Data Takes: 0.004674673080444336 s
-INFO:asyncio:The Image Processing Takes: 0.08094358444213867 s
-INFO:root:Time takes for Image Processing: 0.10652494430541992
-INFO:root:FPS Image Processing:            9.387472638642071
-
-
-INFO:root:Time takes read Image: 0.044557809829711914
-INFO:root:FPS Read Image       : 22.44275479027658
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011735200881958008
-
-INFO:root:Elappsed time for finding all robots: 0.05804324150085449
-INFO:asyncio:Put Data Takes: 0.0013990402221679688 s
-INFO:asyncio:The Image Processing Takes: 0.0806584358215332 s
-INFO:root:Time takes for Image Processing: 0.1036677360534668
-INFO:root:FPS Image Processing:            9.646202744161872
-
-
-INFO:root:Time takes read Image: 0.04780101776123047
-INFO:root:FPS Read Image       : 20.920056660614886
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012981891632080078
-
-INFO:root:Elappsed time for finding all robots: 0.056533098220825195
-INFO:asyncio:Put Data Takes: 0.0012781620025634766 s
-INFO:asyncio:The Image Processing Takes: 0.07649779319763184 s
-INFO:root:Time takes for Image Processing: 0.0938270092010498
-INFO:root:FPS Image Processing:            10.65791192232536
-
-
-INFO:root:Time takes read Image: 0.046575307846069336
-INFO:root:FPS Read Image       : 21.47060419450118
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013588905334472656
-
-INFO:root:Elappsed time for finding all robots: 0.06158041954040527
-INFO:asyncio:Put Data Takes: 0.0015077590942382812 s
-INFO:asyncio:The Image Processing Takes: 0.08186507225036621 s
-INFO:root:Time takes for Image Processing: 0.10858607292175293
-INFO:root:FPS Image Processing:            9.209284147522302
-
-
-INFO:root:Time takes read Image: 0.058098793029785156
-INFO:root:FPS Read Image       : 17.212061522299372
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012152671813964844
-
-INFO:root:Elappsed time for finding all robots: 0.06309270858764648
-INFO:asyncio:Put Data Takes: 0.0030508041381835938 s
-INFO:asyncio:The Image Processing Takes: 0.08816218376159668 s
-INFO:root:Time takes for Image Processing: 0.12258028984069824
-INFO:root:FPS Image Processing:            8.157918383938974
-
-
-INFO:root:Time takes read Image: 0.04439830780029297
-INFO:root:FPS Read Image       : 22.523380947266674
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012736320495605469
-
-INFO:root:Elappsed time for finding all robots: 0.06240439414978027
-INFO:asyncio:Put Data Takes: 0.001363515853881836 s
-INFO:asyncio:The Image Processing Takes: 0.08368062973022461 s
-INFO:root:Time takes for Image Processing: 0.10261702537536621
-INFO:root:FPS Image Processing:            9.744971619885364
-
-
-INFO:root:Time takes read Image: 0.05010032653808594
-INFO:root:FPS Read Image       : 19.959949746830624
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012403726577758789
-
-INFO:root:Elappsed time for finding all robots: 0.06352806091308594
-INFO:asyncio:Put Data Takes: 0.0015201568603515625 s
-INFO:asyncio:The Image Processing Takes: 0.08142232894897461 s
-INFO:root:Time takes for Image Processing: 0.10524845123291016
-INFO:root:FPS Image Processing:            9.501327461693895
-
-
-INFO:root:Time takes read Image: 0.05427193641662598
-INFO:root:FPS Read Image       : 18.425729134176503
-
-
-INFO:root:
-Time passed to find blue contourse: 0.013605594635009766
-
-INFO:root:Elappsed time for finding all robots: 0.060416460037231445
-INFO:asyncio:Put Data Takes: 0.0011472702026367188 s
-INFO:asyncio:The Image Processing Takes: 0.08394956588745117 s
-INFO:root:Time takes for Image Processing: 0.10492897033691406
-INFO:root:FPS Image Processing:            9.530256484830858
-
-
-INFO:root:Time takes read Image: 0.04980349540710449
-INFO:root:FPS Read Image       : 20.07891196844287
-
-
-INFO:root:
-Time passed to find blue contourse: 0.010527849197387695
-
-INFO:root:Elappsed time for finding all robots: 0.05453300476074219
-INFO:asyncio:Put Data Takes: 0.0016627311706542969 s
-INFO:asyncio:The Image Processing Takes: 0.0774221420288086 s
-INFO:root:Time takes for Image Processing: 0.10209846496582031
-INFO:root:FPS Image Processing:            9.7944665508416
-
-
-INFO:root:Time takes read Image: 0.047421932220458984
-INFO:root:FPS Read Image       : 21.087289217805754
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012143135070800781
-
-INFO:root:Elappsed time for finding all robots: 0.060018062591552734
-INFO:asyncio:Put Data Takes: 0.0011391639709472656 s
-INFO:asyncio:The Image Processing Takes: 0.08047652244567871 s
-INFO:root:Time takes for Image Processing: 0.10166501998901367
-INFO:root:FPS Image Processing:            9.836224889426708
-
-
-INFO:root:Time takes read Image: 0.049909353256225586
-INFO:root:FPS Read Image       : 20.036324551556117
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012273788452148438
-
-INFO:root:Elappsed time for finding all robots: 0.06458783149719238
-INFO:asyncio:Put Data Takes: 0.0012392997741699219 s
-INFO:asyncio:The Image Processing Takes: 0.08326196670532227 s
-INFO:root:Time takes for Image Processing: 0.11140108108520508
-INFO:root:FPS Image Processing:            8.976573568753343
-
-
-INFO:root:Time takes read Image: 0.048333168029785156
-INFO:root:FPS Read Image       : 20.689725932795326
-
-
-INFO:root:
-Time passed to find blue contourse: 0.011932134628295898
-
-INFO:root:Elappsed time for finding all robots: 0.06165170669555664
-INFO:asyncio:Put Data Takes: 0.0018439292907714844 s
-INFO:asyncio:The Image Processing Takes: 0.0850374698638916 s
-INFO:root:Time takes for Image Processing: 0.11046719551086426
-INFO:root:FPS Image Processing:            9.052461188820999
-
-
-INFO:root:Time takes read Image: 0.05030322074890137
-INFO:root:FPS Read Image       : 19.87944280927261
-
-
-INFO:root:
-Time passed to find blue contourse: 0.014397621154785156
-
-INFO:root:Elappsed time for finding all robots: 0.07096052169799805
-INFO:asyncio:Put Data Takes: 0.0053598880767822266 s
-INFO:asyncio:The Image Processing Takes: 0.1015627384185791 s
-INFO:root:Time takes for Image Processing: 0.12519454956054688
-INFO:root:FPS Image Processing:            7.987568176970657
-
-
-INFO:root:Time takes read Image: 0.04687333106994629
-INFO:root:FPS Read Image       : 21.334092908988257
-
-
-INFO:root:
-Time passed to find blue contourse: 0.009947061538696289
-
-INFO:root:Elappsed time for finding all robots: 0.060613393783569336
-INFO:asyncio:Put Data Takes: 0.003247976303100586 s
-INFO:asyncio:The Image Processing Takes: 0.0859825611114502 s
-INFO:root:Time takes for Image Processing: 0.1071627140045166
-INFO:root:FPS Image Processing:            9.331603900567998
-
-
-INFO:root:Time takes read Image: 0.05104422569274902
-INFO:root:FPS Read Image       : 19.59085452719587
-
-
-INFO:root:
-Time passed to find blue contourse: 0.012174606323242188
-
-INFO:root:Elappsed time for finding all robots: 0.07666635513305664
-INFO:asyncio:Put Data Takes: 0.0011293888092041016 s
-INFO:asyncio:The Image Processing Takes: 0.09789609909057617 s
-INFO:root:Time takes for Image Processing: 0.12318992614746094
-INFO:root:FPS Image Processing:            8.117546874758078
-
-
-INFO:root:Time takes read Image: 0.047370195388793945
-INFO:root:FPS Read Image       : 21.110320356342957
-
-
-INFO:root:
-Time passed to find blue contourse: 0.018323183059692383
-
-INFO:root:Elappsed time for finding all robots: 0.07759594917297363
-INFO:asyncio:Put Data Takes: 0.0016546249389648438 s
-INFO:asyncio:The Image Processing Takes: 0.10141849517822266 s
-INFO:root:Time takes for Image Processing: 0.15255498886108398
-INFO:root:FPS Image Processing:            6.555013424769716
+Time passed to find blue contourse: 0.012011528015136719
+
+INFO:root:Elappsed time for finding all robots: 0.06705975532531738
+INFO:asyncio:Put Data Takes: 0.0015497207641601562 s
+INFO:asyncio:The Image Processing Takes: 0.08537745475769043 s
+INFO:root:Time takes for Image Processing: 0.10736560821533203
+INFO:root:FPS Image Processing:            9.313969497517343
 
 

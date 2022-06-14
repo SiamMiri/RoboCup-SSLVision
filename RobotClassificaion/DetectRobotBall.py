@@ -2,10 +2,10 @@
 from asyncio.log import logger
 import math
 import numpy as np
-from ImageProcessing.ImageProcessing import Image_Processing
 from UDPSockets_SSLClient_ProtoBuf.UDPConnection import UDP_Connection
 import multiprocessing
-import time 
+import time
+import ImageProcessing.ImageProcessing as ImageProcessing
 
 class Detect_Robot_Ball(multiprocessing.Process):
     
@@ -33,10 +33,9 @@ class Detect_Robot_Ball(multiprocessing.Process):
     
     def __init__(self, SslListQueue, CropImageQueue, frameIdx) -> None: #, package_color_pixel_position:list = None
         super(multiprocessing.Process, self).__init__()
-        Image_Processing.ROTATE_ROBOT_IMAGE = Detect_Robot_Ball.ROTATE_ROBAT_SINGLE_IMAGE
-        self.processImage = Image_Processing(self)
+        
+        self.processImage   = None 
         self.upd_connection = UDP_Connection()
-
         # object global variable
         self.pack                           = None # package_color_pixel_position
         self.shortest_line_pixel_pos_list   = None
@@ -49,13 +48,15 @@ class Detect_Robot_Ball(multiprocessing.Process):
         self.crop_frame_queue               = CropImageQueue
         self.frameIdx                       = 0
         
-        if self.SHOW_CROPED_IMAGE == False:
-            Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW = False
         
     def __del__(self):
-        self.terminate()
+        if self.queue == None and self.crop_frame_queue == None:
+            pass
+        else:
+            self.terminate()
     
     def run(self):
+        self.processImage = ImageProcessing.Image_Processing()
         self.startTime = time.time()
         if self.frameProcess is not None:
             startTime1 = time.time()
@@ -642,7 +643,7 @@ class Detect_Robot_Ball(multiprocessing.Process):
         return angleD
     
     def match_robot(self, frameRobot:np.array = None):
-        
+        self.processImage = ImageProcessing.Image_Processing()
         circle_pixel_pos_pack = {"TOP_RIGHT":    "",
                                  "TOP_LEFT":     "",
                                  "DOWN_LEFT":    "",

@@ -9,16 +9,9 @@ import logging
 import threading
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Process, Queue
-from Detect_Robot_Ball import Detect_Robot_Ball
+import multiprocessing as mp
+import RobotClassificaion.DetectRobotBall as DetectRobotBall
 
-# from sklearn.datasets import load_sample_image
-# from Detect_Robot_Ball import Detect_Robot_Ball as s
-
-# Describrion of the class : This class receive Images from the Capture Video Class
-# It processes images to detect the robot ID, Orientation, position
-# Return : List of [ Robot_Id, X_Pos_Pixel, Y_Pos_Pixel, Orientation, X_Position, Y_Position]
-q = Queue()
-imgg = Queue()
 class Image_Processing():
     
     """ This class get images from DetectRobotBall """
@@ -54,9 +47,7 @@ class Image_Processing():
     SHOW_BALL_INFO_IN_MAIN_FRAME    = False
 
 
-    def __init__(self, parent = None):
-        # parent.__init__()
-        self.Parent = parent
+    def __init__(self):
         
         self.__Dict_SSL_List    = {}
         self.__list_num         = 0
@@ -119,10 +110,12 @@ class Image_Processing():
                                             Res   = True)
         
         mylist = self._detect_blue_circle(frame = field_frame)
-        #return mylist, self.__Dict_Robot_Image
-        return q.get(), imgg.get()
+        return mylist, self.__Dict_Robot_Image
+
     def _detect_blue_circle(self, frame: cv2.VideoCapture.read = None):
+        
         startTime = time.time()
+        
         # Constants:
         blue_color_num          = 1
         if_is_ball              = False
@@ -140,7 +133,7 @@ class Image_Processing():
                 print(f"blue_area_of_circle_min {area_of_circle_min}")
                 print(f"blue_area_of_circle_max {area_of_circle_max}")
 
-            
+            processes = []
             """ contours for blue area """
             for contours in contours_blue:
                 
@@ -162,10 +155,16 @@ class Image_Processing():
                         cv2.line(crop_img, (int(crop_img.shape[0]/2) , 0), (int(crop_img.shape[0]/2), crop_img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
                     
                     # myList = {blue_color_num: [crop_img, cy_blue, cx_blue]}
-                    # self.dict_crop_img_info.update({blue_color_num: [crop_img, cy_blue, cx_blue]})
+                    self.dict_crop_img_info.update({blue_color_num: [crop_img, cy_blue, cx_blue]})
+                    # self._find_red_green_circle(crop_img, cy_blue, cx_blue) # , blue_color_num
+                    # p = {blue_color_num: Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))}
+                    # p = Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))
+                    process = mp.Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))
+                    processes.append(process)
+                    process.start()
                     blue_color_num += 1
-                    self._find_red_green_circle(crop_img, cy_blue, cx_blue) # , blue_color_num
-            #         p = {blue_color_num: Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))}
+            # for proc in processes:
+            #     proc.join()
             
             # for i in p:
             #     p[i].start()
@@ -201,6 +200,15 @@ class Image_Processing():
         except Exception as e:
             print(f"_detect_blue_circle: {e}")                
 
+    def multiprocessing_ordered(self, listData):
+        start_time = time.time()
+        pool = ThreadPool(len(listData))
+        for i in listData:
+            tasks = [*zip(listData[i][0], listData[i][1], listData[i][2])]
+            pool.map(self._find_red_green_circle, tasks)
+        pool.close()
+        print("Time with multiprocessing (ordered): {0:.1f}".format((time.time() - start_time)*1e3))
+        
     def _calculate_area_of_circle(self, frame: np.array = None, circle_color:str = None):
         area_of_circle_min = None
         area_of_circle_max = None
@@ -410,7 +418,7 @@ class Image_Processing():
         return crop_img
     
     def _find_red_green_circle(self, img : cv2.VideoCapture.read = None,  cy: int = None, cx :int = None): # , Robo_Num: int = None,
-        
+        detect_robot = DetectRobotBall.Detect_Robot_Ball(SslListQueue=None, CropImageQueue=None, frameIdx=None)
         # constants
         num_of_circle   = 1
         num_of_red      = 0
@@ -517,29 +525,29 @@ class Image_Processing():
             Angle = None
             Id = None
             if len(circlePack) == 4 :
-                Angle = self.Parent.list_min_dist_between_circle(circle_pixel_pos_pack = circlePack)
+                Angle = detect_robot.list_min_dist_between_circle(circle_pixel_pos_pack = circlePack)
                 ssl_message_["orientation"] = Angle
                 if Angle is not None:    
                     if Image_Processing.rotate_image_by_degree:
                         img = self.rotate_image_by_degree(frame=img, degree=Angle)
-                        Id  = self.Parent.match_robot(frameRobot = img)
+                        Id  = detect_robot.match_robot(frameRobot = img)
                     else:
                         imgRotated = self.rotate_image_by_degree(frame=img, degree=Angle)
-                        Id  = self.Parent.match_robot(frameRobot = imgRotated)
+                        Id  = detect_robot.match_robot(frameRobot = imgRotated)
                 if Id is not None:
                     ssl_message_["robot_id"] = int(Id) 
                     ssl_message_["pixel_x"]  = cx
                     ssl_message_["pixel_y"]  = cy
                     if Angle is not None:
-                        # self.Parent.send_data_to_server(ssl_message = ssl_message_)
+                        detect_robot.send_data_to_server(ssl_message = ssl_message_)
                         # self.show_single_robot(frame = img, frame_name = " " + str(Id))# + " " +str (Angle) + " "
                         if Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW:
                             imgDict = {Id: img}
-                            # self.__Dict_Robot_Image.update(imgDict)
-                            imgg.put(imgDict)
+                            self.__Dict_Robot_Image.update(imgDict)
+                            
                         mydict = {self.__list_num: ssl_message_}
-                        #self.__Dict_SSL_List.update(mydict)
-                        q.put(mydict)
+                        self.__Dict_SSL_List.update(mydict)
+                        
                         self.__list_num += 1
         except Exception as e:
             print(f'_find_red_green_circle: {e}')

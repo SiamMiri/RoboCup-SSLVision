@@ -150,13 +150,13 @@ class Main(QMainWindow, Ui_MainWindow):
                     detectRobot.join()
                     endTime = time.time()
                     
-                    if Main.DICT_SSL_LIST.empty():
-                        continue
-                    Main.DICT_SSL_LIST.get()
-                    cropImagList = Main.CROP_FRAME_DICT.get()
-                    for key in cropImagList:
-                        cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
-                        cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
+                    # if Main.DICT_SSL_LIST.empty():
+                    #     continue
+                    # Main.DICT_SSL_LIST.get()
+                    # cropImagList = Main.CROP_FRAME_DICT.get()
+                    # for key in cropImagList:
+                    #     cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
+                    #     cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
                     
                     logging.info(f'Time takes for Image Processing: {endTime - startTime}')
                     logging.info(f'FPS Image Processing:            {1/(endTime - startTime)}\n\n')
@@ -210,16 +210,16 @@ class Main(QMainWindow, Ui_MainWindow):
                     logging.info(f'Time takes for Image Processing: {endTime - startTime}')
                     logging.info(f'FPS Image Processing:            {1/(endTime - startTime)}\n\n')
                     
-                    if Main.DICT_SSL_LIST.empty():
-                        continue
+                    while Main.DICT_SSL_LIST.empty():
+                        pass
                     Main.DICT_SSL_LIST.get()
                     cropImagList = Main.CROP_FRAME_DICT.get()
-                    for key in cropImagList:
-                        cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
-                        cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
+                    # for key in cropImagList:
+                    #     cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
+                    #     cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
                     
                     cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
-                    k = cv2                                      .waitKey(1)
+                    k = cv2.waitKey(1)
                     if k % 256 == 27:
                         # ESC pressed
                         print("Escape hit, closing...")

@@ -15,18 +15,11 @@ class Capture_Image():
         pass
     
     def load_image(self, image_path = None):
-        
-        startTime = time.time()
-       
+               
         if image_path is not None:
             self.frame = cv2.imread(image_path)
         else:
             self.frame = cv2.imread(self.image_path)
-        
-        endTime = time.time()
-        
-        logging.info(f'Time takes read Image: {endTime - startTime}')
-        logging.info(f'FPS Read Image       : {1/(endTime - startTime)}\n\n')
         
         return self.frame
     

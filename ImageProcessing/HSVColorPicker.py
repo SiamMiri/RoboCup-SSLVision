@@ -15,8 +15,9 @@ class HSV_COLOR_PICKER():
         self.high_H = self.max_value_H
         self.high_S = self.max_value
         self.high_V = self.max_value
-        self.window_capture_name = 'Video Capture'
+        self.window_capture_name   = 'Video Capture'
         self.window_detection_name = 'Object Detection'
+        self.window_res_name       = 'Result Image'
         self.low_H_name  = 'Low H'
         self.low_S_name  = 'Low S'
         self.low_V_name  = 'Low V'
@@ -134,6 +135,14 @@ class HSV_COLOR_PICKER():
     def mouse_call_back(self, fram_name):
         return cv.setMouseCallback(fram_name, self.mouse_clicked)
     
+    def gaussian_blur(self, img):
+        img = cv.GaussianBlur(img, (15, 15), 0)    
+        return img
+
+    def median_blur(self, img):
+        img = cv.medianBlur(img, 15)
+        return img
+
     def color_picker(self):
         cv.namedWindow(self.window_capture_name)
         cv.namedWindow(self.window_detection_name)
@@ -152,12 +161,25 @@ class HSV_COLOR_PICKER():
                 # ret, frame = self.cap.read()
                 if self.imgPath != None: 
                     frame = cv.imread(self.imgPath)
-                    frame = cv.resize(frame, (1280,1280))
+                    frame = cv.resize(frame, (740,480))
                 else:
                     ret, frame = self.cap.read()
                     
-                frame_HSV = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+                frame_HSV       = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
                 frame_threshold = cv.inRange(frame_HSV, (self.low_H, self.low_S, self.low_V), (self.high_H, self.high_S, self.high_V))
+                
+                frame_res       = cv.bitwise_and(frame, frame, mask = frame_threshold)
+
+
+                # t1 = time.time()
+                # frame_blur_gausian = self.gaussian_blur(img=frame_res)
+                # t2 = time.time()
+                # print(f'Gaussian Blur takes: {t2-t1}')
+
+                # t1 = time.time()
+                # frame_blur_median = self.median_blur(img=frame_res)
+                # t2 = time.time()
+                # print(f'Median Blur takes: {t2-t1}')
                 
                 # Creat Button
                 cv.rectangle(frame, (20, 20), (270, 50), (0, 0, 0), -1)
@@ -174,15 +196,18 @@ class HSV_COLOR_PICKER():
                 
                 cv.imshow(self.window_capture_name, frame)
                 cv.imshow(self.window_detection_name, frame_threshold)
-                
+                cv.imshow(self.window_res_name, frame_res)
+                # cv.imshow("Gaussian Blur", frame_blur_gausian)
+                # cv.imshow("Median Blur", frame_blur_median)
+
                 self.mouse_call_back(self.window_capture_name)
                 
                 key = cv.waitKey(30)
                 if key == ord('q') or key == 27:
                     # self.cap.release()
-                    # cv.destroyAllWindows()
-                    cv.destroyWindow(self.window_capture_name)
-                    cv.destroyWindow(self.window_detection_name)
+                    cv.destroyAllWindows()
+                    # cv.destroyWindow(self.window_capture_name)
+                    # cv.destroyWindow(self.window_detection_name)
                     self.cap.release()
                     # cv.destroyAllWindows()
                     return True

@@ -7,12 +7,11 @@ import logging
 logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encoding="utf-8",
 
 
-
 # FIXME: Change the frame size would cause high FPS Drop
 
 
 class Capture_Video():
-
+    LOG_FPS = False
     def __init__(self) -> None:
 
         # Define Variable for Class Object
@@ -23,10 +22,10 @@ class Capture_Video():
         self.camera_capture = cv2.VideoCapture(0)
 
         """ Load Json File For Setting Camera Configuration """
-        # self.load_json_config_file()
+        self.load_json_config_file()
 
         """ Start capturing get camera config from start_process_command """
-        # self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
+        self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
 
     def __del__(self) -> None:
         self.finish_capturing()
@@ -36,38 +35,23 @@ class Capture_Video():
     # start image capturing
     ##########################################
     def start_video_capturing(self): # FRAME_FROM_CAM
-        # cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
-        # while True:
-        startTime =  time.time()
+        if Capture_Video.LOG_FPS:
+            startTime =  time.time()
         ret, frame = self.camera_capture.read() # FIXME: Changed to load Image
         
-            # if not ret:
-            #     print("failed to grab frame")
-            #     break
-        endTime = time.time()
-        logging.info(f'Current Resolution is:    {len(frame[0])} {len(frame[1])}')
-        logging.info(f'Time takes to read frame: {endTime - startTime}')
-        logging.info(f'Raw FPS:                  {1/(endTime - startTime)}\n\n')
+        if not ret:
+            print("failed to grab frame")
+    
+        if Capture_Video.LOG_FPS:
+            endTime = time.time()
+            logging.info(f'Current Resolution is:    {len(frame[0])} {len(frame[1])}')
+            logging.info(f'Time takes to read frame: {endTime - startTime}')
+            logging.info(f'Raw FPS:                  {1/(endTime - startTime)}\n\n')
 
         if ret:
             return frame
         else:
             return None
-            # FRAME_FROM_CAM.put(frame)
-            # cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", frame)
-        #     k = cv2.waitKey(1)
-        #     if k % 256 == 27:
-        #         # ESC pressed
-        #         print("Escape hit, closing...")
-        #         break
-            
-        #     if k % 256 == ord("q"):
-        #         # Q pressed
-        #         print("Escape hit, closing...")
-        #         break
-            
-        # FRAME_FROM_CAM.put(None)
-        # FRAME_FROM_CAM.close()
 
     ##########################################
     # destroy opencv camera and free the camera 

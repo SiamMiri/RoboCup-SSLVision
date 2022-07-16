@@ -2,12 +2,12 @@
 from asyncio.log import logger
 import math
 import numpy as np
-from UDPSockets_SSLClient_ProtoBuf.UDPConnection import UDP_Connection
+# from UDPSockets_SSLClient_ProtoBuf.UDPConnection import UDP_Connection
 import multiprocessing
 import time
-import ImageProcessing.ImageProcessing as ImageProcessing
+# import ImageProcessing.ImageProcessing as ImageProcessing
 
-class Detect_Robot_Ball(multiprocessing.Process):
+class Detect_Robot_Ball():
     
     ROTATE_ROBAT_SINGLE_IMAGE = False
     Robot_Pattern_Dict= { "1"  : {"TOP_RIGHT": 'red'  , "TOP_LEFT": 'red'  , "DOWN_LEFT": 'green', "DOWN_RIGHT": 'red'},
@@ -31,11 +31,10 @@ class Detect_Robot_Ball(multiprocessing.Process):
     SEND_DATA_TO_SERVER = False
     SHOW_CROPED_IMAGE   = False
     
-    def __init__(self, SslListQueue, CropImageQueue, frameIdx) -> None: #, package_color_pixel_position:list = None
-        super(multiprocessing.Process, self).__init__()
+    def __init__(self, FuncRotateImage, FuncfindContours, CircleArea, FuncCalContoursArea, FuncCalMoment) -> None: #,CropImageQueue package_color_pixel_position:list = None
         
         self.processImage   = None 
-        self.upd_connection = UDP_Connection()
+        self.upd_connection = None # UDP_Connection()
         # object global variable
         self.pack                           = None # package_color_pixel_position
         self.shortest_line_pixel_pos_list   = None
@@ -44,41 +43,69 @@ class Detect_Robot_Ball(multiprocessing.Process):
         self.startTime                      = 0
         self.endTime                        = 0
         self.frameProcess                   = 0
-        self.queue                          = SslListQueue
-        self.crop_frame_queue               = CropImageQueue
         self.frameIdx                       = 0
+        self.boolStart                      = False          
         
+        # External Function
+        self.FuncRotateImage                = FuncRotateImage
+        self.FuncfindContours               = FuncfindContours
+        self.FuncCalContoursArea            = FuncCalContoursArea
+        self.FuncCalMoment                  = FuncCalMoment
+
+        # External Variable 
+        self.CircleArea                     = CircleArea
         
     def __del__(self):
-        if self.queue == None and self.crop_frame_queue == None:
-            pass
-        else:
-            self.terminate()
+        print("Class Detection Deleted")
     
     def run(self):
-        self.processImage = ImageProcessing.Image_Processing()
-        self.startTime = time.time()
-        if self.frameProcess is not None:
-            startTime1 = time.time()
+        while True:
+            # self.processImage = ImageProcessing.Image_Processing()
+            while self.queue_frame_data.empty():
+                pass
+            self.frameData = self.queue_frame_data.get()
+            self.startTime = time.time()
+            if self.frameProcess is not None:
+                startTime1 = time.time()
+                
+                # ssl_list, crop_image_list = (self.processImage._start_process(field_frame = self.frameProcess))
+                
+                ssl_list       = {}
+                ssl_list_queue = {}
+                
+                for circlePack in self.frameData:
+                    
+                    Angle       = self.list_min_dist_between_circle(circle_pixel_pos_pack = self.frameData[circlePack][3])
+                    rotateImg   = self.FuncRotateImage(self.frameData[circlePack][2], degree=Angle)
+                    RobotId     = self.match_robot(frameRobot = rotateImg)
+
+                    ssl_list_queue[circlePack] = [RobotId, Angle, self.frameData[circlePack][0], self.frameData[circlePack][1]]
+                self.queue.put(ssl_list_queue)
+                startTime2 = time.time()
+                
+                # self.queue.put(ssl_list)
+                # self.crop_frame_queue.put(crop_image_list)
+                
+                endTime2 = time.time()
+                logger.info(f"Put Data Takes: {endTime2 - startTime2} s")
+                
+                endTime1 = time.time()
+                logger.info(f"The Image Processing Takes: {endTime1 - startTime1} s")
             
-            ssl_list, crop_image_list = (self.processImage._start_process(field_frame = self.frameProcess))
-            
-            startTime2 = time.time()
-            
-            self.queue.put(ssl_list)
-            self.crop_frame_queue.put(crop_image_list)
-            
-            endTime2 = time.time()
-            logger.info(f"Put Data Takes: {endTime2 - startTime2} s")
-            
-            endTime1 = time.time()
-            logger.info(f"The Image Processing Takes: {endTime1 - startTime1} s")
-    
-    def detect_robot(self, frame : np.array ):# , dataQueue 
-        self.frameProcess = frame
-        self.start()
+    def detect_robot(self, frame_data : dict, CircleArea:list=None ):# , dataQueue 
+        # self.frameData  = frame_data
+        self.CircleArea = CircleArea
+        ssl_list_queue = {}
+        if frame_data != None:
+            for circlePack in frame_data:
+                
+                Angle       = self.list_min_dist_between_circle(circle_pixel_pos_pack = frame_data[circlePack][3])
+                rotateImg   = self.FuncRotateImage(frame_data[circlePack][2], degree=Angle)
+                RobotId     = self.match_robot(frameRobot = rotateImg)
+                
+                ssl_list_queue[circlePack] = [RobotId, Angle, frame_data[circlePack][0], frame_data[circlePack][1]]
+        return ssl_list_queue
         
-          
     def list_min_dist_between_circle(self, circle_pixel_pos_pack:list = None ):
         length_list = {}
         if circle_pixel_pos_pack is not None:
@@ -211,7 +238,7 @@ class Detect_Robot_Ball(multiprocessing.Process):
                     Angle = self.getAngle(PT1 = [pixel_position_value_shortest_line["TOP_LEFT"][0], pixel_position_value_shortest_line["TOP_LEFT"][1]], # 
                                     PT2 = [pixel_position_value_shortest_line["TOP_RIGHT"][0], pixel_position_value_shortest_line["TOP_RIGHT"][1]], #
                                     PT3 = [pixel_position_value_shortest_line["TOP_RIGHT"][0], pixel_position_value_shortest_line["TOP_LEFT"][1]])
-                    Angle =  ( 180 + Angle ) * -1
+                    Angle =  ( 180 - Angle )
                     return Angle
                 else:
                     if Detect_Robot_Ball.PRINT_DEBUG:
@@ -220,7 +247,7 @@ class Detect_Robot_Ball(multiprocessing.Process):
                     Angle = self.getAngle(PT1 = [pixel_position_value_shortest_line["TOP_LEFT"][0], pixel_position_value_shortest_line["TOP_LEFT"][1]], # 
                                     PT2 = [pixel_position_value_shortest_line["TOP_RIGHT"][0], pixel_position_value_shortest_line["TOP_RIGHT"][1]], #
                                     PT3 = [pixel_position_value_shortest_line["TOP_RIGHT"][0], pixel_position_value_shortest_line["TOP_LEFT"][1]])
-                    Angle =  ( 180 + Angle ) * -1
+                    Angle =  ( 180 - Angle )
                     return Angle
 
             else:
@@ -287,11 +314,13 @@ class Detect_Robot_Ball(multiprocessing.Process):
                 
 
         if pixel_position_circle_shortest_line[1] == "DOWN_LEFT" and pixel_position_circle_shortest_line[0] == "TOP_LEFT":
-            print("second assumption 2")
+            if Detect_Robot_Ball.PRINT_DEBUG:
+                print("second assumption 2")
             if pixel_position_value_shortest_line["TOP_LEFT"][0] < pixel_position_value_shortest_line["DOWN_LEFT"][0]:
                 if pixel_position_value_shortest_line["TOP_LEFT"][1] < pixel_position_value_shortest_line["DOWN_LEFT"][1]:
-                    print("2 is up and back")
-                    print("3 is down and frot")
+                    if Detect_Robot_Ball.PRINT_DEBUG:
+                        print("2 is up and back")
+                        print("3 is down and front")
                     # FIXED
                     Angle = self.getAngle(PT1 = [pixel_position_value_shortest_line["DOWN_LEFT"][0], pixel_position_value_shortest_line["DOWN_LEFT"][1]], # 
                                     PT2 = [pixel_position_value_shortest_line["TOP_LEFT"][0], pixel_position_value_shortest_line["TOP_LEFT"][1]], #
@@ -643,23 +672,24 @@ class Detect_Robot_Ball(multiprocessing.Process):
         return angleD
     
     def match_robot(self, frameRobot:np.array = None):
-        self.processImage = ImageProcessing.Image_Processing()
+        # self.processImage = ImageProcessing.Image_Processing()
         circle_pixel_pos_pack = {"TOP_RIGHT":    "",
                                  "TOP_LEFT":     "",
                                  "DOWN_LEFT":    "",
                                  "DOWN_RIGHT":   ""}
                
-        contours_red , mask   = self.processImage.find_contours_mask(frame=frameRobot, circle_color="Masked_Red")
-        contours_green , mask = self.processImage.find_contours_mask(frame=frameRobot, circle_color="Masked_Green")
-        are_of_circle_min, are_of_circle_max = self.processImage._calculate_area_of_circle(frame=frameRobot,circle_color="Red")
+        contours_red , _   = self.FuncfindContours(frame=frameRobot, circle_color="Masked_Red")
+        contours_green , _ = self.FuncfindContours(frame=frameRobot, circle_color="Masked_Green")
+        are_of_circle_min = self.CircleArea[0]
+        are_of_circle_max = self.CircleArea[1]
         
         list_circle_cordinate = []             
         
         """ contours for red area  """            
         for red_contour in contours_red:
-            red_area = self.processImage.calculate_contours_area(contours=red_contour)
+            red_area = self.FuncCalContoursArea(contours=red_contour)
             if red_area < are_of_circle_max and red_area > are_of_circle_min:
-                moment = self.processImage.calculate_moment(contours=red_contour)
+                moment = self.FuncCalMoment(contours=red_contour)
                 cx_red = int(moment["m10"]/moment["m00"])
                 cy_red = int(moment["m01"]/moment["m00"])
                 if cx_red > frameRobot.shape[0]/2 and cy_red < frameRobot.shape[1]/2:
@@ -674,19 +704,31 @@ class Detect_Robot_Ball(multiprocessing.Process):
         list_circle_cordinate.clear()
         """ contours for green area """             
         for green_contour in contours_green:
-            green_area = self.processImage.calculate_contours_area(contours=green_contour)
+            green_area = self.FuncCalContoursArea(contours=green_contour)
             if green_area < are_of_circle_max and green_area > are_of_circle_min:
-                moment = self.processImage.calculate_moment(contours=green_contour)
+                moment = self.FuncCalMoment(contours=green_contour)
                 cx_green = int(moment["m10"]/moment["m00"])
                 cy_green = int(moment["m01"]/moment["m00"])
                 if cx_green > frameRobot.shape[0]/2 and cy_green < frameRobot.shape[1]/2:
-                    circle_pixel_pos_pack["TOP_RIGHT"] = "green"
+                    if circle_pixel_pos_pack["TOP_RIGHT"] != "red":
+                        circle_pixel_pos_pack["TOP_RIGHT"] = "green"
+                    else:
+                        print("To Debug List Matching")
                 if cx_green < frameRobot.shape[0]/2 and cy_green < frameRobot.shape[1]/2:
-                    circle_pixel_pos_pack["TOP_LEFT"] = "green"
+                    if circle_pixel_pos_pack["TOP_LEFT"] != "red":
+                        circle_pixel_pos_pack["TOP_LEFT"] = "green"
+                    else:
+                        print("To Debug List Matching")
                 if cx_green < frameRobot.shape[0]/2 and cy_green > frameRobot.shape[1]/2:
-                    circle_pixel_pos_pack["DOWN_LEFT"] = "green"
+                    if circle_pixel_pos_pack["DOWN_LEFT"] != "red":
+                        circle_pixel_pos_pack["DOWN_LEFT"] = "green"
+                    else:
+                        print("To Debug List Matching")
                 if cx_green > frameRobot.shape[0]/2 and cy_green > frameRobot.shape[1]/2:
-                    circle_pixel_pos_pack["DOWN_RIGHT"] = "green"
+                    if circle_pixel_pos_pack["DOWN_RIGHT"] != "red":
+                        circle_pixel_pos_pack["DOWN_RIGHT"] = "green"
+                    else:
+                        print("To Debug List Matching")
 
         return self.loop_robot_id_list(color_pattern_list = circle_pixel_pos_pack)
     
@@ -696,13 +738,3 @@ class Detect_Robot_Ball(multiprocessing.Process):
                 return Roboid
         if Detect_Robot_Ball.PRINT_DEBUG:       
             print(f"IT IS NOT ROBOT PATERN, PATERN: {color_pattern_list}")
-            
-    def send_data_to_server(self, ssl_message:dict=None):
-        if Detect_Robot_Ball.SEND_DATA_TO_SERVER:
-            self.endTime = time.time()
-            if Detect_Robot_Ball.PRINT_DEBUG:
-                if Detect_Robot_Ball.PRINT_DEBUG:
-                    print(f"Data is sending. time takes: {self.endTime - self.startTime}")
-                    print(f"Data SSL is {ssl_message}")
-            udp__connection = UDP_Connection()
-            udp__connection.send(payload=ssl_message)

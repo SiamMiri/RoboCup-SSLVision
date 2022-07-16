@@ -1,4 +1,5 @@
 import json
+from pickle import TRUE
 import cv2
 import numpy as np
 import time
@@ -10,10 +11,14 @@ import threading
 from multiprocessing.pool import ThreadPool
 from multiprocessing import Process, Queue
 import multiprocessing as mp
-import RobotClassificaion.DetectRobotBall as DetectRobotBall
+from multiprocessing import Pool
+import multiprocessing
+import cython_me
+from os import path
+import os
+from datetime import date, datetime
 
-class Image_Processing():
-    
+class Image_Processing(): 
     """ This class get images from DetectRobotBall """
     # This Parameters are belongs to the CLASS
     ########## Dimension in cintimeteres ########
@@ -31,27 +36,19 @@ class Image_Processing():
     Field_Size_Y_Direction  = 188
 
     # Application Control Parameters #
-    SAVE_ROBOT_IMAGE                = False
-    SHOW_CIRCLE_LINE_CONNECTION     = False
     MASK_COLOR_THRESHOLD            = True     # This Value should be as True to work correctly !!!
-    CIRCLE_ID_COLOR_BY_CORDINATE    = True
     CENTER_CORDINATE                = False
-    ROTATE_ROBOT_IMAGE              = False
     PRINT_DEBUG                     = False
-    SHOW_MAIN_FIELD                 = True
-    SHOW_ROBOTS_IN_NEW_WINDOW       = True
-    CAPTURE_ONE_ROBOT_IMAGE         = False
-    FIND_ROBOT_AND_BALL             = True
-    LOAD_IMAGE                      = True 
-    ANGLE                           = 0
-    SHOW_BALL_INFO_IN_MAIN_FRAME    = False
-
 
     def __init__(self):
-        
-        self.__Dict_SSL_List    = {}
+        # super(multiprocessing.Process, self).__init__()
+        self._Frame_Data    = {}
         self.__list_num         = 0
         self.__Dict_Robot_Image = {}
+
+        self.area_of_circle_min = 0
+        self.area_of_circle_max = 0
+        self.boolArea = False
             
         self.pTime = 0
         self.robot_center_pos = None
@@ -65,12 +62,13 @@ class Image_Processing():
         self.color_range        = None 
         self.ConfigFrame        = None
         self.dict_crop_img_info = {}
-        
-        self.__read_color_config_json_file()
+        self.frameNew = 0
+        self.circlePackCounter = 0
+        self.startProc = False
+        self.ifSet = False
 
-    def __del__(self):
-        #cv2.destroyAllWindows()
-        pass
+        self.__read_color_config_json_file()
+        # self.start()
     
     def __read_color_config_json_file(self):
         try:
@@ -94,50 +92,59 @@ class Image_Processing():
 
     def _start_process(self, field_frame: np.array = None):
         
-        # Set Pixel Value
-        try:
-            self.xFrameSizePixel = int(field_frame.shape[0]) # Setting the length of the X direction
-            self.yFrameSizePixel = int(field_frame.shape[0]) # Setting the length of the Y direction
-
-            self.xCoef = Image_Processing.Field_Size_X_Direction/self.xFrameSizePixel
-            self.yCoef = Image_Processing.Field_Size_Y_Direction/self.yFrameSizePixel
-        except Exception as e: 
-            print(f"_start_process {e}")
         ''''''
-        # Detect Robot 
-        field_frame = self.set_image_filter(frame = field_frame , filterJsonFile = self.ConfigFrame["FrameConfig"],
-                                            Blur  = False,GaussianBlur = False , Segmentation = False,
-                                            Res   = True)
-        
-        mylist = self._detect_blue_circle(frame = field_frame)
-        return mylist, self.__Dict_Robot_Image
+        # Detect Robot
+        if self.ifSet != True: 
+            # Set Pixel Value
+            try:
+                self.xFrameSizePixel = int(field_frame.shape[0]) # Setting the length of the X direction
+                self.yFrameSizePixel = int(field_frame.shape[0]) # Setting the length of the Y direction
 
+                self.xCoef = Image_Processing.Field_Size_X_Direction/self.xFrameSizePixel
+                self.yCoef = Image_Processing.Field_Size_Y_Direction/self.yFrameSizePixel
+            except Exception as e: 
+                print(f"_start_process {e}")
+        
+        return self._detect_blue_circle(frame = field_frame)
+                
     def _detect_blue_circle(self, frame: cv2.VideoCapture.read = None):
         
-        startTime = time.time()
-        
+        self.frameNew = frame
+        '''NOTE: This part of function is currently move to Cython Function'''
         # Constants:
-        blue_color_num          = 1
-        if_is_ball              = False
-        crop_img = None
+        # blue_color_num          = 0
+        # blue_color_dict         = f'Blue_Circle_{blue_color_num}'
+        # if_is_ball              = False
+        # crop_img = None
 
         # The X_Position and Y_Position of the circle blue 
-        cx_blue = 0 
-        cy_blue = 0 
-        moment  = 0
+        # cx_blue = 0 
+        # cy_blue = 0 
+        # moment  = 0
 
         contours_blue, mask_blue = self.find_contours_mask(frame= frame, circle_color= "Blue")
-        area_of_circle_min , area_of_circle_max = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
+        
+        '''NOTE: This part of function is currently move to Cython Function'''
+        # frame[mask_blue > 0] = (255, 0 , 0)
+        
+        area_of_circle_min ,area_of_circle_max = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
+        
+        lenContoursBlue = len(contours_blue)
         try:     
             if Image_Processing.PRINT_DEBUG:
                 print(f"blue_area_of_circle_min {area_of_circle_min}")
-                print(f"blue_area_of_circle_max {area_of_circle_max}")
+                print(f"blue_self.area_of_circle_max {area_of_circle_max}")
+            
+            cython_me.loop_blue_circle(lenContoursBlue, contours_blue, area_of_circle_max, area_of_circle_min, self._find_red_green_circle)
 
-            processes = []
+            '''NOTE: This part of function is currently move to Cython Function
+            
             """ contours for blue area """
             for contours in contours_blue:
                 
                 blue_area = cv2.contourArea(contours)
+                if blue_area == 0:
+                    continue
                 if Image_Processing.PRINT_DEBUG:
                     print(f"blue_are {blue_area}")
                 if blue_area < area_of_circle_max and blue_area > area_of_circle_min:
@@ -148,66 +155,17 @@ class Image_Processing():
 
                     cx_blue = int(moment["m10"]/moment["m00"])
                     cy_blue = int(moment["m01"]/moment["m00"])
-                    crop_img = self._crop_robot_circle(frame, cy_blue, cx_blue, if_is_ball)
-                    crop_img = self.creat_circle_color_id_mask(crop_img, color = "blue", cordinate_list=[cx_blue, cy_blue])
                     if Image_Processing.CENTER_CORDINATE:
                         cv2.line(crop_img, (0 , int(crop_img.shape[0]/2)), (crop_img.shape[0], int(crop_img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
                         cv2.line(crop_img, (int(crop_img.shape[0]/2) , 0), (int(crop_img.shape[0]/2), crop_img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
                     
-                    # myList = {blue_color_num: [crop_img, cy_blue, cx_blue]}
-                    self.dict_crop_img_info.update({blue_color_num: [crop_img, cy_blue, cx_blue]})
-                    # self._find_red_green_circle(crop_img, cy_blue, cx_blue) # , blue_color_num
-                    # p = {blue_color_num: Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))}
-                    # p = Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))
-                    process = mp.Process(target=self._find_red_green_circle, args=(crop_img, cy_blue, cx_blue,))
-                    processes.append(process)
-                    process.start()
-                    blue_color_num += 1
-            # for proc in processes:
-            #     proc.join()
-            
-            # for i in p:
-            #     p[i].start()
-            
-            # p[blue_color_num].join()
-            # if Image_Processing.CAPTURE_ONE_ROBOT_IMAGE:
-            #     self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
-            #     # return frame, SSL_DetectionRobot_List
-            #     # return pack, crop_img
-            # else:
-            #     t = ThreadPool(processes= len(self.dict_crop_img_info))
-            #     for num in self.dict_crop_img_info:
-            #         t.map(self._find_red_green_circle, [self.dict_crop_img_info[num][0],
-            #                                             self.dict_crop_img_info[num][1], 
-            #                                             self.dict_crop_img_info[num][2]])
-                    # t.start()
-# for num in self.dict_crop_img_info:
-                #     print(num)
-                #     MyThread  = threading.Thread(target = self._find_red_green_circle, args = (self.dict_crop_img_info[num][0],
-                #                                                                         num, 
-                #                                                                         self.dict_crop_img_info[num][1], 
-                #                                                                         self.dict_crop_img_info[num][2]))#self._find_red_green_circle(crop_img, blue_color_num, frame, cy_blue, cx_blue)
-                #     MyThread.start()
-                    # logging.info(f'Elappsed time for finding each robot: {endTime - startTime}')
-                    # return pack, crop_img
-            # MyThread.join()
-            # t.join()
-            endTime = time.time()
-            print(f'Elappsed time for finding all robots: {endTime - startTime}')
-            logging.info(f'Elappsed time for finding all robots: {endTime - startTime}')
-            # print(self.__Dict_SSL_List)            
-            return self.__Dict_SSL_List
+                    blue_color_num          += 1
+                    blue_color_dict         = f'Blue_Circle_{blue_color_num}'
+                    self._find_red_green_circle(cy_blue, cx_blue, blue_color_dict)
+                    '''
+            return self._Frame_Data
         except Exception as e:
             print(f"_detect_blue_circle: {e}")                
-
-    def multiprocessing_ordered(self, listData):
-        start_time = time.time()
-        pool = ThreadPool(len(listData))
-        for i in listData:
-            tasks = [*zip(listData[i][0], listData[i][1], listData[i][2])]
-            pool.map(self._find_red_green_circle, tasks)
-        pool.close()
-        print("Time with multiprocessing (ordered): {0:.1f}".format((time.time() - start_time)*1e3))
         
     def _calculate_area_of_circle(self, frame: np.array = None, circle_color:str = None):
         area_of_circle_min = None
@@ -303,6 +261,7 @@ class Image_Processing():
             return contours, mask
     
     def set_image_filter(self, frame  : cv2.VideoCapture.read, filterJsonFile = None, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
+        self.ifSet = True
         if filterJsonFile != None :
             ''' Blur Image '''
             if Blur is not False:
@@ -417,26 +376,23 @@ class Image_Processing():
         
         return crop_img
     
-    def _find_red_green_circle(self, img : cv2.VideoCapture.read = None,  cy: int = None, cx :int = None): # , Robo_Num: int = None,
-        detect_robot = DetectRobotBall.Detect_Robot_Ball(SslListQueue=None, CropImageQueue=None, frameIdx=None)
+    def _find_red_green_circle(self, cy: int = None, cx :int = None, blue_color_dict:int = None): # , Robo_Num: int = None,  img : cv2.VideoCapture.read = None,
+        
+        # Crop image with the given cordinate to find circle's of robots ID
+        img = self._crop_robot_circle(self.frameNew, cy, cx, False)
+
         # constants
-        num_of_circle   = 1
+        num_of_circle   = 0
         num_of_red      = 0
         num_of_green    = 0
-        ssl_message_ = {"confidence"  : 0,
-                        "robot_id"    : 0,
-                        "x"           : 0,
-                        "y"           : 0,
-                        "orientation" : 0,
-                        "pixel_x"     : 0,
-                        "pixel_y"     : 0,
-                        "height"      : 0}
         
-        circlePack = {  "TOP_RIGHT":    [],
+        """ List of color position in croped image """
+        circlePack = {"TOP_RIGHT":      [],
                         "TOP_LEFT":     [],
                         "DOWN_LEFT":    [],
                         "DOWN_RIGHT":   [],
                         "prime":        []}
+        
 
         num_x_cor   = {'green' : [],
                         'red'  : []}
@@ -447,21 +403,24 @@ class Image_Processing():
         
                         
         if Image_Processing.MASK_COLOR_THRESHOLD:
-            img[mask_green > 0] = (0  , 255 , 0)
-            img[mask_red   > 0] = (0, 0   , 255)
+            img[mask_green > 0] = (0  , 255 , 0  )
+            img[mask_red   > 0] = (0  , 0   , 255)
             
-        # Area for both green and blue Color are the same  
-        area_of_circle_min, area_of_circle_max = self._calculate_area_of_circle(frame=img, circle_color= "Red")
-
+        # Area for both green and blue Color are the same
+        if self.boolArea != True:  
+            self.area_of_circle_min, self.area_of_circle_max = self._calculate_area_of_circle(frame=img, circle_color= "Red")
+            self.boolArea = True
         if Image_Processing.PRINT_DEBUG:
-            print(f'area_min: {area_of_circle_min}')
-            print(f'area_max: {area_of_circle_max}')
+            print(f'area_min: {self.area_of_circle_min}')
+            print(f'area_max: {self.area_of_circle_max}')
              
         try:
             """ contours for red area  """            
             for contours in contours_red:
                 red_area = cv2.contourArea(contours)
-                if red_area < area_of_circle_max and red_area > area_of_circle_min:
+                if red_area == 0:
+                    continue
+                if red_area < self.area_of_circle_max and red_area > self.area_of_circle_min:
                     if Image_Processing.PRINT_DEBUG:
                         print(f"red_area {red_area}")
                     moment = cv2.moments(contours) # NOTE: check me again 
@@ -470,13 +429,16 @@ class Image_Processing():
                     if Image_Processing.PRINT_DEBUG:
                         print(f"cx_red {cx_red}")
                         print(f"cy_red {cy_red}")
-                    num_of_red    += 1
-                    num_of_circle += 1
-                    position = self.check_circle_position(img.shape[0], img.shape[1], cx_red, cy_red)
+                    
+                    
+                    position, circlePack = self.check_circle_position(img.shape[0], img.shape[1], cx_red, cy_red, circlePack)
+                    if position != None:
+                        num_of_circle += 1
+                        num_of_red    += 1
                     num_x_cor['red'].append([position , cx_red, cy_red])
-                    for i in circlePack:
-                        if i == position:
-                            circlePack[i] = [cx_red, cy_red]
+                    # for i in circlePack:
+                    #     if i == position:
+                    #         circlePack[i] = [cx_red, cy_red]
                     if Image_Processing.PRINT_DEBUG:
                         print(f'Red Position is: {position}')
                     # self.creat_circle_color_id_mask(img, 'red' , [cx_red, cy_red])
@@ -484,26 +446,33 @@ class Image_Processing():
             """ contours for green area """             
             for contours in contours_green:
                 green_area = cv2.contourArea(contours)
+                if green_area == 0:
+                    continue
                 if Image_Processing.PRINT_DEBUG:
                     print(f"Green_are: {green_area}")
                 
-                if green_area < area_of_circle_max and green_area > area_of_circle_min:
+                if green_area < self.area_of_circle_max and green_area > self.area_of_circle_min:
                     moment = cv2.moments(contours) # NOTE: check me again 
                     cx_green = int(moment["m10"]/moment["m00"])
                     cy_green = int(moment["m01"]/moment["m00"])
                     if Image_Processing.PRINT_DEBUG:
                         print(f"cx_green {cx_green}")
                         print(f"cy_green {cy_green}")
-                    num_of_green  += 1
-                    num_of_circle += 1 
-                    position = self.check_circle_position(img.shape[0], img.shape[1], cx_green, cy_green)
-                    for i in circlePack:
-                        if i == position:
-                            if len(circlePack[i]) > 1:
-                                """ PRIME VALUE IS USED WHEN WE HAVE TWO CIRCLE IN ONE QUARTER OF IMAGE """
-                                circlePack["prime"] = [cx_green, cy_green]
-                            else:
-                                circlePack[i] = [cx_green, cy_green]
+
+                    position, circlePack = self.check_circle_position(img.shape[0], img.shape[1], cx_green, cy_green, circlePack)
+                    
+                    if position != None:
+                        num_of_circle += 1
+                        num_of_green    += 1
+                    
+                    num_x_cor['green'].append([position , cx_red, cy_red])
+                    # for i in circlePack:
+                    #     if i == position:
+                    #         if len(circlePack[i]) > 1:
+                    #             """ PRIME VALUE IS USED WHEN WE HAVE TWO CIRCLE IN ONE QUARTER OF IMAGE """
+                    #             circlePack["prime"] = [cx_green, cy_green]
+                    #         else:
+                    #             circlePack[i] = [cx_green, cy_green]
                     if Image_Processing.PRINT_DEBUG:
                         print(f'Green Position is: {position}')
                     num_x_cor['green'].append([position , cx_green, cy_green])
@@ -522,35 +491,14 @@ class Image_Processing():
                 # print(f'num_y_cor_red :     {B}')
                 print(f'circle_pack: {circlePack}')
               
-            Angle = None
-            Id = None
-            if len(circlePack) == 4 :
-                Angle = detect_robot.list_min_dist_between_circle(circle_pixel_pos_pack = circlePack)
-                ssl_message_["orientation"] = Angle
-                if Angle is not None:    
-                    if Image_Processing.rotate_image_by_degree:
-                        img = self.rotate_image_by_degree(frame=img, degree=Angle)
-                        Id  = detect_robot.match_robot(frameRobot = img)
-                    else:
-                        imgRotated = self.rotate_image_by_degree(frame=img, degree=Angle)
-                        Id  = detect_robot.match_robot(frameRobot = imgRotated)
-                if Id is not None:
-                    ssl_message_["robot_id"] = int(Id) 
-                    ssl_message_["pixel_x"]  = cx
-                    ssl_message_["pixel_y"]  = cy
-                    if Angle is not None:
-                        detect_robot.send_data_to_server(ssl_message = ssl_message_)
-                        # self.show_single_robot(frame = img, frame_name = " " + str(Id))# + " " +str (Angle) + " "
-                        if Image_Processing.SHOW_ROBOTS_IN_NEW_WINDOW:
-                            imgDict = {Id: img}
-                            self.__Dict_Robot_Image.update(imgDict)
-                            
-                        mydict = {self.__list_num: ssl_message_}
-                        self.__Dict_SSL_List.update(mydict)
-                        
-                        self.__list_num += 1
+
+            if num_of_circle == 4 :
+                myDict = {blue_color_dict : [cx, cy, img, circlePack]}
+                self._Frame_Data.update(myDict)
+                # Data.put(myDict)
+
         except Exception as e:
-            print(f'_find_red_green_circle: {e}')
+            print(f'ERROR: _find_red_green_circle: {e}')
    
     def rotate_image_by_degree(self, frame=None, degree=None):
         # rotate image after calculation
@@ -564,22 +512,52 @@ class Image_Processing():
         #cv2.imshow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit", frame)
         print("HI")
     
-    def check_circle_position(self,img_shape_x, img_shape_y, x, y):
+    def check_circle_position(self,img_shape_x, img_shape_y, x, y, circlePack):
         if x >= img_shape_x//2:
             if y <= img_shape_y//2:
-                return "TOP_RIGHT"
+                if len(circlePack["TOP_RIGHT"]) == 0:
+                    circlePack["TOP_RIGHT"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "TOP_RIGHT", circlePack
+                elif len(circlePack["prime"]) == 0: 
+                    circlePack["prime"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "prime", circlePack
         
         if x <= img_shape_x//2:
             if y <= img_shape_y//2:
-                return "TOP_LEFT"
+                if len(circlePack["TOP_LEFT"]) == 0:
+                    circlePack["TOP_LEFT"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "TOP_LEFT", circlePack
+                elif len(circlePack["prime"]) == 0: 
+                    circlePack["prime"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "prime", circlePack
     
         if x <= img_shape_x//2:
             if y >= img_shape_y//2:
-                return "DOWN_LEFT"
+                if len(circlePack["DOWN_LEFT"]) == 0:
+                    circlePack["DOWN_LEFT"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "DOWN_LEFT", circlePack
+                elif len(circlePack["prime"]) == 0: 
+                    circlePack["prime"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "prime", circlePack
 
         if x >= img_shape_x//2:
             if y >= img_shape_y//2:
-                return "DOWN_RIGHT"
+                if len(circlePack["DOWN_RIGHT"]) == 0:
+                    circlePack["DOWN_RIGHT"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "DOWN_RIGHT", circlePack
+                elif len(circlePack["prime"]) == 0: 
+                    circlePack["prime"] = [x, y]
+                    self.circlePackCounter += 1
+                    return "prime", circlePack
+
+        return None, None
 
     def robot_id_detection(self, num_of_green:int = None, num_of_red:int = None, Robo_Num : int = None, robot_id: list = None):
         if num_of_green == 2 and num_of_red == 2:
@@ -642,14 +620,19 @@ class Image_Processing():
     
         return frame
 
-    def saveRobotImage(self, frame, robot_num, cx, cy):
+    def saveFrame(self, frame, frame_num):
+        if path.exists("Saved_Framed"):
+            pass
+        else: 
+            os.makedirs("Saved_Framed")
+        currentTime = datetime.now()
         try:
             if frame is not None:
-                cv2.imwrite(f"Robot{robot_num}_x{cx}_y{cy}.jpg", frame)
+                cv2.imwrite(f"./Saved_Framed/Field_Frame_Number_{frame_num}_Date_{currentTime}.jpg", frame)
             else:
-                print("crop image is not valid")
+                print("Image is not valid")
         except Exception as e:
-            print(f'saveRobotImage: {e}')
+            print(f'saveFrame: {e}')
 
     def calculate_contours_area(self, contours = None):
         return cv2.contourArea(contours)
@@ -781,16 +764,16 @@ class Image_Processing():
 
         area_of_circle_min = pi*area_of_circle_min**2
         area_of_circle_max = pi*area_of_circle_max**2
-        #if Image_Processing.PRINT_DEBUG:
-        print(f"Orange_area_of_circle_min {area_of_circle_min}")
-        print(f"Orange_area_of_circle_max {area_of_circle_max}")
+        if Image_Processing.PRINT_DEBUG:
+            print(f"Orange_area_of_circle_min {area_of_circle_min}")
+            print(f"Orange_area_of_circle_max {area_of_circle_max}")
 
 
         """ contours for Orange area """
         for contours in contours_orange:
             orange_area = cv2.contourArea(contours)
-            #if Image_Processing.PRINT_DEBUG:
-            print(f"orange_are {orange_area}")
+            if Image_Processing.PRINT_DEBUG:
+                print(f"orange_are {orange_area}")
             if orange_area < area_of_circle_max and orange_area > area_of_circle_min:
                 
                 if Image_Processing.MASK_COLOR_THRESHOLD:

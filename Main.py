@@ -2,38 +2,56 @@
 # Liscence : Student project ( Open source Liscence)
 
 
-# NOTE:
+# NOTE: 
 # TODO: 1- Find Robot Id base on the robot color
 # TODO: 2- Find Robot location in the field
 # TODO: 3- Find Robot oriantation in the field
 # TODO: 4- Find Robot ball position (similar to robot position)
 # TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
-# TODO: 6- Record Video (e.x for one min), save image with frame number 
+# TODO: 6- Save image with frame number 
 
+
+##### Needed Libraries
+from telnetlib import SE
 import time
 import logging
-from cv2 import VideoCapture
 import os.path
 from os import path
+import multiprocessing as mp
+import sys
 
+# Image Preccesing Library
+import cv2
+
+# Library for GUI
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt5 import QtCore, QtWidgets
+
+# Import Classes and functions
 from src.ImageProcessing.CaptureImage import Capture_Image
 from src.ImageProcessing.CaptureVideo import Capture_Video
 from src.RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
 from src.ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
 from src.ImageProcessing.ImageProcessing import Image_Processing
-from src.MainGui.MainWindow import Ui_MainWindow  
-import cv2
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
-from PyQt5 import QtCore, QtWidgets
-import multiprocessing as mp
-import concurrent.futures
-import sys
-from server_robot_client.UDPSockets_Connection.UDPSend import UDP_Send
-from server_robot_client.UDPSockets_Connection.UDPConnection import UDP_Connection
+from src.MainGui.MainWindow import Ui_MainWindow
 
+# Needed Submodules
+try: 
+    # Import Server Class
+    from server_robot_client.UDPSockets_Connection.UDPSend import UDP_Send
+    from server_robot_client.UDPSockets_Connection.UDPConnection import UDP_Connection
+
+    # Loading submoduls server status 
+    SERVER_STATUS = True
+    
+except Exception as e:
+    print(f"The submodules for server doesn't exist {e}")
+    # Could not import submoduls, set server status to False
+    SERVER_STATUS = False
+    
+
+# Logging Configuration
 logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encoding="utf-8",
-
-DetectRobot.ROTATE_ROBAT_SINGLE_IMAGE = True
 
 
 # Definition of slots in this class are for futures if there were need to use GUI
@@ -45,18 +63,25 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def __init__(self)  :
         QMainWindow.__init__(self)
-        self.setupUi(self)
-        self.img_counter        = 0
-        self.robot_id           = None                # Robot Id base on Color
-        self.robot_location     = None                # Robot location on the field
-        self.robot_orientation  = None                # Robot orientation
-        self.mainFieldWindow    = None
         
+        # Load Grafical User Interface
+        self.setupUi(self)
+        
+        # Creat windows for the showing frames
+        self.mainFieldWindow = cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        
+        # Default Image File Path
         self.txt_FilePath.setPlainText("/home/robosoccer/Desktop/server_robot_vision/ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg")
-        self.lbl_Port.setText(f"PORT: {str(UDP_Connection.PORT)}")
-        self.lbl_Group.setText(f"Group: {UDP_Connection.GROUP}")
+        
+        # Set server information on Gui
+        if SERVER_STATUS:
+            self.lbl_Port.setText(f"PORT: {str(UDP_Connection.PORT)}")
+            self.lbl_Group.setText(f"Group: {UDP_Connection.GROUP}")
 
+        # Connect Signals to Slots
         self.connectMe()
+        
+        # Creat Object of QMessageBox for handling Eŕrors
         self.msg                = QMessageBox()
         
     def __del__(self):
@@ -65,39 +90,50 @@ class Main(QMainWindow, Ui_MainWindow):
     
     # Define All Signals Here
     def connectMe(self):
+        """_summary_
+        This Methods connect all Signals to the Slots
+        """        
         self.btn_LoadImageFile.clicked.connect(self.slotLoadImageFile)
         self.btn_StartImageCapturing.clicked.connect(self.slotImageCapturing)
         self.btn_StartVideoCapturing.clicked.connect(self.slotVideoCapturing)
         self.btn_ImageColorConfiguration.clicked.connect(self.slotImageColorConfiguration)
         self.btn_VideoColorConfiguration.clicked.connect(self.slotVideoColorConfiguration)
     
-    # Define All Slots Here
+################################# All Slots are Defined Here #################################
     def slotLoadImageFile(self):
+        """_summary_
+        Loading Image Directory
+        """        
         filepath = ""
         filepath = QFileDialog.getOpenFileName(self, "Choose The Image File", "", "Image File (*.jpg .*JPG)")
         if filepath != "":
             self.txt_FilePath.setText(str(filepath[0]))
     
     def slotImageCapturing(self):
+        """_summary_
+        Connect slot slotImageCapturing to method image_capturing 
+        """        
         self.image_capturing(img_path= self.txt_FilePath.toPlainText())
         
     def slotVideoCapturing(self):
+        """_summary_
+        Connect slot slotVideoCapturing to method video_capturing 
+        """
         self.video_capturing()
         
     def slotImageColorConfiguration(self):
+        """_summary_
+        Connect slot slotImageColorConfiguration to method image_color_configuration 
+        """
         self.image_color_configuration()
         
     def slotVideoColorConfiguration(self):
+        """_summary_
+        Connect slot slotVideoColorConfiguration to method video_color_configuration 
+        """
         self.video_color_configuration()
-    
-    def slot_finish_capturing(self):
-        """ Delete Cv2 class to empty the buffer """
-        # cv2.destroyAllWindows()
-        # cv2.destroyWindow(self.mainFieldWindow)    
-        # self.mainFieldWindow = None
-        pass 
-        
-    # Methods calls by slots
+   
+################################# All Methods are Defined Here #################################
     def video_capturing(self):
         frameIdx = 0
         self.deactive()
@@ -203,9 +239,11 @@ class Main(QMainWindow, Ui_MainWindow):
                                             CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max],
                                             FuncCalContoursArea = processImage.calculate_contours_area, FuncCalMoment = processImage.calculate_moment)# , CropImageQueue = Main.CROP_FRAME_DICT 
         
-        if self.checkBox_ConnectServer.isChecked():
-            sendDataToServer    = UDP_Send(Main.DICT_SSL_LIST)
-            sendDataToServer.start()
+        # Check if submodules Server is Imported
+        if SERVER_STATUS:
+            if self.checkBox_ConnectServer.isChecked():
+                sendDataToServer    = UDP_Send(Main.DICT_SSL_LIST)
+                sendDataToServer.start()
 
         """ start capturing image from path"""
         if len(img_path) != 0:

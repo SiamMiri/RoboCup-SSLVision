@@ -132,13 +132,14 @@ class Image_Processing():
         # moment  = 0
 
         # FIXME: This function take time, it should be optimized
-        # finding blue counter 
+        # finding blue counter
         contours_blue, mask_blue = self.find_contours_mask(frame= frame, circle_color= "Blue")
         
         '''NOTE: This part of function is currently move to Cython Function'''
         # frame[mask_blue > 0] = (255, 0 , 0)
         
-        area_of_circle_min ,area_of_circle_max = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
+        if self.boolArea:
+            area_of_circle_min ,area_of_circle_max = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
         
         lenContoursBlue = len(contours_blue)
         try:     
@@ -173,9 +174,22 @@ class Image_Processing():
                     '''
             return self._Frame_Data
         except Exception as e:
-            print(f"_detect_blue_circle: {e}")                
-        
+            print(f"_detect_blue_circle: {e}")                  
+    
     def _calculate_area_of_circle(self, frame: np.array = None, circle_color:str = None):
+        """_summary_
+        Fix Variable in this function are suited for the 1080 pixel image, it might
+        not work on other resolution
+        Args:
+            frame (np.array, optional): _description_. Defaults to None. The frame field is loaded to
+            this method, the size of the robots circle(id pattern) are dependent to img size
+            
+            circle_color (str, optional): _description_. Defaults to None. Area which is dedicated to each
+            circle can be differ from blue and green/red 
+
+        Returns:
+            _type_: _description_: return maximum and min area of the which are accepted to detect robots
+        """        
         area_of_circle_min = None
         area_of_circle_max = None
 
@@ -197,10 +211,21 @@ class Image_Processing():
         return area_of_circle_min , area_of_circle_max
 
     def find_contours_mask(self, frame = None, circle_color:str = None):
-        startTime = time.time()
+        """_summary_
+
+        Args:
+            frame (_type_, optional): _description_. Defaults to None. the contours will be
+            detected of a given frame
+            circle_color (str, optional): _description_. Defaults to None. The required color
+            should be given to detect mask and contours
+
+        Returns:
+            _type_: _description_: Mask and contours of the frame
+        """        
         contours = None
         mask     = None
-        frameHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        frameHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) # convert frame to hsv format for setting mask
         
         # Source: https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
         if circle_color == "Blue":
@@ -211,8 +236,6 @@ class Image_Processing():
             # find contours
             contours             = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)#[-2]
             contours             = imutils.grab_contours(contours)
-            endTime = time.time()
-            logging.info(f'\nTime passed to find blue contourse: {endTime-startTime}\n')
             return contours, mask
         
         # Color: Red
@@ -269,6 +292,22 @@ class Image_Processing():
             return contours, mask
     
     def set_image_filter(self, frame  : cv2.VideoCapture.read, filterJsonFile = None, Blur  : bool = False,GaussianBlur  : bool = False , Segmentation : bool  = False , Res : bool = False):
+        """_summary_
+
+        Args:
+            frame (cv2.VideoCapture.read): _description_: frame which need to apply filter
+            
+            filterJsonFile (_type_, optional): _description_. Defaults to None. loaded json file which
+            contains filter specification
+            
+            Blur (bool, optional): _description_. Defaults to False.
+            GaussianBlur (bool, optional): _description_. Defaults to False.
+            Segmentation (bool, optional): _description_. Defaults to False.
+            Res (bool, optional): _description_. Defaults to False.
+
+        Returns:
+            _type_: _description_: return frame after filtering image
+        """        
         self.ifSet = True
         if filterJsonFile != None :
             ''' Blur Image '''
@@ -331,8 +370,26 @@ class Image_Processing():
         return frame
 
     def _crop_robot_circle(self, img : cv2.VideoCapture.read, pos_y , pos_x, if_is_ball):
+        """_summary_
+        This function first cropped image as square and then delete extra part and make it 
+        circle image
+        
+        Args:
+            img (cv2.VideoCapture.read): _description_
+            img/frame which should be cropped
+            
+            pos_y (_type_): _description_ x pixel position of the img which required to
+            be cropped. It is center of the cropped image
+            pos_x (_type_): _description_ y pixel position of the img which required to
+            be cropped. It is center of the cropped image
+            
+            if_is_ball (_type_): _description_ set to true if ball is required to be detected
+            as it has different are
+
+        Returns:
+            _type_: _description_ cropped img/frame
+        """        
         if if_is_ball:
-            # print(f"diff {pos_x} and {pos_y}")
             pos_y   = pos_y - int(img.shape[0]/40) 
             pos_x   = pos_x - int(img.shape[1]/65)
             radius  = int(img.shape[1] / 65)
@@ -352,7 +409,6 @@ class Image_Processing():
             crop_img = cv2.bitwise_or(fg, bk)
             return crop_img
         else:
-            # print(f"diff {pos_x} and {pos_y}")
             pos_y   = pos_y - int(img.shape[0]/40) 
             pos_x   = pos_x - int(img.shape[1]/65)
             radius  = int(img.shape[1] / 65)
@@ -371,22 +427,20 @@ class Image_Processing():
             bk = cv2.bitwise_or(background, background, mask=mask)
             crop_img = cv2.bitwise_or(fg, bk)
             return crop_img
-
-    def _crop_robot_rec(self, img : cv2.VideoCapture.read, pos_y , pos_x):
-        np_crop_img = np.array(img)
-        pos_y   = pos_y - 15
-        pos_x   = pos_x - 15
-        higth   = pos_y + 30
-        width   = pos_x + 30
-        # crop rec image from robot
-        np_crop_img  = np_crop_img[pos_y:higth, pos_x:width]
-        crop_img = np_crop_img
-        
-        return crop_img
     
     def _find_red_green_circle(self, cy: int = None, cx :int = None, blue_color_dict:int = None): # , Robo_Num: int = None,  img : cv2.VideoCapture.read = None,
-        
-        # Crop image with the given cordinate to find circle's of robots ID
+        """_summary_
+
+        Args:
+            cy (int, optional): _description_. Defaults to None. x position of the blue color. It is
+            required for cropping image
+            cx (int, optional): _description_. Defaults to None. y position of the blue color. It is
+            required for cropping image
+            
+            blue_color_dict (int, optional): _description_. Defaults to None. Dictionary
+            for updating the self._Frame_Data 
+        """        
+        # Crop image with the given coordinate to find circle's of robots ID
         img = self._crop_robot_circle(self.frameNew, cy, cx, False)
 
         # constants
@@ -394,16 +448,14 @@ class Image_Processing():
         num_of_red      = 0
         num_of_green    = 0
         
-        """ List of color position in croped image """
+        """ List of color position in cropped image 
+            prime is used when one side of the frame is already
+            occupied by circle """
         circlePack = {"TOP_RIGHT":      [],
                         "TOP_LEFT":     [],
                         "DOWN_LEFT":    [],
                         "DOWN_RIGHT":   [],
                         "prime":        []}
-        
-
-        num_x_cor   = {'green' : [],
-                        'red'  : []}
         
         # finding Red Color and Green Color Contours 
         contours_red,   mask_red   = self.find_contours_mask(frame= img, circle_color= "Red")
@@ -414,7 +466,7 @@ class Image_Processing():
             img[mask_green > 0] = (0  , 255 , 0  )
             img[mask_red   > 0] = (0  , 0   , 255)
             
-        # Area for both green and blue Color are the same
+        # Area for both green and blue Color is the same
         if self.boolArea != True:  
             self.area_of_circle_min, self.area_of_circle_max = self._calculate_area_of_circle(frame=img, circle_color= "Red")
             self.boolArea = True
@@ -438,19 +490,30 @@ class Image_Processing():
                         print(f"cx_red {cx_red}")
                         print(f"cy_red {cy_red}")
                     
-                    
-                    position, circlePack = self.check_circle_position(img.shape[0], img.shape[1], cx_red, cy_red, circlePack)
+                    # set the position of the circle
+                    position, circlePack = self.set_circle_position(img.shape[0], img.shape[1], cx_red, cy_red, circlePack)
                     if position != None:
                         num_of_circle += 1
                         num_of_red    += 1
-                    num_x_cor['red'].append([position , cx_red, cy_red])
-                    # for i in circlePack:
-                    #     if i == position:
-                    #         circlePack[i] = [cx_red, cy_red]
+
                     if Image_Processing.PRINT_DEBUG:
                         print(f'Red Position is: {position}')
-                    # self.creat_circle_color_id_mask(img, 'red' , [cx_red, cy_red])
 
+            # For robots that has 4 red circle as a ID
+            if num_of_red == 4:
+                # Debug
+                if Image_Processing.PRINT_DEBUG:
+                    print(f'circle_pack: {circlePack}')
+                # clear circle package from any empty list
+                for x in list(circlePack.keys()):
+                    if circlePack[x] == []:
+                        del circlePack[x]
+                
+                # updating frame data dictionary
+                myDict = {blue_color_dict : [cx, cy, img, circlePack]}
+                self._Frame_Data.update(myDict)
+                return # return as the num of circle is complete and eq to 4
+            
             """ contours for green area """             
             for contours in contours_green:
                 green_area = cv2.contourArea(contours)
@@ -467,26 +530,17 @@ class Image_Processing():
                         print(f"cx_green {cx_green}")
                         print(f"cy_green {cy_green}")
 
-                    position, circlePack = self.check_circle_position(img.shape[0], img.shape[1], cx_green, cy_green, circlePack)
+                    # set the position of the circle
+                    position, circlePack = self.set_circle_position(img.shape[0], img.shape[1], cx_green, cy_green, circlePack)
                     
                     if position != None:
                         num_of_circle += 1
-                        num_of_green    += 1
-                    
-                    num_x_cor['green'].append([position , cx_red, cy_red])
-                    # for i in circlePack:
-                    #     if i == position:
-                    #         if len(circlePack[i]) > 1:
-                    #             """ PRIME VALUE IS USED WHEN WE HAVE TWO CIRCLE IN ONE QUARTER OF IMAGE """
-                    #             circlePack["prime"] = [cx_green, cy_green]
-                    #         else:
-                    #             circlePack[i] = [cx_green, cy_green]
+                        num_of_green   += 1
+
                     if Image_Processing.PRINT_DEBUG:
                         print(f'Green Position is: {position}')
-                    num_x_cor['green'].append([position , cx_green, cy_green])
-                    # self.creat_circle_color_id_mask(img,'green', [cx_green, cy_green])
             
-            # clear circle package from any emtpy list
+            # clear circle package from any empty list
             for x in list(circlePack.keys()):
                 if circlePack[x] == []:
                     del circlePack[x]
@@ -495,7 +549,8 @@ class Image_Processing():
             if Image_Processing.PRINT_DEBUG:
                 print(f'circle_pack: {circlePack}')
               
-
+            
+            # updating frame data dictionary
             if num_of_circle == 4 :
                 myDict = {blue_color_dict : [cx, cy, img, circlePack]}
                 self._Frame_Data.update(myDict)
@@ -504,18 +559,36 @@ class Image_Processing():
             print(f'ERROR: _find_red_green_circle: {e}')
    
     def rotate_image_by_degree(self, frame=None, degree=None):
+        """_summary_
+        This method is called externally after finding angle from robot detection class
+        Args:
+            frame (_type_, optional): _description_. Defaults to None.  Input frame
+            degree (_type_, optional): _description_. Defaults to None. Degree to be rotated
+
+        Returns:
+            _type_: _description_ : return rotated image by given degree
+        """        
         # rotate image after calculation
         (h, w) = frame.shape[:2]
         M = cv2.getRotationMatrix2D((frame.shape[1] // 2, frame.shape[1] // 2), degree, 1.0)
         imgRotated = cv2.warpAffine(frame, M, (w, h))
         return imgRotated
     
-    def show_single_robot(self, frame = np.array, frame_name = None):
-        #cv2.namedWindow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit")
-        #cv2.imshow(f"RobotSoccer Robot{frame_name}\tHit Escape to Exit", frame)
-        print("HI")
-    
-    def check_circle_position(self,img_shape_x, img_shape_y, x, y, circlePack):
+    def set_circle_position(self,img_shape_x, img_shape_y, x, y, circlePack):
+        """_summary_
+        this function regardless of the circle color set their position to the given 
+        dictionary
+        Args:
+            img_shape_x (_type_): _description_ x value of the img size (pixel)
+            img_shape_y (_type_): _description_ y value of the img size (pixel)
+            x (_type_): _description_ x pixel position of the circle 
+            y (_type_): _description_ y pixel position of the circle
+            circlePack (_type_): _description_ circle dictionary which required to
+            be set by position
+
+        Returns:
+            _type_: _description_ dictionary of the circle position 
+        """        
         if x >= img_shape_x//2:
             if y <= img_shape_y//2:
                 if len(circlePack["TOP_RIGHT"]) == 0:
@@ -562,26 +635,59 @@ class Image_Processing():
 
         return None, None
 
-    def robot_id_detection(self, num_of_green:int = None, num_of_red:int = None, Robo_Num : int = None, robot_id: list = None):
-        if num_of_green == 2 and num_of_red == 2:
-            print("Num_Green = 2  Num_Red = 2")
-            # return robot_id[1], robot_id[3], robot_id[5], robot_id[10], robot_id[11], robot_id[7]
-        
-        if num_of_green == 3 and num_of_red == 1:
-            print("Num_Green = 3  Num_Red = 1")
-            # return robot_id[2], robot_id[6], robot_id[12], robot_id[14]
-        
-        if num_of_green == 1 and num_of_red == 3:
-            print("Num_Green = 1  Num_Red = 3")
-
     def convert_pixel_to_centimeter(self, xVal = None, yVal = None):  
+        """_summary_
+
+        Args:
+            xVal (_type_, optional): _description_. Defaults to None. x pixel position 
+            yVal (_type_, optional): _description_. Defaults to None. y pixel position
+
+        Returns:
+            _type_: _description_ x and y position in centimeters
+        """        
         x = xVal * self.xCoef
         y = yVal * self.yCoef
             
         return x, y
 
-    def creat_circle_color_id_mask(self, frame: cv2.VideoCapture.read, color: str = None, cordinate_list :list = None):
+    def saveFrame(self, frame, frame_num):
+        """_summary_
+        Saving Given Frame
+        Args:
+            frame (_type_): _description_       Frame required ti be saved
+            frame_num (_type_): _description_   Name of the ing file 
+        """        
+        if path.exists("Saved_Framed"):
+            pass
+        else: 
+            os.makedirs("Saved_Framed")
+        currentTime = datetime.now()
+        try:
+            if frame is not None:
+                cv2.imwrite(f"./Saved_Framed/Field_Frame_Number_{frame_num}_Date_{currentTime}.jpg", frame)
+            else:
+                print("Image is not valid")
+        except Exception as e:
+            print(f'saveFrame: {e}')
 
+    def calculate_contours_area(self, contours = None):
+        return cv2.contourArea(contours)
+    
+    def calculate_moment(self, contours = None):
+        return cv2.moments(contours)
+    
+    ############################ This Methods are extra and might be needed for later work ############################
+    def creat_circle_color_id_mask(self, frame: cv2.VideoCapture.read, color: str = None, cordinate_list :list = None):
+        """_summary_
+        this method is used for creating circle of given color in a given position 
+        Args:
+            frame (cv2.VideoCapture.read): _description_
+            color (str, optional): _description_. Defaults to None.
+            cordinate_list (list, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         # Center coordinates
         center_coordinates = (int(frame.shape[0]/2), int(frame.shape[1]/2))
         # print(f'center_coordinates: {center_coordinates}')
@@ -622,28 +728,19 @@ class Image_Processing():
             return frame
     
         return frame
-
-    def saveFrame(self, frame, frame_num):
-        if path.exists("Saved_Framed"):
-            pass
-        else: 
-            os.makedirs("Saved_Framed")
-        currentTime = datetime.now()
-        try:
-            if frame is not None:
-                cv2.imwrite(f"./Saved_Framed/Field_Frame_Number_{frame_num}_Date_{currentTime}.jpg", frame)
-            else:
-                print("Image is not valid")
-        except Exception as e:
-            print(f'saveFrame: {e}')
-
-    def calculate_contours_area(self, contours = None):
-        return cv2.contourArea(contours)
     
-    def calculate_moment(self, contours = None):
-        return cv2.moments(contours)
+    def _crop_robot_rec(self, img : cv2.VideoCapture.read, pos_y , pos_x):
+        np_crop_img = np.array(img)
+        pos_y   = pos_y - 15
+        pos_x   = pos_x - 15
+        higth   = pos_y + 30
+        width   = pos_x + 30
+        # crop rec image from robot
+        np_crop_img  = np_crop_img[pos_y:higth, pos_x:width]
+        crop_img = np_crop_img
+        
+        return crop_img
     
-    ############################ GARBAGE FUNCTION ############################
     def detect_robot_id_gray_scale(self, frame: cv2.VideoCapture.read):
         # Contants:
         

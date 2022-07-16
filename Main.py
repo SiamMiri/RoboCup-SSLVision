@@ -28,8 +28,8 @@ from PyQt5 import QtCore, QtWidgets
 import multiprocessing as mp
 import concurrent.futures
 import sys
-from server_robot_client.UDPSockets_SSLClient_ProtoBuf.UDPSend import UDP_Send
-from server_robot_client.UDPSockets_SSLClient_ProtoBuf.UDPConnection import UDP_Connection
+from server_robot_client.UDPSockets_Connection.UDPSend import UDP_Send
+from server_robot_client.UDPSockets_Connection.UDPConnection import UDP_Connection
 
 logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encoding="utf-8",
 

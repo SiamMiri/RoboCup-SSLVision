@@ -1,3 +1,7 @@
+# Author : Siamak Mirifar
+# This code is written for handling GUI of the application using 
+# PyQt library
+
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'form.ui'

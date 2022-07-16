@@ -25,7 +25,7 @@ from PyQt5 import QtCore, QtWidgets # GUI Lib
 # Import Classes and functions
 from src.ImageProcessing.CaptureImage import Capture_Image
 from src.ImageProcessing.CaptureVideo import Capture_Video
-from src.RobotClassification.DetectRobotBall import Detect_Robot_Ball as DetectRobot
+from src.RobotClassification.DetectRobot import Detect_Robot as DetectRobot
 from src.ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
 from src.ImageProcessing.ImageProcessing import Image_Processing
 from src.MainGui.MainWindow import Ui_MainWindow
@@ -238,8 +238,7 @@ class Main(QMainWindow, Ui_MainWindow):
         """ Create Objects """
         capturingImage      = Capture_Image(image_path= None)
         processImage        = Image_Processing()
-        detectRobot         = DetectRobot(FuncRotateImage = processImage.rotate_image_by_degree, FuncfindContours = processImage.find_contours_mask,
-                                            CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max],
+        detectRobot         = DetectRobot(FuncRotateImage = processImage.rotate_image_by_degree, FuncFindContours = processImage.find_contours_mask,
                                             FuncCalContoursArea = processImage.calculate_contours_area, FuncCalMoment = processImage.calculate_moment)
         
 

@@ -37,8 +37,12 @@ class Image_Processing():
         self._Frame_Data        = {}    # Robots Data
 
         # Minimum and Maximum area of the Robots
-        self.area_of_circle_min = 0
-        self.area_of_circle_max = 0
+        # Red and Green circle have the same area
+        
+        self.area_of_circle_min      = 0 # for green and red
+        self.area_of_circle_max      = 0 # for green and red
+        self.area_of_circle_min_blue = 0
+        self.area_of_circle_max_blue = 0
         self.boolArea = False       # Check if the Max and Min area has been calculated
             
         # Coefficient to convert pixel to centimeter
@@ -138,17 +142,17 @@ class Image_Processing():
         '''NOTE: This part of function is currently move to Cython Function'''
         # frame[mask_blue > 0] = (255, 0 , 0)
         
-        if self.boolArea:
-            area_of_circle_min ,area_of_circle_max = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
+        if self.boolArea != True:
+            self.area_of_circle_min_blue ,self.area_of_circle_max_blue = self._calculate_area_of_circle(frame =frame, circle_color = "Blue") 
         
         lenContoursBlue = len(contours_blue)
         try:     
             if Image_Processing.PRINT_DEBUG:
-                print(f"blue_area_of_circle_min {area_of_circle_min}")
-                print(f"blue_self.area_of_circle_max {area_of_circle_max}")
+                print(f"blue_area_of_circle_min {self.area_of_circle_min_blue}")
+                print(f"blue_self.area_of_circle_max {self.area_of_circle_max_blue}")
             
             # Cython Function, if the function is moved to python this function should be committed
-            cython_me.loop_blue_circle(lenContoursBlue, contours_blue, area_of_circle_max, area_of_circle_min, self._find_red_green_circle)
+            cython_me.loop_blue_circle(lenContoursBlue, contours_blue, self.area_of_circle_max_blue, self.area_of_circle_min_blue, self._find_red_green_circle)
 
             '''NOTE: This part of function is currently move to Cython Function
             """ contours for blue area """

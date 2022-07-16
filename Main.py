@@ -2,15 +2,15 @@
 # License : Student project ( Open source License)
 
 
-# NOTE: 
-# TODO: 1- Find Robot Id base on the robot color
-# TODO: 2- Find Robot location in the field
-# TODO: 3- Find Robot orientation in the field
-# TODO: 4- Find Robot ball position (similar to robot position)
-# TODO: 5- Save image with frame number 
+# NOTE: Project Milestone
+# TODO: Task 1- Find Robot Id base on the robot color
+# TODO: Task 2- Find Robot location in the field
+# TODO: Task 3- Find Robot orientation in the field
+# TODO: Task 4- Find Robot ball position (similar to robot position)
+# TODO: Task 5- Save image with frame number 
 
 
-##### Needed Libraries
+##### required libraries
 from telnetlib import SE
 import time
 import logging
@@ -18,13 +18,9 @@ import os.path
 from os import path
 import multiprocessing as mp
 import sys
-
-# Image Precessing Library
-import cv2
-
-# Library for GUI
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
-from PyQt5 import QtCore, QtWidgets
+import cv2 # Image Processing Lib
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox # GUI Lib
+from PyQt5 import QtCore, QtWidgets # GUI Lib
 
 # Import Classes and functions
 from src.ImageProcessing.CaptureImage import Capture_Image
@@ -34,7 +30,7 @@ from src.ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
 from src.ImageProcessing.ImageProcessing import Image_Processing
 from src.MainGui.MainWindow import Ui_MainWindow
 
-# Needed Submodules
+# required submodules
 try: 
     # Import Server Class
     from server_robot_client.UDPSockets_Connection.UDPSend import UDP_Send
@@ -172,7 +168,7 @@ class Main(QMainWindow, Ui_MainWindow):
                     
                     # tsProcess = time.time()
                     # Main.QUEUE_FRAME.put(field_frame)
-                    field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.ConfigFrame["FrameConfig"],
+                    field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.json_frame_config["FrameConfig"],
                                                                     Blur  = False,GaussianBlur = False , Segmentation = False,
                                                                     Res   = True)
                     Frame_Data = processImage._start_process(field_frame = field_frame)
@@ -266,7 +262,7 @@ class Main(QMainWindow, Ui_MainWindow):
                     field_frame = capturingImage.load_image(image_path=img_path) # Load Image from Path
                     
                     # Set Img filters (load from json file)
-                    field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.ConfigFrame["FrameConfig"],
+                    field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.json_frame_config["FrameConfig"],
                                                                     Blur  = False,GaussianBlur = False , Segmentation = False,
                                                                     Res   = True)
                     

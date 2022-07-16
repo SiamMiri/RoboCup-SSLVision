@@ -1,5 +1,4 @@
 import json
-from pickle import TRUE
 import cv2
 import numpy as np
 import time
@@ -7,21 +6,17 @@ import imutils
 from math import atan2, cos, sin, sqrt, pi, acos
 from skimage.transform import (hough_line, hough_line_peaks)
 import logging
-import threading
-from multiprocessing.pool import ThreadPool
-from multiprocessing import Process, Queue
-import multiprocessing as mp
-from multiprocessing import Pool
-import multiprocessing
-import cython_me
+from src.CythonCode import cython_me
+
 from os import path
 import os
 from datetime import date, datetime
 
 class Image_Processing(): 
     """ This class get images from DetectRobotBall """
+    
     # This Parameters are belongs to the CLASS
-    ########## Dimension in cintimeteres ########
+    ########## Dimension in centimeters ########
 #   0 ################## X ######################
     #                                           #
     #                                           #
@@ -31,69 +26,76 @@ class Image_Processing():
     #                                           #
     #                                           #
     #############################################
-    
     Field_Size_X_Direction  = 277
     Field_Size_Y_Direction  = 188
 
-    # Application Control Parameters #
-    MASK_COLOR_THRESHOLD            = True     # This Value should be as True to work correctly !!!
-    CENTER_CORDINATE                = False
-    PRINT_DEBUG                     = False
-
+    # Application Control Parameters
+    MASK_COLOR_THRESHOLD        = True     # This Value should be as True to work correctly !!!
+    PRINT_DEBUG                 = False    # Control debug session 
     def __init__(self):
-        # super(multiprocessing.Process, self).__init__()
-        self._Frame_Data    = {}
-        self.__list_num         = 0
-        self.__Dict_Robot_Image = {}
+        
+        self._Frame_Data        = {}    # Robots Data
 
+        # Minimum and Maximum area of the Robots
         self.area_of_circle_min = 0
         self.area_of_circle_max = 0
-        self.boolArea = False
+        self.boolArea = False       # Check if the Max and Min area has been calculated
             
-        self.pTime = 0
-        self.robot_center_pos = None
-
+        # Coefficient to convert pixel to centimeter
         self.xCoef              = 0
         self.yCoef              = 0
+        
+        # Width and hight frame size
         self.xFrameSizePixel    = 0 
         self.yFrameSizePixel    = 0
-        self.RoboXRatioFrame    = 0
-        self.RoboYRatioFrame    = 0 
-        self.color_range        = None 
-        self.ConfigFrame        = None
-        self.dict_crop_img_info = {}
-        self.frameNew = 0
-        self.circlePackCounter = 0
-        self.startProc = False
-        self.ifSet = False
+        
+        self.ifSet              = False # False if image cm and pixel are not applied
+        
+        self.json_color_range   = None  # Read Color Config .json file to detect robots pattern
+        
+        self.json_frame_config        = None
+        
+        self.frameNew           = None  # save new frame as class object variable        
 
-        self.__read_color_config_json_file()
-        # self.start()
+        self.__read_color_config_json_file() # Load HSV color json file
     
     def __read_color_config_json_file(self):
+        """_summary_
+        Read json file which contains HSV color range config
+        and frame filter configuration
+        """        
         try:
         # try to load the json file if exist
             with open("./src/Config/Robo_Color_Config.json") as color_config:
-                self.color_range = json.load(color_config)
+                self.json_color_range = json.load(color_config)
         # Catch Err in this case might be naming diff in json file and print defined
         except Exception as e:
-            self.color_range = None
+            self.json_color_range = None
             print(f'Could Not Find Color Config .json File {e}')
-            
-        try:
         
+        try:
         # try to load the json file if exist
             with open("./src/Config/CameraConfig.json") as color_config:
-                self.ConfigFrame = json.load(color_config)
+                self.json_frame_config = json.load(color_config)
         # Catch Err in this case might be naming diff in json file and print defined
         except Exception as e:
-            self.ConfigFrame = None
+            self.json_frame_config = None
             print(f'Could Not Find Color Config .json File {e}')
+            
 
     def _start_process(self, field_frame: np.array = None):
+        """_summary_
+
+        Args:
+            field_frame (np.array, optional): _description_. Defaults to None. 
+            frame of the field  should be passed'for process
+
+        Returns:
+            _type_: _description_: list of data as dic which contains info of the robots in the field
+        """        
         
-        ''''''
-        # Detect Robot
+        # set coefficient of the width and hight of the field respect to the frame size
+        # These values will be set just ones
         if self.ifSet != True: 
             # Set Pixel Value
             try:
@@ -102,6 +104,8 @@ class Image_Processing():
 
                 self.xCoef = Image_Processing.Field_Size_X_Direction/self.xFrameSizePixel
                 self.yCoef = Image_Processing.Field_Size_Y_Direction/self.yFrameSizePixel
+                self.ifSet = True # set pixel and centimeter coefficient is done
+                
             except Exception as e: 
                 print(f"_start_process {e}")
         
@@ -109,8 +113,13 @@ class Image_Processing():
                 
     def _detect_blue_circle(self, frame: cv2.VideoCapture.read = None):
         
+        # Clear frame data for new set of data
+        self._Frame_Data.clear()
+        
         self.frameNew = frame
-        '''NOTE: This part of function is currently move to Cython Function'''
+        '''NOTE: This part of function is currently move to Cython Function
+        if there is a need to move to python version active this part and
+        the next mention part, do not forget to comment Cython Function'''
         # Constants:
         # blue_color_num          = 0
         # blue_color_dict         = f'Blue_Circle_{blue_color_num}'
@@ -122,6 +131,8 @@ class Image_Processing():
         # cy_blue = 0 
         # moment  = 0
 
+        # FIXME: This function take time, it should be optimized
+        # finding blue counter 
         contours_blue, mask_blue = self.find_contours_mask(frame= frame, circle_color= "Blue")
         
         '''NOTE: This part of function is currently move to Cython Function'''
@@ -135,10 +146,10 @@ class Image_Processing():
                 print(f"blue_area_of_circle_min {area_of_circle_min}")
                 print(f"blue_self.area_of_circle_max {area_of_circle_max}")
             
+            # Cython Function, if the function is moved to python this function should be committed
             cython_me.loop_blue_circle(lenContoursBlue, contours_blue, area_of_circle_max, area_of_circle_min, self._find_red_green_circle)
 
             '''NOTE: This part of function is currently move to Cython Function
-            
             """ contours for blue area """
             for contours in contours_blue:
                 
@@ -155,9 +166,6 @@ class Image_Processing():
 
                     cx_blue = int(moment["m10"]/moment["m00"])
                     cy_blue = int(moment["m01"]/moment["m00"])
-                    if Image_Processing.CENTER_CORDINATE:
-                        cv2.line(crop_img, (0 , int(crop_img.shape[0]/2)), (crop_img.shape[0], int(crop_img.shape[0]/2)), (0, 0, 0), thickness=1, lineType=1)
-                        cv2.line(crop_img, (int(crop_img.shape[0]/2) , 0), (int(crop_img.shape[0]/2), crop_img.shape[0]), (0, 0, 0), thickness=1, lineType=1)
                     
                     blue_color_num          += 1
                     blue_color_dict         = f'Blue_Circle_{blue_color_num}'
@@ -196,8 +204,8 @@ class Image_Processing():
         
         # Source: https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
         if circle_color == "Blue":
-            low_blue             = np.array(self.color_range["Low_Blue"] , np.uint8)
-            upper_blue           = np.array(self.color_range["Up_Blue"]  , np.uint8) 
+            low_blue             = np.array(self.json_color_range["Low_Blue"] , np.uint8)
+            upper_blue           = np.array(self.json_color_range["Up_Blue"]  , np.uint8) 
             # define masks
             mask                 = cv2.inRange(frameHSV, low_blue       ,upper_blue)
             # find contours
@@ -209,8 +217,8 @@ class Image_Processing():
         
         # Color: Red
         elif circle_color == "Red":
-            low_red         = np.array(self.color_range["Low_Red"], np.uint8)
-            upper_red       = np.array(self.color_range["Up_Red"], np.uint8)
+            low_red         = np.array(self.json_color_range["Low_Red"], np.uint8)
+            upper_red       = np.array(self.json_color_range["Up_Red"], np.uint8)
             # define masks
             mask            = cv2.inRange(frameHSV, low_red        ,upper_red)
             # find contours
@@ -220,8 +228,8 @@ class Image_Processing():
             
         elif circle_color == "Green":
             # Color: green
-            low_green       = np.array(self.color_range["Low_Green"], np.uint8)
-            upper_green     = np.array(self.color_range["Up_Green"], np.uint8)
+            low_green       = np.array(self.json_color_range["Low_Green"], np.uint8)
+            upper_green     = np.array(self.json_color_range["Up_Green"], np.uint8)
             # define masks
             mask            = cv2.inRange(frameHSV, low_green      ,upper_green)
             # find contours
@@ -485,17 +493,12 @@ class Image_Processing():
             
             # Debug
             if Image_Processing.PRINT_DEBUG:
-                # A = num_x_cor['green']
-                # B = num_x_cor['red']
-                # print(f'num_x_cor_green :   {A}')
-                # print(f'num_y_cor_red :     {B}')
                 print(f'circle_pack: {circlePack}')
               
 
             if num_of_circle == 4 :
                 myDict = {blue_color_dict : [cx, cy, img, circlePack]}
                 self._Frame_Data.update(myDict)
-                # Data.put(myDict)
 
         except Exception as e:
             print(f'ERROR: _find_red_green_circle: {e}')
@@ -517,44 +520,44 @@ class Image_Processing():
             if y <= img_shape_y//2:
                 if len(circlePack["TOP_RIGHT"]) == 0:
                     circlePack["TOP_RIGHT"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "TOP_RIGHT", circlePack
                 elif len(circlePack["prime"]) == 0: 
                     circlePack["prime"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "prime", circlePack
         
         if x <= img_shape_x//2:
             if y <= img_shape_y//2:
                 if len(circlePack["TOP_LEFT"]) == 0:
                     circlePack["TOP_LEFT"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "TOP_LEFT", circlePack
                 elif len(circlePack["prime"]) == 0: 
                     circlePack["prime"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "prime", circlePack
     
         if x <= img_shape_x//2:
             if y >= img_shape_y//2:
                 if len(circlePack["DOWN_LEFT"]) == 0:
                     circlePack["DOWN_LEFT"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "DOWN_LEFT", circlePack
                 elif len(circlePack["prime"]) == 0: 
                     circlePack["prime"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "prime", circlePack
 
         if x >= img_shape_x//2:
             if y >= img_shape_y//2:
                 if len(circlePack["DOWN_RIGHT"]) == 0:
                     circlePack["DOWN_RIGHT"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "DOWN_RIGHT", circlePack
                 elif len(circlePack["prime"]) == 0: 
                     circlePack["prime"] = [x, y]
-                    self.circlePackCounter += 1
+                    
                     return "prime", circlePack
 
         return None, None

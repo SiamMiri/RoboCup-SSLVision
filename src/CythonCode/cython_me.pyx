@@ -1,4 +1,3 @@
-
 import cv2
 
 def loop_blue_circle(int lenContoursBlue, contours_blue, float area_of_circle_max, float area_of_circle_min, find_red_green_circle):

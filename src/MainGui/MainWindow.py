@@ -16,6 +16,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(674, 382)
         MainWindow.setMaximumSize(QtCore.QSize(700, 700))
+        
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         
@@ -27,27 +28,35 @@ class Ui_MainWindow(object):
         self.btn_LoadImageFile = QtWidgets.QPushButton(self.centralwidget)
         self.btn_LoadImageFile.setGeometry(QtCore.QRect(20, 80, 111, 31))
         self.btn_LoadImageFile.setObjectName("btn_LoadImageFile")
+        
         self.btn_StartImageCapturing = QtWidgets.QPushButton(self.centralwidget)
         self.btn_StartImageCapturing.setGeometry(QtCore.QRect(20, 130, 181, 31))
         self.btn_StartImageCapturing.setObjectName("btn_StartImageCapturing")
+        
         self.btn_StartVideoCapturing = QtWidgets.QPushButton(self.centralwidget)
         self.btn_StartVideoCapturing.setGeometry(QtCore.QRect(460, 130, 181, 31))
         self.btn_StartVideoCapturing.setObjectName("btn_StartVideoCapturing")
+        
         self.btn_ImageColorConfiguration = QtWidgets.QPushButton(self.centralwidget)
         self.btn_ImageColorConfiguration.setGeometry(QtCore.QRect(20, 180, 181, 31))
         self.btn_ImageColorConfiguration.setObjectName("btn_ImageColorConfiguration")
+        
         self.txt_FilePath = QtWidgets.QTextEdit(self.centralwidget)
         self.txt_FilePath.setGeometry(QtCore.QRect(150, 80, 491, 31))
         self.txt_FilePath.setObjectName("txt_FilePath")
+        
         self.lbl_version = QtWidgets.QLabel(self.centralwidget)
         self.lbl_version.setGeometry(QtCore.QRect(20, 10, 101, 21))
         self.lbl_version.setObjectName("lbl_version")
+        
         self.btn_VideoColorConfiguration = QtWidgets.QPushButton(self.centralwidget)
         self.btn_VideoColorConfiguration.setGeometry(QtCore.QRect(460, 180, 181, 31))
         self.btn_VideoColorConfiguration.setObjectName("btn_VideoColorConfiguration")
+        
         self.lbl_NumFrameToSave = QtWidgets.QLabel(self.centralwidget)
         self.lbl_NumFrameToSave.setGeometry(QtCore.QRect(20, 260, 181, 17))
         self.lbl_NumFrameToSave.setObjectName("lbl_NumFrameToSave")
+        
         # self.lbl_NumRoboImageToSave = QtWidgets.QLabel(self.centralwidget)
         # self.lbl_NumRoboImageToSave.setGeometry(QtCore.QRect(20, 300, 221, 16))
         # self.lbl_NumRoboImageToSave.setObjectName("lbl_NumRoboImageToSave")
@@ -59,15 +68,15 @@ class Ui_MainWindow(object):
         # self.txt_NumRoboImageToSave.setObjectName("txt_NumRoboImageToSave")
         
         self.checkBox_ShowRobotsInfo = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox_ShowRobotsInfo.setGeometry(QtCore.QRect(400, 250, 241, 21))
+        self.checkBox_ShowRobotsInfo.setGeometry(QtCore.QRect(370, 250, 280, 21))
         self.checkBox_ShowRobotsInfo.setObjectName("checkBox_ShowRobotsInfo")
         
         self.checkBox_SaveFrame = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox_SaveFrame.setGeometry(QtCore.QRect(400, 280, 241, 21))
+        self.checkBox_SaveFrame.setGeometry(QtCore.QRect(370, 280, 241, 21))
         self.checkBox_SaveFrame.setObjectName("checkBox_SaveFrame")
         
         self.checkBox_ConnectServer = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox_ConnectServer.setGeometry(QtCore.QRect(400, 310, 241, 21))
+        self.checkBox_ConnectServer.setGeometry(QtCore.QRect(370, 310, 241, 21))
         self.checkBox_ConnectServer.setObjectName("checkBox_ConnectServer")
         
         self.lbl_ServerInformation = QtWidgets.QLabel(self.centralwidget)
@@ -105,7 +114,7 @@ class Ui_MainWindow(object):
         #self.lbl_NumRoboImageToSave.setText(_translate("MainWindow", "Number of robot image to save:"))
         self.checkBox_ShowRobotsInfo.setText(_translate("MainWindow", "Show Robot Information on Frame"))
         self.checkBox_SaveFrame.setText(_translate("MainWindow", "Save Frame"))
-        self.checkBox_ConnectServer.setText(_translate("MainWindow", "Start sendeing data"))
+        self.checkBox_ConnectServer.setText(_translate("MainWindow", "Start Sending Data to Server"))
         self.lbl_ServerInformation.setText(_translate("MainWindow", "Server Information:"))
         self.lbl_Port.setText(_translate("MainWindow", "Port:"))
         self.lbl_Group.setText(_translate("MainWindow", "Group:"))

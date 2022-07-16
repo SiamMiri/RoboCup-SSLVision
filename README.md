@@ -6,6 +6,6 @@ This application is developed as part of master project.
 
 **2. To install libraries run following command line in command prompt:**
 
-`pip install -r requirments.txt`
+`pip install -r requirements.txt`
 
 

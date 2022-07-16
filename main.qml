@@ -5,7 +5,7 @@ ApplicationWindow {
     visible: true
     width: 650
     height: 500
-    title: "SSl"
+    title: "RoboCup SSL Vision Cinema"
 
     
     Button{
@@ -38,7 +38,7 @@ ApplicationWindow {
             id: txtBtnStopReceive
             x: 5
             y: 15
-            text: qsTr("Stop Reading UDP Buffer")
+            text: qsTr("Stop Receiving UDP Buffer")
             color: "#ffffff"
 
         }

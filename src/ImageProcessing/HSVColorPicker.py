@@ -1,68 +1,87 @@
-from __future__ import print_function
+# Author : Modified by Siamak Mirifar
+# Sample available on following link:
+# https://docs.opencv.org/3.4/da/d97/tutorial_threshold_inRange.html
+
 import cv2 as cv
 import numpy as np
 import json
 import time
-# pip install opencv-contrib-python
 
 class HSV_COLOR_PICKER():
     def __init__(self, image_path = None):
+        """_summary_
+
+        Args:
+            image_path (_type_, optional): _description_. Defaults to None. If the img path
+            is defined the color picker will be set for thr img
+        """
+        
+        # __init__ Variable of the Object 
         self.max_value = 255
-        self.max_value_H = 360//2
-        self.low_H = 0
-        self.low_S = 0
-        self.low_V = 0
-        self.high_H = self.max_value_H
-        self.high_S = self.max_value
-        self.high_V = self.max_value
-        self.window_capture_name   = 'Video Capture'
-        self.window_detection_name = 'Object Detection'
-        self.window_res_name       = 'Result Image'
-        self.low_H_name  = 'Low H'
-        self.low_S_name  = 'Low S'
-        self.low_V_name  = 'Low V'
-        self.high_H_name = 'High H'
-        self.high_S_name = 'High S'
-        self.high_V_name = 'High V'
+        self.max_value_Hue = 360//2
+        self.low_Hue = 0
+        self.low_Saturation = 0
+        self.low_Value = 0
+        self.high_Hue = self.max_value_Hue
+        self.high_Saturation = self.max_value
+        self.high_Value = self.max_value
+        self.window_capture_name    = 'Video Capture'
+        self.window_detection_name  = 'Object Detection'
+        self.window_res_name        = 'Result Image'
+        self.low_Hue_name           = 'Low Hue'
+        self.low_saturation_name    = 'Low Saturation'
+        self.low_value_name         = 'Low Value'
+        self.high_hue_name            = 'High Hue'
+        self.high_saturation_name   = 'High Saturation'
+        self.high_value_name        = 'High Value'
         self.cap = cv.VideoCapture(1)
         self.imgPath = image_path
     
     def on_low_H_thresh_trackbar(self, val):
-        self.low_H = val
-        self.low_H = min(self.high_H-1, self.low_H)
-        cv.setTrackbarPos(self.low_H_name, self.window_detection_name, self.low_H)
+        self.low_Hue = val
+        self.low_Hue = min(self.high_Hue-1, self.low_Hue)
+        cv.setTrackbarPos(self.low_Hue_name, self.window_detection_name, self.low_Hue)
     
     def on_high_H_thresh_trackbar(self, val):
         
-        self.high_H = val
-        self.high_H = max(self.high_H, self.low_H+1)
-        cv.setTrackbarPos(self.high_H_name, self.window_detection_name, self.high_H)
+        self.high_Hue = val
+        self.high_Hue = max(self.high_Hue, self.low_Hue+1)
+        cv.setTrackbarPos(self.high_hue_name, self.window_detection_name, self.high_Hue)
     
     def on_low_S_thresh_trackbar(self, val):
         
-        self.low_S = val
-        self.low_S = min(self.high_S-1, self.low_S)
-        cv.setTrackbarPos(self.low_S_name, self.window_detection_name, self.low_S)
+        self.low_Saturation = val
+        self.low_Saturation = min(self.high_Saturation-1, self.low_Saturation)
+        cv.setTrackbarPos(self.low_saturation_name, self.window_detection_name, self.low_Saturation)
     
     def on_high_S_thresh_trackbar(self, val):
         
-        self.high_S = val
-        self.high_S = max(self.high_S, self.low_S+1)
-        cv.setTrackbarPos(self.high_S_name, self.window_detection_name, self.high_S)
+        self.high_Saturation = val
+        self.high_Saturation = max(self.high_Saturation, self.low_Saturation+1)
+        cv.setTrackbarPos(self.high_saturation_name, self.window_detection_name, self.high_Saturation)
     
     def on_low_V_thresh_trackbar(self, val):
         
-        self.low_V = val
-        self.low_V = min(self.high_V-1, self.low_V)
-        cv.setTrackbarPos(self.low_V_name, self.window_detection_name, self.low_V)
+        self.low_Value = val
+        self.low_Value = min(self.high_Value-1, self.low_Value)
+        cv.setTrackbarPos(self.low_value_name, self.window_detection_name, self.low_Value)
     
     def on_high_V_thresh_trackbar(self, val):
         
-        self.high_V = val
-        self.high_V = max(self.high_V, self.low_V+1)
-        cv.setTrackbarPos(self.high_V_name, self.window_detection_name, self.high_V)
+        self.high_Value = val
+        self.high_Value = max(self.high_Value, self.low_Value+1)
+        cv.setTrackbarPos(self.high_value_name, self.window_detection_name, self.high_Value)
 
     def mouse_clicked(self, event, x, y, flags, params):
+        """_summary_
+
+        Args:
+            event (_type_): _description_ mouse click event 
+            x (_type_): _description_ x     position of the mouse clicked position
+            y (_type_): _description_ y     position of the mouse clicked position
+            flags (_type_): _description_   mouse event flags  
+            params (_type_): _description_  mouse event parameters
+        """        
         if event == cv.EVENT_LBUTTONDOWN:
             Red_area = np.array([[(20, 20), (270, 20), (270, 50), (20, 50)]])
             inside_red = cv.pointPolygonTest(Red_area, (x, y), False)
@@ -80,8 +99,8 @@ class HSV_COLOR_PICKER():
                 try:
                     with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
-                        data['Low_Red'] = [self.low_H, self.low_S, self.low_V]
-                        data['Up_Red']  = [self.high_H, self.high_S, self.high_V]
+                        data['Low_Red'] = [self.low_Hue, self.low_Saturation, self.low_Value]
+                        data['Up_Red']  = [self.high_Hue, self.high_Saturation, self.high_Value]
                     
                     with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
@@ -94,8 +113,8 @@ class HSV_COLOR_PICKER():
                 try:
                     with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
-                        data['Low_Green'] = [self.low_H, self.low_S, self.low_V]
-                        data['Up_Green']  = [self.high_H, self.high_S, self.high_V]
+                        data['Low_Green'] = [self.low_Hue, self.low_Saturation, self.low_Value]
+                        data['Up_Green']  = [self.high_Hue, self.high_Saturation, self.high_Value]
                     
                     with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
@@ -108,8 +127,8 @@ class HSV_COLOR_PICKER():
                 try:
                     with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
-                        data['Low_Orange'] = [self.low_H, self.low_S, self.low_V]
-                        data['Up_Orange']  = [self.high_H, self.high_S, self.high_V]
+                        data['Low_Orange'] = [self.low_Hue, self.low_Saturation, self.low_Value]
+                        data['Up_Orange']  = [self.high_Hue, self.high_Saturation, self.high_Value]
                     
                     with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
@@ -122,8 +141,8 @@ class HSV_COLOR_PICKER():
                 try:
                     with open('./src/Config/Robo_Color_Config.json', 'r') as file:
                         data = json.load(file)
-                        data['Low_Blue'] = [self.low_H, self.low_S, self.low_V]
-                        data['Up_Blue']  = [self.high_H, self.high_S, self.high_V]
+                        data['Low_Blue'] = [self.low_Hue, self.low_Saturation, self.low_Value]
+                        data['Up_Blue']  = [self.high_Hue, self.high_Saturation, self.high_Value]
                     
                     with open('./src/Config/Robo_Color_Config.json', 'w') as file:
                         json.dump(data, file, indent=2)
@@ -132,8 +151,8 @@ class HSV_COLOR_PICKER():
                 except Exception as err:
                     print(f'Could not find .json file {err}')
 
-    def mouse_call_back(self, fram_name):
-        return cv.setMouseCallback(fram_name, self.mouse_clicked)
+    def mouse_call_back(self, frame_name):
+        return cv.setMouseCallback(frame_name, self.mouse_clicked)
     
     def gaussian_blur(self, img):
         img = cv.GaussianBlur(img, (15, 15), 0)    
@@ -147,13 +166,13 @@ class HSV_COLOR_PICKER():
         cv.namedWindow(self.window_capture_name)
         cv.namedWindow(self.window_detection_name)
 
-        cv.createTrackbar(self.low_H_name  , self.window_detection_name , self.low_H  , self.max_value_H , self.on_low_H_thresh_trackbar )
-        cv.createTrackbar(self.high_H_name , self.window_detection_name , self.high_H , self.max_value_H , self.on_high_H_thresh_trackbar)
-        cv.createTrackbar(self.low_S_name  , self.window_detection_name , self.low_S  , self.max_value   , self.on_low_S_thresh_trackbar )
+        cv.createTrackbar(self.low_Hue_name  , self.window_detection_name , self.low_Hue  , self.max_value_Hue , self.on_low_H_thresh_trackbar )
+        cv.createTrackbar(self.high_hue_name , self.window_detection_name , self.high_Hue , self.max_value_Hue , self.on_high_H_thresh_trackbar)
+        cv.createTrackbar(self.low_saturation_name  , self.window_detection_name , self.low_Saturation  , self.max_value   , self.on_low_S_thresh_trackbar )
 
-        cv.createTrackbar(self.high_S_name , self.window_detection_name , self.high_S , self.max_value   , self.on_high_S_thresh_trackbar)
-        cv.createTrackbar(self.low_V_name  , self.window_detection_name , self.low_V  , self.max_value   , self.on_low_V_thresh_trackbar )
-        cv.createTrackbar(self.high_V_name , self.window_detection_name , self.high_V , self.max_value   , self.on_high_V_thresh_trackbar)
+        cv.createTrackbar(self.high_saturation_name , self.window_detection_name , self.high_Saturation , self.max_value   , self.on_high_S_thresh_trackbar)
+        cv.createTrackbar(self.low_value_name  , self.window_detection_name , self.low_Value  , self.max_value   , self.on_low_V_thresh_trackbar )
+        cv.createTrackbar(self.high_value_name , self.window_detection_name , self.high_Value , self.max_value   , self.on_high_V_thresh_trackbar)
         time.sleep(2)
 
         while True:
@@ -166,22 +185,11 @@ class HSV_COLOR_PICKER():
                     ret, frame = self.cap.read()
                     
                 frame_HSV       = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-                frame_threshold = cv.inRange(frame_HSV, (self.low_H, self.low_S, self.low_V), (self.high_H, self.high_S, self.high_V))
+                frame_threshold = cv.inRange(frame_HSV, (self.low_Hue, self.low_Saturation, self.low_Value), (self.high_Hue, self.high_Saturation, self.high_Value))
                 
                 frame_res       = cv.bitwise_and(frame, frame, mask = frame_threshold)
-
-
-                # t1 = time.time()
-                # frame_blur_gausian = self.gaussian_blur(img=frame_res)
-                # t2 = time.time()
-                # print(f'Gaussian Blur takes: {t2-t1}')
-
-                # t1 = time.time()
-                # frame_blur_median = self.median_blur(img=frame_res)
-                # t2 = time.time()
-                # print(f'Median Blur takes: {t2-t1}')
                 
-                # Creat Button
+                # Create Button for saving Color
                 cv.rectangle(frame, (20, 20), (270, 50), (0, 0, 0), -1)
                 cv.putText(frame, "Save Red HSV Range Color", (30, 40), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
                 
@@ -197,23 +205,16 @@ class HSV_COLOR_PICKER():
                 cv.imshow(self.window_capture_name, frame)
                 cv.imshow(self.window_detection_name, frame_threshold)
                 cv.imshow(self.window_res_name, frame_res)
-                # cv.imshow("Gaussian Blur", frame_blur_gausian)
-                # cv.imshow("Median Blur", frame_blur_median)
 
                 self.mouse_call_back(self.window_capture_name)
                 
                 key = cv.waitKey(30)
                 if key == ord('q') or key == 27:
-                    # self.cap.release()
                     cv.destroyAllWindows()
-                    # cv.destroyWindow(self.window_capture_name)
-                    # cv.destroyWindow(self.window_detection_name)
                     self.cap.release()
-                    # cv.destroyAllWindows()
                     return True
             except Exception as err:
                 print(err)
-                # cv.destroyAllWindows()
                 cv.destroyWindow(self.window_capture_name)
                 cv.destroyWindow(self.window_detection_name)
                 self.cap.release()

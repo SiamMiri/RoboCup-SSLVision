@@ -1,22 +1,18 @@
-from http.client import IM_USED
 import cv2
 import json
 import time
 import logging
 
+# Logging Config
 logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encoding="utf-8",
 
 
-# FIXME: Change the frame size would cause high FPS Drop
-
-
 class Capture_Video():
-    LOG_FPS = False
+    LOG_FPS = False # Set to True to log the FPS of reading Video 
     def __init__(self) -> None:
 
         # Define Variable for Class Object
         self.camera_config = None # Load json camera config file
-        self.pTime         = 0 # Calculate FPS
 
         # Get Camera
         self.camera_capture = cv2.VideoCapture(0)
@@ -28,6 +24,7 @@ class Capture_Video():
         self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
 
     def __del__(self) -> None:
+        # Release Camera
         self.finish_capturing()
         print("Camera Released")
 
@@ -57,7 +54,7 @@ class Capture_Video():
     # destroy opencv camera and free the camera 
     ##########################################
     def finish_capturing(self):
-        # cv2.destroyAllWindows() #FIXME: Check it makes any different
+        # Release Camera
         self.camera_capture.release()
         pass
 
@@ -65,6 +62,13 @@ class Capture_Video():
     # set camera configuration
     ##########################################
     def set_camera_config(self, Fps=False, Res=False, Focus=False):
+        """_summary_
+
+        Args:
+            Fps (bool, optional): _description_. Defaults to False.   set to True to change FPS of the Camera
+            Res (bool, optional): _description_. Defaults to False.   set to True to change Resolution of the Camera
+            Focus (bool, optional): _description_. Defaults to False. set to True to change FPS of reading image
+        """        
         try:
             if isinstance(Fps, bool) and isinstance(Res, bool) and isinstance(Focus, bool):
                 
@@ -82,8 +86,7 @@ class Capture_Video():
                     print("FPS is not set")
 
                 if Res is not False:
-                    # self.camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-                    # self.camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
                     # Change Resolution
                     if isinstance(self.camera_config["CameraConfig"]["Resolution"], list):
                         # set camera Resolution from Json file
@@ -120,6 +123,10 @@ class Capture_Video():
     # load json file as dictionary in python
     ##########################################
     def load_json_config_file(self):
+        """_summary_
+        Loading json file
+        """
+        
         """ with this function you can load json file """
         try:
             # try to load the json file if exist
@@ -130,8 +137,3 @@ class Capture_Video():
         except Exception as e:
             print(f"ERROR: Unable To Load Json File {e}")
             self.camera_config = None
-
-# cap = Capture_Video()
-# cap.load_json_config_file()
-# cap.set_camera_config(Fps=True, Res=True, Focus=False)
-# cap.start_video_capturing()

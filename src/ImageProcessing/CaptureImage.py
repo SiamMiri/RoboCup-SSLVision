@@ -1,20 +1,31 @@
-# import ImageProcessing
+# Author : Siamak Mirifar
+
 import cv2
 import logging
 import time
 
 class Capture_Image():
     def __init__(self, image_path = None) -> None:
-        # Define in __init__ of object
+        """_summary_
+
+        Args:
+            image_path (_type_, optional): _description_. Defaults to None.
+        """        
+        
+        # Object Variable 
         self.image_path  = image_path
-
-        # Object variable which needed
         self.frame = None
-
-    def __del__(self):
-        pass
     
     def load_image(self, image_path = None):
+        """_summary_
+
+        Args:
+            image_path (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
+            return loaded image from path
+        """        
                
         if image_path is not None:
             self.frame = cv2.imread(image_path)
@@ -22,12 +33,3 @@ class Capture_Image():
             self.frame = cv2.imread(self.image_path)
         
         return self.frame
-    
-    def show_image(self, input_image = None):
-        
-        if input_image is None:
-            if self.frame is None:
-                self.load_image() 
-            return self.frame
-        else: 
-            return input_image 

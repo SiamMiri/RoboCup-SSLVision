@@ -1,14 +1,13 @@
-# Autor : Siamak Mirifar
-# Liscence : Student project ( Open source Liscence)
+# Author : Siamak Mirifar
+# License : Student project ( Open source License)
 
 
 # NOTE: 
 # TODO: 1- Find Robot Id base on the robot color
 # TODO: 2- Find Robot location in the field
-# TODO: 3- Find Robot oriantation in the field
+# TODO: 3- Find Robot orientation in the field
 # TODO: 4- Find Robot ball position (similar to robot position)
-# TODO: 5- Make DOCUMETS from where the Idea of the method has been taken !! IMPORTANT
-# TODO: 6- Save image with frame number 
+# TODO: 5- Save image with frame number 
 
 
 ##### Needed Libraries
@@ -20,7 +19,7 @@ from os import path
 import multiprocessing as mp
 import sys
 
-# Image Preccesing Library
+# Image Precessing Library
 import cv2
 
 # Library for GUI
@@ -30,7 +29,7 @@ from PyQt5 import QtCore, QtWidgets
 # Import Classes and functions
 from src.ImageProcessing.CaptureImage import Capture_Image
 from src.ImageProcessing.CaptureVideo import Capture_Video
-from src.RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
+from src.RobotClassification.DetectRobotBall import Detect_Robot_Ball as DetectRobot
 from src.ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
 from src.ImageProcessing.ImageProcessing import Image_Processing
 from src.MainGui.MainWindow import Ui_MainWindow
@@ -41,12 +40,12 @@ try:
     from server_robot_client.UDPSockets_Connection.UDPSend import UDP_Send
     from server_robot_client.UDPSockets_Connection.UDPConnection import UDP_Connection
 
-    # Loading submoduls server status 
+    # Status of loading server submodules 
     SERVER_STATUS = True
     
 except Exception as e:
     print(f"The submodules for server doesn't exist {e}")
-    # Could not import submoduls, set server status to False
+    # Could not import submodules, set server status to False
     SERVER_STATUS = False
     
 
@@ -64,14 +63,14 @@ class Main(QMainWindow, Ui_MainWindow):
     def __init__(self)  :
         QMainWindow.__init__(self)
         
-        # Load Grafical User Interface
+        # Load Graphical User Interface
         self.setupUi(self)
         
-        # Creat windows for the showing frames
-        self.mainFieldWindow = cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        # Create windows for the showing frames
+        self.FieldWindowName = None
         
         # Default Image File Path
-        self.txt_FilePath.setPlainText("/home/robosoccer/Desktop/server_robot_vision/ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg")
+        self.txt_FilePath.setPlainText("/home/siamakmirifar/Documents/Rosenheim/ThirdSemmester/MasterProjekt/server_robot_vision/ImageSample/FieldTest_Left_Light_On_Daylight(hight).jpg")
         
         # Set server information on Gui
         if SERVER_STATUS:
@@ -81,7 +80,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # Connect Signals to Slots
         self.connectMe()
         
-        # Creat Object of QMessageBox for handling Eŕrors
+        # Create Object of QMessageBox for handling errors
         self.msg                = QMessageBox()
         
     def __del__(self):
@@ -133,11 +132,10 @@ class Main(QMainWindow, Ui_MainWindow):
         """
         self.video_color_configuration()
    
-################################# All Methods are Defined Here #################################
+################################# All Methods of Signals are Defined Here #################################
     def video_capturing(self):
         frameIdx = 0
-        self.deactive()
-        DetectRobot.SHOW_CROPED_IMAGE = Main.SHOW_CROP_IMAGE
+        self.deactivate()
         
         """ start capturing video from camera """
         try:
@@ -147,15 +145,15 @@ class Main(QMainWindow, Ui_MainWindow):
             capturingVideo.load_json_config_file()
             capturingVideo.set_camera_config(Fps=True, Res=True, Focus=False)
             
-            """ Creat Objects """
+            """ Create Objects """
             processImage    = Image_Processing()
             detectRobot     = DetectRobot(FuncRotateImage = processImage.rotate_image_by_degree, FuncfindContours = processImage.find_contours_mask,
                                             CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max],
                                             FuncCalContoursArea = processImage.calculate_contours_area, FuncCalMoment = processImage.calculate_moment)# , CropImageQueue = Main.CROP_FRAME_DICT 
 
 
-            # Creat windows for the frame
-            self.mainFieldWindow = cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+            # Create windows for the frame
+            self.FieldWindowName = cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
             
             # Frame Index End on 1
             # Frame Index End on 1
@@ -172,15 +170,15 @@ class Main(QMainWindow, Ui_MainWindow):
                     print(f'\ntime for read image {teRead-tsRead}')
                     print(f'fps for read image {1 // (teRead-tsRead)}\n')
                     
-                    # tsProccess = time.time()
+                    # tsProcess = time.time()
                     # Main.QUEUE_FRAME.put(field_frame)
                     field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.ConfigFrame["FrameConfig"],
                                                                     Blur  = False,GaussianBlur = False , Segmentation = False,
                                                                     Res   = True)
                     Frame_Data = processImage._start_process(field_frame = field_frame)
-                    # teProccess = time.time()
-                    # print(f'\ntime for Img Proccess {teProccess-tsProccess}')
-                    # print(f'fps for Img Proccess {1 // (teProccess-tsProccess)}\n')
+                    # teProcess = time.time()
+                    # print(f'\ntime for Img Process {Process-tsProccess}')
+                    # print(f'fps for Img Process {1 // (teProccess-tsProccess)}\n')
                     
                     # Main.QUEUE_FRAME_DATA.put(Frame_Data)
                     # startTime = time.time()
@@ -228,88 +226,76 @@ class Main(QMainWindow, Ui_MainWindow):
             print(e)
 
     def image_capturing(self, img_path:str=None):
-        self.deactive()
-        frameIdx = 0
-        DetectRobot.SHOW_CROPED_IMAGE = Main.SHOW_CROP_IMAGE
+        """_summary_
+
+        Args:
+            img_path (str, optional):  _description_. Defaults to None, get the Image
+            Path from it's slot.
+        """
+            
+        # deactivate all unnecessary btn and txt field 
+        self.deactivate()
         
-        """ Creat Objects """
-        processImage        = Image_Processing()
+        # Frame index for saving frame
+        frameIdx = 0
+        
+        """ Create Objects """
         capturingImage      = Capture_Image(image_path= None)
+        processImage        = Image_Processing()
         detectRobot         = DetectRobot(FuncRotateImage = processImage.rotate_image_by_degree, FuncfindContours = processImage.find_contours_mask,
                                             CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max],
-                                            FuncCalContoursArea = processImage.calculate_contours_area, FuncCalMoment = processImage.calculate_moment)# , CropImageQueue = Main.CROP_FRAME_DICT 
+                                            FuncCalContoursArea = processImage.calculate_contours_area, FuncCalMoment = processImage.calculate_moment)
         
+
         # Check if submodules Server is Imported
         if SERVER_STATUS:
             if self.checkBox_ConnectServer.isChecked():
-                sendDataToServer    = UDP_Send(Main.DICT_SSL_LIST)
-                sendDataToServer.start()
-
+                sendDataToServer    = UDP_Send(Main.DICT_SSL_LIST) # Create Server Object
+                sendDataToServer.start() # Start Process (it is MultiProcess class)
+        
         """ start capturing image from path"""
-        if len(img_path) != 0:
-            if path.exists(img_path):                       
-                # Creat windows for the frame
-                cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+        if len(img_path) != 0: # check if path is not None
+            if path.exists(img_path): # check if path exist
+                frameIdx, startCap = self.check_num_frame_to_save() # Frame Index End on 1
                 
-                # Frame Index End on 1
-                frameIdx, startCap = self.check_num_frame_to_save()
+                strFieldName = "RobotSoccer Image Capturing\tHit Escape or Q to Exit" # Field name
+                self.FieldWindowName = cv2.namedWindow(strFieldName, cv2.WINDOW_AUTOSIZE) # Naming Frame
                 
-                while startCap:       
-                        
-                    t1 = time.time()
-                    # tsRead = time.time()
-                    field_frame = capturingImage.load_image(image_path=img_path)
+                while startCap: # Start Image Processing loop       
                     
-                    # teRead = time.time()
-                    # print(f'\ntime for read image {teRead-tsRead}')
-                    # print(f'fps for read image {1 // (teRead-tsRead)}\n')
+                    field_frame = capturingImage.load_image(image_path=img_path) # Load Image from Path
                     
-                    # tsProccess = time.time()
-                    # Main.QUEUE_FRAME.put(field_frame)
+                    # Set Img filters (load from json file)
                     field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.ConfigFrame["FrameConfig"],
                                                                     Blur  = False,GaussianBlur = False , Segmentation = False,
                                                                     Res   = True)
-                    Frame_Data = processImage._start_process(field_frame = field_frame)
-                    # teProccess = time.time()
-                    # print(f'\ntime for Img Proccess {teProccess-tsProccess}')
-                    # print(f'fps for Img Proccess {1 // (teProccess-tsProccess)}\n')
                     
-                    # Main.QUEUE_FRAME_DATA.put(Frame_Data)
-                    # startTime = time.time()
-                    DetectedRobot = detectRobot.detect_robot(frame_data= Frame_Data, CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max])
-                    # detectRobot.join()
-                    # endTime = time.time()
-                    # print(f'\ntime for Detect {endTime-startTime}')
-                    # print(f'fps for Detect {1 // (endTime-startTime)}\n')
                     
-                    # logging.info(f'Time takes for Image Processing: {endTime - startTime}')
-                    # logging.info(f'FPS Image Processing:            {1/(endTime - startTime)}\n\n')
+                    Frame_Data = processImage._start_process(field_frame = field_frame) # Image Processing
+
+                    # Find Robots from processed image
+                    DetectedRobot = detectRobot.detect_robot(frame_data= Frame_Data,
+                                                             CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max])
                     
-                    # while Main.DICT_SSL_LIST.empty():
-                    #     pass
-                    # a = Main.DICT_SSL_LIST.get()
-                    # # cropImagList = Main.CROP_FRAME_DICT.get()
-                    # for key in cropImagList:
-                    #     cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
-                    #     cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
+                    # show robots ifo if checkbox is activated
                     if self.checkBox_ShowRobotsInfo.isChecked():
                         for i in DetectedRobot:
-                            # print(a)
                             font = cv2.FONT_HERSHEY_SIMPLEX
                             cv2.putText(field_frame, f'Id: {DetectedRobot[i][0]} ', (DetectedRobot[i][2],DetectedRobot[i][3]-40), font, 0.3, (0, 255, 0), 1, cv2.LINE_AA)
                             cv2.putText(field_frame, f'Degree {DetectedRobot[i][1]}', (DetectedRobot[i][2],DetectedRobot[i][3]-30), font, 0.3, (0, 255, 0), 1, cv2.LINE_AA)
                     
+                    # Save Image the image index reduced by one
                     if frameIdx != 0: 
                         processImage.saveFrame(field_frame, frameIdx)
                         frameIdx -= 1
+                    
+                    # Send data to server if checkbox is active
                     if self.checkBox_ConnectServer.isChecked():
                         Main.DICT_SSL_LIST.put(DetectedRobot)
-                    # sendDataToServer.send(DetectedRobot)
-                    cv2.imshow("RobotSoccer\tHit Escape or Q to Exit", field_frame)
+                    
+                    cv2.imshow(strFieldName, field_frame)
                     k = cv2.waitKey(1)
-                    t2 = time.time()
-                    print(f'\ntime for all proccess takes {t2-t1}')
-                    print(f'fps for all proccess takes {1 // (t2-t1)}\n')
+                    
                     if k % 256 == 27:
                         # ESC pressed
                         print("Escape hit, closing...")
@@ -321,74 +307,93 @@ class Main(QMainWindow, Ui_MainWindow):
                         print("Escape hit, closing...")
                         cv2.destroyAllWindows()
                         break
+                
+                # Active all deactivated btn and txt field
                 self.active()
-            else:
+            
+            else: # Msg box for checking img path
                 self.msg.setIcon(QMessageBox.Information)
                 self.msg.setText("The Image Path does not exist, PLEASE REENTER YOUR FILE PATH !!")
                 self.msg.setWindowTitle("Error")
                 self.msg.setStandardButtons(QMessageBox.Ok)
                 self.msg.show()
-                self.active()
-        else:
+                self.active() # Active all deactivated btn and txt field
+        else: # Msg box for checking img path
             self.msg.setIcon(QMessageBox.Information)
             self.msg.setText("The Image Path is Empty, PLEASE LOAD YOUR FILE !!")
             self.msg.setWindowTitle("Error")
             self.msg.setStandardButtons(QMessageBox.Ok)
             self.msg.show()
-            self.active()
+            self.active() # Active all deactivated btn and txt field
       
     def video_color_configuration(self):
-        colorpicker = ColorPicker(image_path= None)
-        colorpicker.color_picker()
+        """_summary_
+        This function is use for video color config
+        Config HSV color range for image processing
+        """        
+        colorPicker = ColorPicker(image_path= None)
+        colorPicker.color_picker()
                 
     def image_color_configuration(self):
+        """_summary_
+        This function is use for image color config
+        Config HSV color range for image processing
+        """        
         imgPath = self.txt_FilePath.toPlainText()
-        if len(imgPath) != 0:
-            if path.exists(imgPath):
-                colorpicker = ColorPicker(image_path= imgPath)
-                colorpicker.color_picker()
-            else:
-                    self.msg.setIcon(QMessageBox.Information)
-                    self.msg.setText("The Image Path does not exist, PLEASE REENTER YOUR FILE PATH !!")
-                    self.msg.setWindowTitle("Error")
-                    self.msg.setStandardButtons(QMessageBox.Ok)
-                    self.msg.show()
-        else:
+        if len(imgPath) != 0: # check img path len
+            if path.exists(imgPath): # check img path exist
+                colorPicker = ColorPicker(image_path= imgPath)
+                colorPicker.color_picker()
+            else: # Err Msg for wrong img path
+                self.msg.setIcon(QMessageBox.Information)
+                self.msg.setText("The Image Path does not exist, PLEASE REENTER YOUR FILE PATH !!")
+                self.msg.setWindowTitle("Error")
+                self.msg.setStandardButtons(QMessageBox.Ok)
+                self.msg.show()
+        else: # Err Msg for wrong img path
             self.msg.setIcon(QMessageBox.Information)
             self.msg.setText("The Image Path is Empty, PLEASE LOAD YOUR FILE !!")
             self.msg.setWindowTitle("Error")
             self.msg.setStandardButtons(QMessageBox.Ok)
             self.msg.show()
         
-    # General Methods              
-    def deactive(self):
+#################################  General Methods #################################
+    def deactivate(self):
+        """_summary_
+        Deactivate part GUI which are not needed to be active during process
+        """ 
         self.btn_ImageColorConfiguration.setEnabled(False)
         self.btn_LoadImageFile.setEnabled(False)
         self.btn_StartImageCapturing.setEnabled(False)
         self.btn_StartVideoCapturing.setEnabled(False)
         self.btn_VideoColorConfiguration.setEnabled(False)
-        # self.checkBox_ShowRobotsInfo.setEnabled(False)
         self.txt_FilePath.setEnabled(False)
         self.txt_NumFrameToSave.setEnabled(False)
         self.checkBox_SaveFrame.setEnabled(False)
-        # self.checkBox_ConnectServer.setEnabled(False)
-
-        # self.txt_NumRoboImageToSave.setEnabled(False)
+        self.checkBox_ConnectServer.setEnabled(False)
 
     def active(self):
+        """_summary_
+        Active part GUI which where deactivated
+        """
         self.btn_ImageColorConfiguration.setEnabled(True)
         self.btn_LoadImageFile.setEnabled(True)
         self.btn_StartImageCapturing.setEnabled(True)
         self.btn_StartVideoCapturing.setEnabled(True)
         self.btn_VideoColorConfiguration.setEnabled(True)
-        # self.checkBox_ShowRobotsInfo.setEnabled(True)
         self.txt_FilePath.setEnabled(True)
         self.txt_NumFrameToSave.setEnabled(True)
         self.checkBox_SaveFrame.setEnabled(True)
-        # self.checkBox_ConnectServer.setEnabled(True)
-        # self.txt_NumRoboImageToSave.setEnabled(True)
+        self.checkBox_ConnectServer.setEnabled(True)
     
     def check_num_frame_to_save(self):
+        """_summary_
+        check frame index is correct integer value
+        Returns:
+            _type_: _description_
+            frameIdx -> number of frame to be saved
+            startCap -> if number of index is correct return True
+        """        
         i = self.txt_NumFrameToSave.toPlainText()
         if i != None and self.checkBox_SaveFrame.isChecked():
             try:
@@ -407,6 +412,7 @@ class Main(QMainWindow, Ui_MainWindow):
  
 if __name__ == "__main__":   
     
+    # Make GUI capable of working in different resolution
     if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
         QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
         

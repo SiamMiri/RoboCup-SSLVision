@@ -16,12 +16,12 @@ from cv2 import VideoCapture
 import os.path
 from os import path
 
-from ImageProcessing.CaptureImage import Capture_Image
-from ImageProcessing.CaptureVideo import Capture_Video
-from RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
-from ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
-from ImageProcessing.ImageProcessing import Image_Processing
-from MainGui.MainWindow import Ui_MainWindow  
+from src.ImageProcessing.CaptureImage import Capture_Image
+from src.ImageProcessing.CaptureVideo import Capture_Video
+from src.RobotClassificaion.DetectRobotBall import Detect_Robot_Ball as DetectRobot
+from src.ImageProcessing.HSVColorPicker import HSV_COLOR_PICKER as ColorPicker
+from src.ImageProcessing.ImageProcessing import Image_Processing
+from src.MainGui.MainWindow import Ui_MainWindow  
 import cv2
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from PyQt5 import QtCore, QtWidgets

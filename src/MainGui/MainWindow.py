@@ -22,7 +22,7 @@ class Ui_MainWindow(object):
         self.lbl_University = QtWidgets.QLabel(self.centralwidget)
         self.lbl_University.setGeometry(QtCore.QRect(500, 0, 171, 61))
         self.lbl_University.setObjectName("lbl_University")
-        self.lbl_University.setStyleSheet("background-image : url(./MainGui/logo_th_rosenheim.png)")
+        self.lbl_University.setStyleSheet("background-image : url(src/MainGui/logo_th_rosenheim.png)")
         
         self.btn_LoadImageFile = QtWidgets.QPushButton(self.centralwidget)
         self.btn_LoadImageFile.setGeometry(QtCore.QRect(20, 80, 111, 31))

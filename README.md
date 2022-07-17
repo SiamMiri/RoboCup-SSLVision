@@ -34,8 +34,8 @@ To run the application using python interpreter run main.py. The Python version 
 
 To run the application independent of the python libraries, Main file should be run. This executable file completely independent of python libraries and it is tested on Debian based linux.
 
-#### Robot detection on image
+#### Robot detection on image:
 To test application it is possible to upload image or enter image path and start the detection process on the image.
 
-#### Robot detection on video
+#### Robot detection on video:
 The principle of detecting robots in the video section works the same as detecting robots in the image section. The difference is for detecting robots using images there is no need that the camera to be connected. But for the video section, the camera should be connected and recognized by the system.

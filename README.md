@@ -6,7 +6,7 @@ This application is developed as part of master project by Siamak Mirifar.
 
 2. To install all required python libraries run following script in command prompt:
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 ## Supported cameras
 
@@ -23,7 +23,7 @@ Other cameras can be use for this project. However, the resolution of the camera
 
 To be able to connect to the server the subgroups project should be clone to the project folder with the same name. The clone can be done by running following script (cloning project) in the project folder.
 
-git clone https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_client.git
+`git clone https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_client.git`
 
 ## Running
 

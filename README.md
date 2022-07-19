@@ -48,4 +48,4 @@ To run the application independent of the python libraries, Main file should be 
 
 ## Application graphical user interface
 
-![alt text](https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_vision/-/blob/main/ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg?raw=true)
+![alt text](https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_vision/-/blob/main/ImageSample/t1.jpg?raw=true)

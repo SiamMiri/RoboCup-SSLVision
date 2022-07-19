@@ -46,8 +46,17 @@ class Ui_MainWindow(object):
         self.btn_ImageColorConfiguration.setObjectName("btn_ImageColorConfiguration")
         
         self.txt_FilePath = QtWidgets.QTextEdit(self.centralwidget)
-        self.txt_FilePath.setGeometry(QtCore.QRect(150, 80, 491, 31))
+        self.txt_FilePath.setGeometry(QtCore.QRect(150, 80, 300, 31))
         self.txt_FilePath.setObjectName("txt_FilePath")
+        
+        self.lbl_CamCom = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_CamCom.setGeometry(QtCore.QRect(460, 60, 150, 31))
+        self.lbl_CamCom.setObjectName("lbl_CamCom")
+        
+        self.txt_CamCom = QtWidgets.QTextEdit(self.centralwidget)
+        self.txt_CamCom.setGeometry(QtCore.QRect(460, 90, 50, 31))
+        self.txt_CamCom.setObjectName("txt_CamCom")
+        
         
         self.lbl_version = QtWidgets.QLabel(self.centralwidget)
         self.lbl_version.setGeometry(QtCore.QRect(20, 10, 101, 21))
@@ -122,3 +131,4 @@ class Ui_MainWindow(object):
         self.lbl_ServerInformation.setText(_translate("MainWindow", "Server Information:"))
         self.lbl_Port.setText(_translate("MainWindow", "Port:"))
         self.lbl_Group.setText(_translate("MainWindow", "Group:"))
+        self.lbl_CamCom.setText(_translate("MainWindow", "Camera COM Number:"))

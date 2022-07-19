@@ -20,7 +20,8 @@ import multiprocessing as mp
 import sys
 import cv2 # Image Processing Lib
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox # GUI Lib
-from PyQt5 import QtCore, QtWidgets # GUI Lib
+from PyQt5 import QtCore, QtWidgets
+from pandas import ExcelFile # GUI Lib
 
 # Import Classes and functions
 from src.ImageProcessing.CaptureImage import Capture_Image
@@ -67,6 +68,7 @@ class Main(QMainWindow, Ui_MainWindow):
         
         # Default Image File Path
         self.txt_FilePath.setPlainText("/home/siamakmirifar/Documents/Rosenheim/ThirdSemmester/MasterProjekt/server_robot_vision/ImageSample/FieldTest_Left_Light_On_Daylight(hight).jpg")
+        self.txt_CamCom.setText("0")
         
         # Set server information on Gui
         if SERVER_STATUS:
@@ -130,96 +132,122 @@ class Main(QMainWindow, Ui_MainWindow):
    
 ################################# All Methods of Signals are Defined Here #################################
     def video_capturing(self):
-        frameIdx = 0
+        """_summary_
+
+        Args:
+            img_path (str, optional):  _description_. Defaults to None, get the Image
+            Path from it's slot.
+        """
+        # deactivate all unnecessary btn and txt field 
         self.deactivate()
+        
+        # Frame index for saving frame
+        frameIdx = 0
+        
+        # Check if Camera COM port is correct
+        try:
+            CamCom = int(self.txt_CamCom.toPlainText())
+        except Exception as e:
+            self.msg.setIcon(QMessageBox.Information)
+            self.msg.setText(f"Camera COM Number must be Valid Integer Value !! error: {e}")
+            self.msg.setWindowTitle("Error")
+            self.msg.setStandardButtons(QMessageBox.Ok)
+            self.msg.show()
+            self.active()
+            return 1
         
         """ start capturing video from camera """
         try:
             
             """ Read Camera Objects """
-            capturingVideo  = Capture_Video()
-            capturingVideo.load_json_config_file()
-            capturingVideo.set_camera_config(Fps=True, Res=True, Focus=False)
+            capturingVideo  = Capture_Video(camCom= CamCom)
+            
+            # Set Camera Configuration to Read Camera as Defined n Json File
+            # capturingVideo.set_camera_config(Fps=True, Res=True, Focus=False)
             
             """ Create Objects """
             processImage    = Image_Processing()
-            detectRobot     = DetectRobot(FuncRotateImage = processImage.rotate_image_by_degree, FuncfindContours = processImage.find_contours_mask,
-                                            CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max],
+            detectRobot     = DetectRobot(FuncRotateImage = processImage.rotate_image_by_degree, FuncFindContours = processImage.find_contours_mask,
                                             FuncCalContoursArea = processImage.calculate_contours_area, FuncCalMoment = processImage.calculate_moment)# , CropImageQueue = Main.CROP_FRAME_DICT 
 
-
-            # Create windows for the frame
-            self.FieldWindowName = cv2.namedWindow("RobotSoccer\tHit Escape or Q to Exit")
+            # Check if submodules Server is Imported
+            if SERVER_STATUS:
+                if self.checkBox_ConnectServer.isChecked():
+                    sendDataToServer    = UDP_Send(Main.DICT_SSL_LIST) # Create Server Object
+                    sendDataToServer.start() # Start Process (it is MultiProcess class)
             
-            # Frame Index End on 1
+            # check if number of frame to save is correct return (Int, boolean)
+            frameIdx, startCap = self.check_num_frame_to_save() # Frame Index End on 1
+            
+            # Create windows for the frame
+            strFieldName = "RobotSoccer Video Capturing\tHit Escape or Q to Exit"
+            self.FieldWindowName = cv2.namedWindow(strFieldName, cv2.WINDOW_AUTOSIZE)
+            
             # Frame Index End on 1
             frameIdx, startCap = self.check_num_frame_to_save()
             
-            while startCap:                    
-                tsRead = time.time()
-                field_frame = capturingVideo.start_video_capturing()# DICT_SSL_LIST
+            while startCap:
+                
+                field_frame = capturingVideo.start_video_capturing()
                 
                 if field_frame == None:
                     break
                 else:
-                    teRead = time.time()
-                    print(f'\ntime for read image {teRead-tsRead}')
-                    print(f'fps for read image {1 // (teRead-tsRead)}\n')
                     
-                    # tsProcess = time.time()
-                    # Main.QUEUE_FRAME.put(field_frame)
+                    # Set Img filters (load from json file)
                     field_frame = processImage.set_image_filter(frame = field_frame , filterJsonFile = processImage.json_frame_config["FrameConfig"],
                                                                     Blur  = False,GaussianBlur = False , Segmentation = False,
                                                                     Res   = True)
-                    Frame_Data = processImage._start_process(field_frame = field_frame)
-                    # teProcess = time.time()
-                    # print(f'\ntime for Img Process {Process-tsProccess}')
-                    # print(f'fps for Img Process {1 // (teProccess-tsProccess)}\n')
                     
-                    # Main.QUEUE_FRAME_DATA.put(Frame_Data)
-                    # startTime = time.time()
-                    DetectedRobot = detectRobot.detect_robot(frame_data= Frame_Data, CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max])
-                    # detectRobot.join()
-                    # endTime = time.time()
-                    # print(f'\ntime for Detect {endTime-startTime}')
-                    # print(f'fps for Detect {1 // (endTime-startTime)}\n')
+                    Frame_Data = processImage._start_process(field_frame = field_frame) # Image Processing
+                     
+                    # Find Robots from processed image
+                    DetectedRobot = detectRobot.detect_robot(frame_data= Frame_Data,
+                                                             CircleArea = [processImage.area_of_circle_min, processImage.area_of_circle_max])
                     
-                    # logging.info(f'Time takes for Image Processing: {endTime - startTime}')
-                    # logging.info(f'FPS Image Processing:            {1/(endTime - startTime)}\n\n')
-                    
-                    # while Main.DICT_SSL_LIST.empty():
-                    #     pass
-                    # a = Main.DICT_SSL_LIST.get()
-                    # # cropImagList = Main.CROP_FRAME_DICT.get()
-                    # for key in cropImagList:
-                    #     cv2.namedWindow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit")
-                    #     cv2.imshow(f"RobotSoccer_Robot{key}\tHit Escape or Q to Exit", cropImagList[key])
+                    # show robots ifo if checkbox is activated
                     if self.checkBox_ShowRobotsInfo.isChecked():
                         for i in DetectedRobot:
-                            # print(a)
                             font = cv2.FONT_HERSHEY_SIMPLEX
                             cv2.putText(field_frame, f'Id: {DetectedRobot[i][0]} ', (DetectedRobot[i][2],DetectedRobot[i][3]-40), font, 0.3, (0, 255, 0), 1, cv2.LINE_AA)
                             cv2.putText(field_frame, f'Degree {DetectedRobot[i][1]}', (DetectedRobot[i][2],DetectedRobot[i][3]-30), font, 0.3, (0, 255, 0), 1, cv2.LINE_AA)
                     
+                    # Save Image the image index reduced by one
                     if frameIdx != 0: 
                         processImage.saveFrame(field_frame, frameIdx)
                         frameIdx -= 1
+                    
+                    # Send data to server if checkbox is active
+                    if self.checkBox_ConnectServer.isChecked():
+                        Main.DICT_SSL_LIST.put(DetectedRobot)
+                    
+                    cv2.imshow(strFieldName, field_frame)
+                    k = cv2.waitKey(1)
+                    
+                    if k % 256 == 27:
+                        # ESC pressed
+                        print("Escape hit, closing...")
+                        cv2.destroyAllWindows()
+                        break
+                    
+                    if k % 256 == ord("q"):
+                        # Q pressed
+                        print("Escape hit, closing...")
+                        cv2.destroyAllWindows()
+                        break
                 
-                k = cv2.waitKey(1)
-                if k % 256 == 27:
-                    # ESC pressed
-                    self.slot_finish_capturing()
-                    print("Escape hit, closing...")
-                    break
-                
-                if k % 256 == ord("q"):
-                    # Q pressed
-                    print("Escape hit, closing...")
-                    self.slot_finish_capturing()
-                    break
+            # Active all deactivated btn and txt field
             self.active()
+            # Destroy All Window out of the loop
+            cv2.destroyAllWindows()
         except Exception as e:
             print(e)
+            self.msg.setIcon(QMessageBox.Information)
+            self.msg.setText(f"ERROR: {e} !!")
+            self.msg.setWindowTitle("Error")
+            self.msg.setStandardButtons(QMessageBox.Ok)
+            self.msg.show()
+            self.active()
 
     def image_capturing(self, img_path:str=None):
         """_summary_
@@ -248,12 +276,15 @@ class Main(QMainWindow, Ui_MainWindow):
                 sendDataToServer    = UDP_Send(Main.DICT_SSL_LIST) # Create Server Object
                 sendDataToServer.start() # Start Process (it is MultiProcess class)
         
+        
         """ start capturing image from path"""
         if len(img_path) != 0: # check if path is not None
             if path.exists(img_path): # check if path exist
+                
+                # check if number of frame to save is correct return (Int, boolean)
                 frameIdx, startCap = self.check_num_frame_to_save() # Frame Index End on 1
                 
-                strFieldName = "RobotSoccer Image Capturing\tHit Escape or Q to Exit" # Field name
+                strFieldName = "RobotSoccer Processing Image\tHit Escape or Q to Exit" # Field name
                 self.FieldWindowName = cv2.namedWindow(strFieldName, cv2.WINDOW_AUTOSIZE) # Naming Frame
                 
                 while startCap: # Start Image Processing loop       
@@ -305,6 +336,8 @@ class Main(QMainWindow, Ui_MainWindow):
                 
                 # Active all deactivated btn and txt field
                 self.active()
+                # Destroy All Window out of the loop
+                cv2.destroyAllWindows()
             
             else: # Msg box for checking img path
                 self.msg.setIcon(QMessageBox.Information)

@@ -9,19 +9,20 @@ logging.basicConfig(filename="RoboCupLoggingFile", level=logging.DEBUG) #encodin
 
 class Capture_Video():
     LOG_FPS = False # Set to True to log the FPS of reading Video 
-    def __init__(self) -> None:
+    def __init__(self, camCom = 0) -> None:
 
         # Define Variable for Class Object
         self.camera_config = None # Load json camera config file
 
         # Get Camera
-        self.camera_capture = cv2.VideoCapture(0)
+        self.camera_capture = cv2.VideoCapture(camCom)
 
         """ Load Json File For Setting Camera Configuration """
         self.load_json_config_file()
 
         """ Start capturing get camera config from start_process_command """
-        self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
+        # This function is currently called from main
+        # self.set_camera_config(self.camera_config['CameraConfig'], Fps=False, Res=True, Focus=False)
 
     def __del__(self) -> None:
         # Release Camera
@@ -130,7 +131,7 @@ class Capture_Video():
         """ with this function you can load json file """
         try:
             # try to load the json file if exist
-            with open("./src/Config/CameraConfig.json") as config_file:
+            with open("src/Config/CameraConfig.json") as config_file:
                 self.camera_config = json.load(config_file)
 
         # Catch Err in this case might be naming diff in json file and print defined

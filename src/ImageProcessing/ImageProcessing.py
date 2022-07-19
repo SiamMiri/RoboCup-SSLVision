@@ -341,23 +341,11 @@ class Image_Processing():
                 
                 labels = labels.reshape((frame.shape[:-1]))
                 reduced = np.uint8(centers)[labels]
-
-                # frame = [np.hstack([frame, reduced])]
-                # frame = np.vstack(frame)
-                # frame = reduced
+                
                 for i, c in enumerate(centers):
                     mask  = cv2.inRange(labels, i, i)
                     mask  = np.dstack([mask] * 3)  # Make it 3 channel
                     frame = cv2.bitwise_and(reduced, mask)
-                '''
-                for i, c in enumerate(centers):
-                    mask = cv2.inRange(labels, i, i)
-                    mask = np.dstack([mask] * 3)  # Make it 3 channel
-                    ex_img = cv2.bitwise_and(frame, mask)
-                    ex_reduced = cv2.bitwise_and(reduced, mask)
-                    frame.append(np.hstack([ex_img, ex_reduced]))
-                    print("Segmentation is applied")
-                '''
             
             ''' Resolution '''
             if Res is not False:

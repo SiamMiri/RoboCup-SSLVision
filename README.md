@@ -1,5 +1,7 @@
 # server_robot_vision
 
+## Getting started
+
 This application is developed as part of master project by Siamak Mirifar.
 
 This Application is Fully functional on Linux distribution based on Debian.
@@ -50,7 +52,7 @@ To run the application independent of the python libraries, Main file should be 
 
 #### Logging
 
-To check errors and time lapse all the processing classes have attribute **PRINT_DEBUG**, which should be set to True to have logging file.
+To check errors and time lapse all the processing classes have attribute **PRINT_DEBUG**, which should be set to True to active logging.
 
 
 ## Main Libraries and resources
@@ -62,3 +64,7 @@ To check errors and time lapse all the processing classes have attribute **PRINT
 ## Application graphical user interface
 
 ![alt text](/Images/ApplicationInterface.png?raw=true)
+
+## Application structure
+
+[Wiki](https://www.logitech.com/content/dam/logitech/vc/en_hk/pdf/Brio-Datasheet.pdf)

@@ -55,4 +55,4 @@ To run the application independent of the python libraries, Main file should be 
 
 ## Application graphical user interface
 
-![alt text](software/server_robot_vision/-/blob/main/ImageSample/t1.jpg?raw=true)
+![alt text](/ImageSample/t1.jpg?raw=true)

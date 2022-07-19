@@ -22,7 +22,7 @@ To have full  specification of camera check following link:
 
 [Logitech BRIO](https://www.logitech.com/content/dam/logitech/vc/en_hk/pdf/Brio-Datasheet.pdf)
 
-The experience shows that using USB.2 cable could led to low frame per second (fps) in video recording. It is suggested to use USB.3 or above.
+The experience shows that using **USB.2** cable could led to low frame per second (fps) in video recording. It is suggested to use USB.3 or above.
 
 Other cameras can be use for this project. However, the resolution of the camera should be minimum 1280*720.
 

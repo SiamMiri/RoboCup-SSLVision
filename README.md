@@ -2,9 +2,16 @@
 
 This application is developed as part of master project by Siamak Mirifar.
 
-1. This Application is Fully functional on Linux distribution based on Debian
+This Application is Fully functional on Linux distribution based on Debian.
 
-2. To install all required python libraries run following script in command prompt:
+Following dependencies are required to build the software:
+
+ * QT >= 4.3 with opengl and networking support
+ * Google protocol buffers (protoc)
+ * OpenCV >= 3
+ * video for linux 2 (v4l)
+
+To install all required python libraries run following script in command prompt:
 
 `pip install -r requirements.txt`
 

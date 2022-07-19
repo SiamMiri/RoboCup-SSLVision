@@ -34,14 +34,18 @@ To run the application using python interpreter run main.py. The Python version 
 </details>
 
 <details open>
-<summary>1: Executable version:</summary>
+<summary>2: Executable version:</summary>
 <br>
 To run the application independent of the python libraries, Main file should be run. This executable file completely independent of python libraries and it is tested on Debian based linux.
 </details>
 
 
-#### Robot detection on image:
-To test application it is possible to upload image or enter image path and start the detection process on the image.
+## Main Libraries and resources
 
-#### Robot detection on video:
-The principle of detecting robots in the video section works the same as detecting robots in the image section. The difference is for detecting robots using images there is no need that the camera to be connected. But for the video section, the camera should be connected and recognized by the system.
+ - [RoboCup-SSL / ssl-vision](https://github.com/RoboCup-SSL/ssl-vision)
+ - [OpenCv](https://opencv.org)
+ - [Qt for Python](https://www.qt.io/qt-for-python)
+
+## Application graphical user interface
+
+![alt text](https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_vision/-/blob/main/ImageSample/FieldTest_AllLight_Off_Daylight(hight).jpg?raw=true)

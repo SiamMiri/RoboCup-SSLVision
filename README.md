@@ -27,8 +27,11 @@ To be able to connect to the server the subgroups project should be clone to the
 
 ## Running
 
-### Python version:
+<details open>
+<summary>### Python version:</summary>
+<br>
 To run the application using python interpreter run main.py. The Python version of the application only works if all libraries are installed.
+</details>
 
 ### Executable version:
 

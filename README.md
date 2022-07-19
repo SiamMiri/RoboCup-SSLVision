@@ -28,14 +28,17 @@ To be able to connect to the server the subgroups project should be clone to the
 ## Running
 
 <details open>
-<summary>### Python version:</summary>
+<summary>1: Python version:</summary>
 <br>
 To run the application using python interpreter run main.py. The Python version of the application only works if all libraries are installed.
 </details>
 
-### Executable version:
-
+<details open>
+<summary>1: Executable version:</summary>
+<br>
 To run the application independent of the python libraries, Main file should be run. This executable file completely independent of python libraries and it is tested on Debian based linux.
+</details>
+
 
 #### Robot detection on image:
 To test application it is possible to upload image or enter image path and start the detection process on the image.

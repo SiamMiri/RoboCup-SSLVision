@@ -34,6 +34,8 @@ To be able to connect to the server the subgroups project should be clone to the
 
 ## Running
 
+#### Options
+
 <details open>
 <summary>1: Python version:</summary>
 <br>
@@ -45,6 +47,10 @@ To run the application using python interpreter run main.py. The Python version 
 <br>
 To run the application independent of the python libraries, Main file should be run. This executable file completely independent of python libraries and it is tested on Debian based linux.
 </details>
+
+#### Logging
+
+To check errors and time lapse all the processing classes have attribute **PRINT_DEBUG**, which should be set to True to have logging file.
 
 
 ## Main Libraries and resources

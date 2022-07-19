@@ -1,8 +1,30 @@
 @startuml
-class User {
-  -String id
-  -String name
-  +String name()
+class First_Process {
+    +start_process()
 }
-User <|-- SpecificUser
+
+class Second_Process {
++start_process()
+}
+
+class Main {
+  -List frame
+  .
+  .
+  .
+
+  +Process_Image()
+  +Process_Video()
+}
+
+class UDP_Send {
+  -List Queue
+  .
+  .
+  .
+
+  +send_data()
+}
+First_Process --|>  Main
+Second_Process --|>   UDP_Send
 @enduml

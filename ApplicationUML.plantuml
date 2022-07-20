@@ -17,6 +17,26 @@ class Main {
   +Process_Video()
 }
 
+class Detect_Robot {
+  -List Robot_Pattern_Dict
+  -List _Frame_Data
+
+
+  +detect_robot()
+}
+
+class Ui_MainWindow {
+  +setupUi()
+  +retranslateUi()
+}
+
+class Image_Processing {
+  -List frameNew
+  -List _Frame_Data
+
+  +_start_process()
+}
+
 class UDP_Send {
   -List Queue
   .
@@ -25,6 +45,11 @@ class UDP_Send {
 
   +send_data()
 }
-First_Process --|>  Main
-Second_Process --|>   UDP_Send
+
+First_Process --*  Main
+Second_Process --* UDP_Send
+Main *--* Image_Processing : return frame data
+Main *--* Detect_Robot : return robots info
+Main *--* Ui_MainWindow : Application user interface
+Main --o UDP_Send : Send data to server after each process sycle
 @enduml

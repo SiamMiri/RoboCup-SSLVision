@@ -65,14 +65,42 @@ class Capture_Video {
   +set_camera_config()
 }
 
+class UDP_Connection {
+  -Socket socket_ssl
+
+  +__init__()
+}
+
+class UDP_Send {
+  -QUEUE Sendqueuel
+
+  +run()
+  +send()
+  +convert_data_to_ProtoBuf_format()
+}
+
+class UDP_Receive {
+  -QUEUE Sendqueuel
+
+  +run()
+  +receive()
+  +convert_data_to_ProtoBuf_format()
+}
+
+class Client_Socket_ProtoBuf {
+  -List ProtoBuf
+
+  +ssl_robot_detection_message()
+}
+
 First_Process --*  Main
 Second_Process --* UDP_Send
-Main *--* Image_Processing : return frame data
-Main *--* Detect_Robot : return robots info
-Main *--* Ui_MainWindow : Application user interface
-Main --* HSV_COLOR_PICKER : Pick HSV color range
-Main --* Capture_Image : Return frame
-Main --* Capture_Video : Return frame
-Main --o UDP_Send : Send data to server after each process sycle
+Main *-- Image_Processing : return frame data
+Main *-- Detect_Robot : return robots info
+Main *-- Ui_MainWindow : Application user interface
+Main *-- HSV_COLOR_PICKER : Pick HSV color range
+Main *-- Capture_Image : Return frame
+Main *-- Capture_Video : Return frame
+Main *-- UDP_Send : Send data to server after each process sycle
 
 @enduml

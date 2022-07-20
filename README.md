@@ -3,7 +3,7 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#About The Project">About The Project</a></li>
+    <li><a href="#About the project">About the project</a></li>
     <li><a href="#Getting started">Getting started</a></li>
     <li><a href="#Supported cameras">Supported cameras</a></li>
     <li><a href="#Compilation">Compilation</a></li>
@@ -15,7 +15,7 @@
   </ol>
 </details>
 
-## About The Project
+## About the project
 
 This project is part of a master's project at Rosenheim University of Applied Sciences under the supervision of Professor Dietrich. The purpose of this project is to determine the position and Id of the small robot on the soccer field. After the position and IDs have been found, the data will be sent to the server. The whole project's purpose is to make it possible for different teams to play soccer with the available robots. 
 

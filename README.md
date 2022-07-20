@@ -1,17 +1,26 @@
 # server_robot_vision
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#About The Project">About The Project</a></li>
+    <li><a href="#Getting started">Getting started</a></li>
+    <li><a href="#Supported cameras">Supported cameras</a></li>
+    <li><a href="#Compilation">Compilation</a></li>
+    <li><a href="#Running">Running</a></li>
+    <li><a href="#Application graphical user interface">Application graphical user interface</a></li>
+    <li><a href="#Application structure">Application structure</a></li>
+    <li><a href="#Future work">Future work</a></li>
+    <li><a href="#Main Libraries and references">Main Libraries and references</a></li>
+  </ol>
+</details>
+## About The Project
+
+This project is part of a master's project at Rosenheim University of Applied Sciences under the supervision of Professor Dietrich. The purpose of this project is to determine the position and Id of the small robot on the soccer field. After the position and IDs have been found, the data will be sent to the server. The whole project's purpose is to make it possible for different teams to play soccer with the available robots. 
 
 ## Getting started
 
-This application is developed as part of master project.
-
 This Application is Fully functional on Linux distribution based on Debian.
-
-Following dependencies are required to build the software:
-
- * QT >= 4.3 with opengl and networking support
- * Google protocol buffers (protoc)
- * OpenCV >= 3
- * video for linux 2 (v4l)
 
 To install all required python libraries run following script in command prompt:
 
@@ -54,13 +63,6 @@ To run the application independent of the python libraries, Main file should be 
 
 To check errors and time lapse all the processing classes have attribute **PRINT_DEBUG**, which should be set to True to active logging.
 
-
-## Main Libraries and resources
-
- - [RoboCup-SSL / ssl-vision](https://github.com/RoboCup-SSL/ssl-vision)
- - [OpenCv](https://opencv.org)
- - [Qt for Python](https://www.qt.io/qt-for-python)
-
 ## Application graphical user interface
 
 ![alt text](/Images/ApplicationInterface.png?raw=true)
@@ -78,3 +80,10 @@ The only possible way for this problem was finding the minimum length between th
 What is suggested is base on the final design of the robots, the front design of the robots should be straight. It means that the robots are not complete circle. With the help of edge detection and contours in OpenCv it is possible to detect this line and calculate the angle from this line.
 
 The advantage of this method is that it reduced the computation, and code. It is make it possible to work with images with lower resolution, which means higher performance.
+
+
+## Main Libraries and references
+
+ - [RoboCup-SSL / ssl-vision](https://github.com/RoboCup-SSL/ssl-vision)
+ - [OpenCv](https://opencv.org)
+ - [Qt for Python](https://www.qt.io/qt-for-python)

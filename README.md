@@ -68,3 +68,13 @@ To check errors and time lapse all the processing classes have attribute **PRINT
 ## Application structure
 
 [Wiki](https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_vision/-/wikis/Application-Wiki)
+
+## Future work
+
+The current application is using the 1080p frame for detecting robot. The reason is that for finding the angle of the robot we need a fix line in the image that could give us this chance to calculate the angle.
+
+The only possible way for this problem was finding the minimum length between the circle on the top of robots. As the robots are small in the field finding smallest length is so dependent on the image pixel. Low resolution image will cause uncertain measurement.
+
+What is suggested is base on the final design of the robots, the front design of the robots should be straight. It means that the robots are not complete circle. With the help of edge detection and contours in OpenCv it is possible to detect this line and calculate the angle from this line.
+
+The advantage of this method is that it reduced the computation, and code. It is make it possible to work with images with lower resolution, which means higher performance.

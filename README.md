@@ -2,7 +2,7 @@
 
 ## Getting started
 
-This application is developed as part of master project by Siamak Mirifar.
+This application is developed as part of master project.
 
 This Application is Fully functional on Linux distribution based on Debian.
 

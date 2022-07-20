@@ -46,10 +46,33 @@ class UDP_Send {
   +send_data()
 }
 
+class HSV_COLOR_PICKER {
+  -List frame
+
+  +color_picker()
+}
+
+class Capture_Image {
+  -List frame
+
+  +load_image()
+}
+
+class Capture_Video {
+  -List frame
+
+  +start_video_capturing()
+  +set_camera_config()
+}
+
 First_Process --*  Main
 Second_Process --* UDP_Send
 Main *--* Image_Processing : return frame data
 Main *--* Detect_Robot : return robots info
 Main *--* Ui_MainWindow : Application user interface
+Main --* HSV_COLOR_PICKER : Pick HSV color range
+Main --* Capture_Image : Return frame
+Main --* Capture_Video : Return frame
 Main --o UDP_Send : Send data to server after each process sycle
+
 @enduml

@@ -1,14 +1,16 @@
 @startuml
-class First_Process {
-    +start_process()
+
+class QMainWindow {
+PyQt5.QtWidgets
 }
 
-class Second_Process {
-+start_process()
+class Ui_MainWindow {
+  +setupUi()
+  +retranslateUi()
 }
 
 class Main {
-  -List frame
+  +List frame
   .
   .
   .
@@ -18,69 +20,61 @@ class Main {
 }
 
 class Detect_Robot {
-  -List Robot_Pattern_Dict
-  -List _Frame_Data
+  +List Robot_Pattern_Dict
+  +List _Frame_Data
 
 
-  +detect_robot()
-}
-
-class Ui_MainWindow {
-  +setupUi()
-  +retranslateUi()
+  +detect_robot():Python Dictionary
 }
 
 class Image_Processing {
-  -List frameNew
-  -List _Frame_Data
+  +List frameNew
+  +List _Frame_Data
 
-  +_start_process()
+  +_start_process():Python Dictionary
 }
 
-class UDP_Send {
-  -List Queue
-  .
-  .
-  .
-
-  +send_data()
-}
 
 class HSV_COLOR_PICKER {
-  -List frame
+  +List frame
 
   +color_picker()
 }
 
 class Capture_Image {
-  -List frame
+  +List frame
 
-  +load_image()
+  +load_image():List
 }
 
 class Capture_Video {
-  -List frame
+  +List frame
 
-  +start_video_capturing()
+  +start_video_capturing():List
   +set_camera_config()
 }
 
 class UDP_Connection {
-  -Socket socket_ssl
+  +Socket socket_ssl
 
-  +__init__()
+  #__init__()
 }
 
 class UDP_Send {
-  -QUEUE Sendqueuel
+  +QUEUE Sendqueuel
+
+  +run(): @Override 
+  +send(ProtoBuf)
+  +convert_data_to_ProtoBuf_format(Dictionary)
+}
+
+class multiprocessing {
 
   +run()
-  +send()
-  +convert_data_to_ProtoBuf_format()
 }
 
 class UDP_Receive {
-  -QUEUE Sendqueuel
+  +QUEUE Sendqueuel
 
   +run()
   +receive()
@@ -88,19 +82,26 @@ class UDP_Receive {
 }
 
 class Client_Socket_ProtoBuf {
-  -List ProtoBuf
+  +List ProtoBuf
 
   +ssl_robot_detection_message()
 }
 
-First_Process --*  Main
-Second_Process --* UDP_Send
+Ui_MainWindow <|-- Main : Application user interface
+QMainWindow <|-- Main : PyQt5
+
+multiprocessing <|-- UDP_Send : multiprocessing.Process Python class
+UDP_Connection <|.. UDP_Send : Get server information
+UDP_Connection <|.. UDP_Receive : Get server information
+UDP_Send *-- Client_Socket_ProtoBuf : convert data to ProtoBuf format
+UDP_Receive *-- Client_Socket_ProtoBuf : convert data to ProtoBuf format
+
 Main *-- Image_Processing : return frame data
 Main *-- Detect_Robot : return robots info
-Main *-- Ui_MainWindow : Application user interface
 Main *-- HSV_COLOR_PICKER : Pick HSV color range
 Main *-- Capture_Image : Return frame
 Main *-- Capture_Video : Return frame
-Main *-- UDP_Send : Send data to server after each process sycle
+
+Main <-- UDP_Send : Send data to server after each loop cycle
 
 @enduml

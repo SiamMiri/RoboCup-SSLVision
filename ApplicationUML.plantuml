@@ -11,10 +11,10 @@ class Ui_MainWindow {
 
 class Main {
   +List frame
-  .
-  .
-  .
-
+  
+  
+  
+  +setupUi()
   +Process_Image()
   +Process_Video()
 }

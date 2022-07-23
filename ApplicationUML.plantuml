@@ -91,8 +91,8 @@ Ui_MainWindow <|-- Main : Application user interface
 QMainWindow <|-- Main : PyQt5
 
 multiprocessing <|-- UDP_Send : multiprocessing.Process Python class
-UDP_Connection <|.. UDP_Send : Get server information
-UDP_Connection <|.. UDP_Receive : Get server information
+UDP_Connection <|.. UDP_Send : send robots info to server
+UDP_Connection <|.. UDP_Receive : recieve info from server
 UDP_Send *-- Client_Socket_ProtoBuf : convert data to ProtoBuf format
 UDP_Receive *-- Client_Socket_ProtoBuf : convert data to ProtoBuf format
 

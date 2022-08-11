@@ -70,7 +70,7 @@ To check errors and time lapse all the processing classes have attribute **PRINT
 
 ## Application structure
 
-[Wiki](https://inf-git.fh-rosenheim.de/ing/labore/rechneranwendungen/robosoccer/software/server_robot_vision/-/wikis/Application-Wiki)
+[Wiki](https://github.com/SiamMiri/RoboCup-SSLVision/wiki)
 
 ## Future work
 
